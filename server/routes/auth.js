@@ -1,28 +1,29 @@
 const express = require('express');
 const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
 const router = express.Router();
 const User = require('../models/User');
 
 router.post('/register', async (req, res) => {
    const { email, username, password } = req.body;
 
-   //    Empty field checks
+   // Empty fields checks
    if (!email || !username || !password) {
       return res.status(400).json({ error: 'All fields are required' });
    }
 
-   //    Validate username (no empty spaces)
+   // Validate username (no empty spaces)
    if (/\s/.test(username)) {
       return res.status(400).json({ error: 'Username cannot contain spaces' });
    }
 
-   //    Validate email address
+   // Validate email address
    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
    if (!emailRegex.test(email)) {
       return res.status(400).json({ error: 'Not valid e-mail address' });
    }
 
-   //    Validate password strenght
+   // Validate password strenght
    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/;
    if (!passwordRegex.test(password)) {
       return res.status(400).json({
@@ -57,6 +58,72 @@ router.post('/register', async (req, res) => {
    } catch (err) {
       console.error(err);
       res.status(500).json({ error: 'Server error during registration' });
+   }
+});
+
+router.post('/login', async (req, res) => {
+   const { email, password } = req.body;
+
+   // Empty fields checks
+   if (!email || !password) {
+      return res.status(401).json({ error: 'Email and password are required' });
+   }
+
+   try {
+      // Find user by email
+      const user = await User.findOne({ email });
+      if (!user) {
+         return res.status(400).json({ error: 'Invalid email or password' });
+      }
+
+      // Verify password
+      const isMatch = await bcrypt.compare(password, user.passwordHash);
+      if (!isMatch) {
+         return res.status(400).json({ error: 'Invalid email or password' });
+      }
+
+      // Generate JWT
+      const token = jwt.sign(
+         { id: user._id, username: user.username },
+         process.env.JWT_SECRET,
+         { expiresIn: '1d' }
+      );
+
+      // Return token
+      res.status(200).json({
+         message: 'Login successful',
+         token,
+         user: {
+            id: user._id,
+            username: user.username,
+            email: user.email,
+         },
+      });
+   } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: 'Server error during login' });
+   }
+});
+
+router.get('/me', async (req, res) => {
+   const authHeader = req.headers.authorization;
+   if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      return res.status(401).json({ error: 'No token provided' });
+   }
+
+   const token = authHeader.split(' ')[1];
+
+   try {
+      const decoded = jwt.verify(token, process.env.JWT_SECRET);
+      const user = await User.findById(decoded.id).select('-passwordHash');
+      if (!user) {
+         return res.status(404).json({ error: 'User not found' });
+      }
+
+      res.json(user);
+   } catch (err) {
+      console.error(err);
+      res.status(401).json({ error: 'Invalid token' });
    }
 });
 
