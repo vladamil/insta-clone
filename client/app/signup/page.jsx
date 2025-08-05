@@ -31,6 +31,36 @@ export default function SignUpPage() {
       setError('');
       setSuccess('');
 
+      // Empty fields checks
+      if (!email || !username || !password) {
+         setError('All fields are required');
+         setLoading(false);
+         return;
+      }
+
+      // Validate username (no empty spaces)
+      if (/\s/.test(username)) {
+         setError('Username cannot contain spaces');
+         setLoading(false);
+         return;
+      }
+
+      // Validate email address
+      if (!emailRegex.test(email)) {
+         setError('Not valid e-mail address');
+         setLoading(false);
+         return;
+      }
+
+      // Validate password strenght
+      if (!passwordRegex.test(password)) {
+         setError(
+            'Password must have at least 8 characters (one uppercase, one lowercase, one number, and one special character)'
+         );
+         setLoading(false);
+         return;
+      }
+
       // Repeat password check
       if (formData.password !== repeatPassword) {
          setError("Passwords don't match");

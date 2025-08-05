@@ -5,7 +5,10 @@ const router = express.Router();
 const User = require('../models/User');
 
 router.post('/register', async (req, res) => {
-   const { email, username, password } = req.body;
+   // Sanitize data from req
+   const email = req.body.email?.trim().toLowerCase();
+   const username = req.body.username?.trim().toLowerCase();
+   const password = req.body.password?.trim();
 
    // Empty fields checks
    if (!email || !username || !password) {
