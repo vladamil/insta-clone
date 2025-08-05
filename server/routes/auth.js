@@ -65,24 +65,28 @@ router.post('/register', async (req, res) => {
 });
 
 router.post('/login', async (req, res) => {
-   const { email, password } = req.body;
+   // Sanitize data from req
+   const username = req.body.username?.trim().toLowerCase();
+   const password = req.body.password?.trim();
 
    // Empty fields checks
-   if (!email || !password) {
-      return res.status(401).json({ error: 'Email and password are required' });
+   if (!username || !password) {
+      return res
+         .status(401)
+         .json({ error: 'Username and password are required' });
    }
 
    try {
       // Find user by email
-      const user = await User.findOne({ email });
+      const user = await User.findOne({ username });
       if (!user) {
-         return res.status(400).json({ error: 'Invalid email or password' });
+         return res.status(400).json({ error: 'Invalid username or password' });
       }
 
       // Verify password
       const isMatch = await bcrypt.compare(password, user.passwordHash);
       if (!isMatch) {
-         return res.status(400).json({ error: 'Invalid email or password' });
+         return res.status(400).json({ error: 'Invalid username or password' });
       }
 
       // Generate JWT
