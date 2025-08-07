@@ -3,6 +3,7 @@ const cors = require('cors');
 const mongoose = require('mongoose');
 require('dotenv').config();
 const authRoutes = require('./routes/auth');
+const userRoutes = require('./routes/user');
 
 const app = express();
 app.use(cors());
@@ -20,6 +21,7 @@ mongoose
    .catch((err) => console.error('MongoDB connection error:', err));
 
 app.use('/api', authRoutes);
+app.use('/api', userRoutes);
 
 // Check if server works
 app.get('/', (req, res) => {
