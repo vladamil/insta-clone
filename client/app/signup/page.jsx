@@ -1,5 +1,6 @@
 'use client';
 import { useState } from 'react';
+import { API_URL } from '@/lib/constants';
 
 const initialFormData = {
    username: '',
@@ -69,14 +70,13 @@ export default function SignUpPage() {
       }
 
       try {
-         const res = await fetch('http://localhost:5000/api/register', {
+         const res = await fetch(`${API_URL}/api/register`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(formData), // repeatPassword is NOT included!
          });
 
          const data = await res.json();
-         console.log('HTTP SENT');
 
          if (!res.ok) throw new Error(data.error || 'Registration failed');
 

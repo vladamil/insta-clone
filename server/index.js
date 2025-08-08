@@ -6,7 +6,8 @@ const authRoutes = require('./routes/auth');
 const userRoutes = require('./routes/user');
 
 const app = express();
-app.use(cors());
+// Only OUR domain can make requests
+app.use(cors({ origin: process.env.CLIENT_URL, credentials: true }));
 app.use(express.json());
 
 const PORT = process.env.PORT || 5000;

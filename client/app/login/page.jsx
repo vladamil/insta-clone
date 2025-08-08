@@ -1,6 +1,7 @@
 'use client';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { API_URL } from '@/lib/constants';
 
 export default function LoginPage() {
    const [formData, setFormData] = useState({
@@ -26,7 +27,7 @@ export default function LoginPage() {
       setSuccess('');
 
       try {
-         const res = await fetch('http://localhost:5000/api/login', {
+         const res = await fetch(`${API_URL}/api/login`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
