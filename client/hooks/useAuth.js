@@ -1,25 +1,43 @@
 import { useEffect, useState } from 'react';
-import { jwtDecode } from 'jwt-decode';
+import { API_URL } from '@/lib/constants';
 
 export default function useAuth() {
    const [user, setUser] = useState(null);
-   const [checking, setChecking] = useState(true);
+   const [loading, setLoading] = useState(true);
+   const [error, setError] = useState(null);
 
    useEffect(() => {
-      try {
-         const token = sessionStorage.getItem('token');
-         if (token) {
-            const decoded = jwtDecode(token);
-            setUser(decoded); // decoded contains { id, username, ... }
+      const fetchUser = async () => {
+         try {
+            const token = sessionStorage.getItem('token');
+            if (!token) return;
+
+            const res = await fetch(`${API_URL}/api/me`, {
+               headers: {
+                  Authorization: `Bearer ${token}`,
+               },
+            });
+
+            const data = await res.json();
+
+            if (!res.ok) {
+               sessionStorage.removeItem('token'); // token invalid/expired
+               throw new Error(data.error || 'Failed to authenticate');
+               setUser(null);
+            } else {
+               setUser(data);
+            }
+         } catch (err) {
+            sessionStorage.removeItem('token');
+            setUser(null);
+            setError(err.message);
+         } finally {
+            setLoading(false);
          }
-      } catch (err) {
-         console.error('Invalid token:', err);
-         sessionStorage.removeItem('token');
-         setUser(null);
-      } finally {
-         setChecking(false);
-      }
+      };
+
+      fetchUser();
    }, []);
 
-   return { user, checking };
+   return { user, loading, error };
 }
