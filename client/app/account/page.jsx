@@ -8,6 +8,11 @@ export default function DashboardPage() {
    const { user, loading, error } = useAuth();
    const router = useRouter();
 
+   const handleLogout = () => {
+      sessionStorage.removeItem('token');
+      router.replace('/login');
+   };
+
    useEffect(() => {
       if (!loading && !user) {
          // Redirect to login if not authenticated
@@ -24,6 +29,7 @@ export default function DashboardPage() {
          <p>This is your private dashboard 👀</p>
          <p>Your email is {user.email}</p>
          <p>Joined at: {new Date(user.createdAt).toLocaleDateString()}</p>
+         <button onClick={handleLogout}>LogOut</button>
       </div>
    );
 }
