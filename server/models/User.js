@@ -20,6 +20,14 @@ const userSchema = new mongoose.Schema(
          type: Boolean,
          default: false,
       },
+      profilePicUrl: {
+         type: String,
+         default: '',
+      },
+      profilePicId: {
+         type: String,
+         default: '',
+      },
    },
    { timestamps: true }
 );
