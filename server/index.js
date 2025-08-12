@@ -4,6 +4,7 @@ const mongoose = require('mongoose');
 require('dotenv').config();
 const authRoutes = require('./routes/auth');
 const userRoutes = require('./routes/user');
+const accountRoutes = require('./routes/account');
 
 const app = express();
 // Only OUR domain can make requests
@@ -23,6 +24,7 @@ mongoose
 
 app.use('/api', authRoutes);
 app.use('/api', userRoutes);
+app.use('/api', accountRoutes);
 
 // Check if server works
 app.get('/', (req, res) => {
