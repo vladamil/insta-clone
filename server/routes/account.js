@@ -17,6 +17,7 @@ const storage = new CloudinaryStorage({
 
 const upload = multer({ storage });
 
+// Update and set profile picture
 router.patch(
    '/profile-pic',
    requireAuth,
@@ -42,5 +43,76 @@ router.patch(
       }
    }
 );
+
+// Update username
+router.patch('/username', requireAuth, async (req, res) => {
+   try {
+      const username = req.body.username?.trim().toLowerCase();
+
+      if (!username) {
+         return res.status(400).json({ error: 'Username is required' });
+      }
+
+      // Validate username (no spaces)
+      if (/\s/.test(username)) {
+         return res
+            .status(400)
+            .json({ error: 'Username cannot contain spaces' });
+      }
+
+      // Check uniqueness
+      const existingUsername = await User.findOne({ username });
+      if (existingUsername) {
+         return res.status(400).json({ error: 'Username is already taken' });
+      }
+
+      // Update in DB
+      const user = await User.findByIdAndUpdate(
+         req.user.id,
+         { username },
+         { new: true }
+      ).select('-passwordHash');
+
+      res.json(user);
+   } catch (err) {
+      console.error(err);
+      res.status(500).json({ error: 'Failed to update username' });
+   }
+});
+
+// Update email address
+router.patch('/email', requireAuth, async (req, res) => {
+   try {
+      const email = req.body.email?.trim().toLowerCase();
+
+      if (!email) {
+         return res.status(400).json({ error: 'Email is required' });
+      }
+
+      // Validate email address
+      const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+      if (!emailRegex.test(email)) {
+         return res.status(400).json({ error: 'Not a valid e-mail address' });
+      }
+
+      // Check uniqueness
+      const existingEmail = await User.findOne({ email });
+      if (existingEmail) {
+         return res.status(400).json({ error: 'Email is already in use' });
+      }
+
+      // Update in DB
+      const user = await User.findByIdAndUpdate(
+         req.user.id,
+         { email },
+         { new: true }
+      ).select('-passwordHash');
+
+      res.json(user);
+   } catch (err) {
+      console.error(err);
+      res.status(500).json({ error: 'Failed to update email' });
+   }
+});
 
 module.exports = router;

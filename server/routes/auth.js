@@ -23,7 +23,7 @@ router.post('/register', async (req, res) => {
    // Validate email address
    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
    if (!emailRegex.test(email)) {
-      return res.status(400).json({ error: 'Not valid e-mail address' });
+      return res.status(400).json({ error: 'Not a valid e-mail address' });
    }
 
    // Validate password strenght

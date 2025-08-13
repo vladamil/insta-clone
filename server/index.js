@@ -24,7 +24,7 @@ mongoose
 
 app.use('/api', authRoutes);
 app.use('/api', userRoutes);
-app.use('/api', accountRoutes);
+app.use('/api/account', accountRoutes);
 
 // Check if server works
 app.get('/', (req, res) => {
