@@ -181,4 +181,22 @@ router.patch('/description', requireAuth, async (req, res) => {
    }
 });
 
+// Delete account
+router.delete('/', requireAuth, async (req, res) => {
+   try {
+      const user = await User.findById(req.user.id);
+
+      if (user.profilePicPublicId) {
+         await cloudinary.uploader.destroy(user.profilePicPublicId);
+      }
+
+      await User.findByIdAndDelete(req.user.id);
+
+      res.json({ message: 'Account deleted successfully' });
+   } catch (err) {
+      console.error(err);
+      res.status(500).json({ error: 'Failed to delete account' });
+   }
+});
+
 module.exports = router;
