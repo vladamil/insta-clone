@@ -1,17 +1,14 @@
 'use client';
 
-import useAuth from '@/hooks/useAuth';
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import useAuth from '@/hooks/useAuth';
 
-export default function DashboardPage() {
+import UpdateProfilePic from '@/components/account/UpdateProfilePic';
+
+export default function AccountPage() {
    const { user, loading, error } = useAuth();
    const router = useRouter();
-
-   const handleLogout = () => {
-      sessionStorage.removeItem('token');
-      router.replace('/login');
-   };
 
    useEffect(() => {
       if (!loading && !user) {
@@ -20,16 +17,14 @@ export default function DashboardPage() {
       }
    }, [user, loading]);
 
-   if (loading && !user) return <p>Loading...</p>;
-   if (!loading && !user) return null;
+   if (loading && !user) return <div>LOADING...</div>;
+   // if (!loading && !user) return;
+   if (error) return <div>ERROR: {error.message}</div>;
 
    return (
       <div>
-         <h1>Welcome, {user.username}</h1>
-         <p>This is your private dashboard 👀</p>
-         <p>Your email is {user.email}</p>
-         <p>Joined at: {new Date(user.createdAt).toLocaleDateString()}</p>
-         <button onClick={handleLogout}>LogOut</button>
+         <h1>ACCOUNT PAGE</h1>
+         <UpdateProfilePic currentPic={user.profilePicUrl} />
       </div>
    );
 }

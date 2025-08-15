@@ -46,7 +46,7 @@ export default function LoginPage() {
          setFormData({ username: '', password: '' });
 
          // Redirect after login
-         router.replace('/account');
+         router.replace('/profile');
       } catch (err) {
          setError(err.message);
       } finally {
