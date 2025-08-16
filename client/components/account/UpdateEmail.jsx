@@ -35,7 +35,7 @@ export default function UpdateEmail({ currentEmail }) {
 
          const data = await res.json();
          if (!res.ok) throw new Error(data.error);
-         setMessage('✅ Username updated successfully!');
+         setMessage('✅ Email updated successfully!');
       } catch (err) {
          setMessage(`❌ ${err.message}`);
       }
