@@ -7,6 +7,8 @@ import useAuth from '@/hooks/useAuth';
 import UpdateProfilePic from '@/components/account/UpdateProfilePic';
 import UpdateUsername from '@/components/account/UpdateUsername';
 import UpdateEmail from '@/components/account/UpdateEmail';
+import UpdateDescription from '@/components/account/UpdateDescription';
+import DeleteAccount from '@/components/account/DeleteAccount';
 
 export default function AccountPage() {
    const { user, loading, error } = useAuth();
@@ -29,6 +31,8 @@ export default function AccountPage() {
          <UpdateProfilePic currentPic={user.profilePicUrl} />
          <UpdateUsername currentUsername={user.username} />
          <UpdateEmail currentEmail={user.email} />
+         <UpdateDescription currentDescription={user.description} />
+         <DeleteAccount />
       </div>
    );
 }
