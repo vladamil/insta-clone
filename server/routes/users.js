@@ -89,3 +89,48 @@ router.post('/:username/follow', requireAuth, async (req, res) => {
       res.status(500).json({ error: 'Server Error' });
    }
 });
+
+// Unfollow a user route
+
+router.delete('/:username/follow', requireAuth, async (req, res) => {
+   try {
+      const username = req.params.username.toLowerCase().trim();
+      const targetUser = await User.findOne({ username }).select('_id');
+
+      // Check if user exists
+      if (!targetUser) {
+         return res.status(404).json({ error: 'User not found' });
+      }
+
+      // Unfollow logic
+      const follow = await Follow.findOneAndDelete({
+         follower: req.user.id,
+         following: targetUser._id,
+      });
+
+      // Not following safeguard
+      if (!follow) {
+         return res
+            .status(400)
+            .json({ error: "You're not following this user" });
+      }
+
+      // Return updated counts
+      const followersCount = await Follow.countDocuments({
+         following: targetUser._id,
+      });
+      const followingCount = await Follow.countDocuments({
+         follower: targetUser._id,
+      });
+
+      res.status(200).json({
+         message: 'Unfollowed successfully',
+         followersCount,
+         followingCount,
+      });
+   } catch (error) {
+      res.status(500).json({ error: 'Server Error' });
+   }
+});
+
+module.exports = router;
