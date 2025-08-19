@@ -3,6 +3,7 @@ const router = express.Router();
 const User = require('../models/User');
 const Follow = require('../models/Follow');
 const Post = require('../models/Post');
+const requireAuth = require('../middleware/requireAuth');
 
 // Get user profile by username
 router.get('/:username', async (req, res) => {
@@ -47,4 +48,44 @@ router.get('/:username', async (req, res) => {
    }
 });
 
-module.exports = router;
+// Follow a user route
+router.post('/:username/follow', requireAuth, async (req, res) => {
+   try {
+      const username = req.params.username.toLowerCase().trim();
+      const targetUser = await User.findOne({ username }).select('_id');
+
+      // Check if user exists
+      if (!targetUser) {
+         return res.status(404).json({ error: 'User not found' });
+      }
+
+      // Prevent self-follow
+      if (targetUser._id.toString() === req.user.id) {
+         return res.status(400).json({ error: 'Can not follow yourself' });
+      }
+
+      // Follow logic
+      await Follow.create({ follower: req.user.id, following: targetUser._id });
+
+      // Return updated counts
+      const followersCount = await Follow.countDocuments({
+         following: targetUser._id,
+      });
+      const followingCount = await Follow.countDocuments({
+         follower: targetUser._id,
+      });
+
+      res.status(200).json({
+         message: 'Followed successfully',
+         followersCount,
+         followingCount,
+      });
+   } catch (err) {
+      if (err.code === 11000) {
+         // Duplicate key error (if already following)
+         return res.status(400).json({ error: 'Already following this user' });
+      }
+
+      res.status(500).json({ error: 'Server Error' });
+   }
+});
