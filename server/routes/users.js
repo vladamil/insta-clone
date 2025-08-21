@@ -1,4 +1,5 @@
 const express = require('express');
+const jwt = require('jsonwebtoken');
 const router = express.Router();
 const User = require('../models/User');
 const Follow = require('../models/Follow');
@@ -26,6 +27,27 @@ router.get('/:username', async (req, res) => {
          Post.countDocuments({ author: user._id }),
       ]);
 
+      let isFollowing = false;
+
+      // ✅ If token is present, decode and check relationship
+      const authHeader = req.headers.authorization;
+      if (authHeader?.startsWith('Bearer ')) {
+         try {
+            const token = authHeader.split(' ')[1];
+            const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
+            const follow = await Follow.exists({
+               follower: decoded.id,
+               following: user._id,
+            });
+
+            isFollowing = !!follow;
+         } catch (err) {
+            // If token invalid → ignore silently (profile still visible)
+            console.warn('Invalid token on profile check', err.message);
+         }
+      }
+
       const posts = await Post.find({ author: user._id })
          .sort({ createdAt: -1 })
          .limit(6);
@@ -34,13 +56,14 @@ router.get('/:username', async (req, res) => {
          profilePicUrl: user.profilePicUrl || '',
          username: user.username,
          description: user.description || '',
+         isFollowing,
          stats: {
             followers: followersCount,
             following: followingCount,
             posts: postsCount,
          },
 
-         postsPrewiev: posts,
+         postsPreview: posts,
       });
    } catch (err) {
       console.error(err);
