@@ -1,5 +1,4 @@
 const express = require('express');
-const jwt = require('jsonwebtoken');
 const router = express.Router();
 const User = require('../models/User');
 const Follow = require('../models/Follow');
@@ -7,7 +6,7 @@ const Post = require('../models/Post');
 const requireAuth = require('../middleware/requireAuth');
 
 // Get user profile by username
-router.get('/:username', async (req, res) => {
+router.get('/:username', requireAuth, async (req, res) => {
    try {
       const username = req.params.username.toLowerCase().trim();
 
@@ -27,26 +26,11 @@ router.get('/:username', async (req, res) => {
          Post.countDocuments({ author: user._id }),
       ]);
 
-      let isFollowing = false;
-
-      // ✅ If token is present, decode and check relationship
-      const authHeader = req.headers.authorization;
-      if (authHeader?.startsWith('Bearer ')) {
-         try {
-            const token = authHeader.split(' ')[1];
-            const decoded = jwt.verify(token, process.env.JWT_SECRET);
-
-            const follow = await Follow.exists({
-               follower: decoded.id,
-               following: user._id,
-            });
-
-            isFollowing = !!follow;
-         } catch (err) {
-            // If token invalid → ignore silently (profile still visible)
-            console.warn('Invalid token on profile check', err.message);
-         }
-      }
+      // Check if relations already exists (already following)
+      const isFollow = await Follow.exists({
+         follower: req.user.id,
+         following: user._id,
+      });
 
       const posts = await Post.find({ author: user._id })
          .sort({ createdAt: -1 })
@@ -56,7 +40,7 @@ router.get('/:username', async (req, res) => {
          profilePicUrl: user.profilePicUrl || '',
          username: user.username,
          description: user.description || '',
-         isFollowing,
+         isFollowing: !!isFollow,
          stats: {
             followers: followersCount,
             following: followingCount,
