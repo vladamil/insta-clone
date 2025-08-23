@@ -37,7 +37,7 @@ router.get('/:username', requireAuth, async (req, res) => {
          .limit(6);
 
       res.status(200).json({
-         profilePicUrl: user.profilePicUrl || '',
+         profilePicUrl: user.profilePicUrl || null,
          username: user.username,
          description: user.description || '',
          isFollowing: !!isFollow,
@@ -86,6 +86,7 @@ router.post('/:username/follow', requireAuth, async (req, res) => {
          message: 'Followed successfully',
          followersCount,
          followingCount,
+         isFollowing: true,
       });
    } catch (err) {
       if (err.code === 11000) {
@@ -134,6 +135,7 @@ router.delete('/:username/follow', requireAuth, async (req, res) => {
          message: 'Unfollowed successfully',
          followersCount,
          followingCount,
+         isFollowing: false,
       });
    } catch (error) {
       res.status(500).json({ error: 'Server Error' });

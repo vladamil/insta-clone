@@ -5,7 +5,7 @@ export default function ProfileHeader({
 }) {
    return (
       <div>
-         <img src={profilePicUrl || ''} alt={username} width={200} />
+         <img src={profilePicUrl} alt={username} width={200} />
          <div>
             <h2>{username}</h2>
             <p>{description || 'No description yet.'}</p>

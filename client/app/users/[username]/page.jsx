@@ -1,13 +1,15 @@
 'use client';
 import { useState, useEffect } from 'react';
 import { useParams } from 'next/navigation';
-
+import { useRouter } from 'next/navigation';
 import ProfileHeader from '@/components/profile/ProfileHeader';
 import ProfileStats from '@/components/profile/ProfileStats';
 import ProfilePosts from '@/components/profile/ProfilePosts';
+import ProfileFollowButton from '@/components/profile/ProfileFollowButton';
 
 export default function ProfilePage() {
    const { username } = useParams();
+   const router = useRouter();
    const [profile, setProfile] = useState(null);
    const [loading, setLoading] = useState(true);
    const [error, setError] = useState(null);
@@ -15,8 +17,14 @@ export default function ProfilePage() {
    useEffect(() => {
       const fetchUserData = async () => {
          try {
+            const token = sessionStorage.getItem('token');
+            if (!token) return router.replace('/login');
+
             const res = await fetch(
-               `${process.env.NEXT_PUBLIC_API_URL}/api/users/${username}`
+               `${process.env.NEXT_PUBLIC_API_URL}/api/users/${username}`,
+               {
+                  headers: { Authorization: `Bearer ${token}` },
+               }
             );
             const data = await res.json();
 
@@ -38,6 +46,7 @@ export default function ProfilePage() {
 
    if (loading) return <div>LOADING!!!</div>;
    if (error) return <div>{error}</div>;
+   if (!loading && !profile) return null;
 
    return (
       <div>
@@ -47,6 +56,7 @@ export default function ProfilePage() {
             description={profile.description}
          />
          <ProfileStats stats={profile.stats} />
+         <ProfileFollowButton profile={profile} setProfile={setProfile} />
          <ProfilePosts posts={profile.postsPrewiev} />
       </div>
    );
