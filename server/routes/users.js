@@ -26,6 +26,9 @@ router.get('/:username', requireAuth, async (req, res) => {
          Post.countDocuments({ author: user._id }),
       ]);
 
+      // Check if target user is logged user
+      const isSelf = req.user.id === user._id.toString();
+
       // Check if relations already exists (already following)
       const isFollow = await Follow.exists({
          follower: req.user.id,
@@ -41,6 +44,7 @@ router.get('/:username', requireAuth, async (req, res) => {
          username: user.username,
          description: user.description || '',
          isFollowing: !!isFollow,
+         isSelf,
          stats: {
             followers: followersCount,
             following: followingCount,

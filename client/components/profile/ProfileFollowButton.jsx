@@ -1,7 +1,9 @@
-export default function ProfileFollowButton({ profile, setProfile }) {
-   const handleFollow = async () => {
-      console.log(profile);
+import { useRouter } from 'next/navigation';
 
+export default function ProfileFollowButton({ profile, setProfile }) {
+   const router = useRouter();
+
+   const handleFollow = async () => {
       try {
          const res = await fetch(
             `${process.env.NEXT_PUBLIC_API_URL}/api/users/${profile.username}/follow`,
@@ -34,6 +36,17 @@ export default function ProfileFollowButton({ profile, setProfile }) {
          console.error(error);
       }
    };
+
+   if (profile.isSelf)
+      return (
+         <button
+            onClick={() => {
+               router.push('/account');
+            }}
+         >
+            Edit Profile
+         </button>
+      );
 
    return (
       <button onClick={handleFollow}>
