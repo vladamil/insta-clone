@@ -59,4 +59,22 @@ router.post('/', requireAuth, upload.single('postImage'), async (req, res) => {
    }
 });
 
+// Get a single post route
+router.get('/:id', requireAuth, async (req, res) => {
+   try {
+      const post = await Post.findById(req.params.id).populate(
+         'author',
+         'username profilePicUrl'
+      );
+      if (!post) {
+         return res.status(404).json({ error: 'Post not found' });
+      }
+
+      res.status(200).json(post);
+   } catch (err) {
+      console.error(err);
+      res.status(500).json({ error: 'Failed to fetch post' });
+   }
+});
+
 module.exports = router;
