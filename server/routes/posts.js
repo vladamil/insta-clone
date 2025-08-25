@@ -3,6 +3,7 @@ const cloudinary = require('../config/cloudinary');
 const multer = require('multer');
 const { CloudinaryStorage } = require('multer-storage-cloudinary');
 const Post = require('../models/Post');
+const Follow = require('../models/Follow');
 const requireAuth = require('../middleware/requireAuth');
 
 const router = express.Router();
@@ -56,6 +57,27 @@ router.post('/', requireAuth, upload.single('postImage'), async (req, res) => {
       }
 
       res.status(500).json({ error: 'Failed to create post' });
+   }
+});
+
+// Get a feed for logged in user (posts from users he follows)
+router.get('/feed', requireAuth, async (req, res) => {
+   try {
+      // Get the array of ids logged in user follows
+      const followingIds = await Follow.find({
+         follower: req.user.id,
+      }).distinct('following');
+
+      // posts of followed users
+      const feedPosts = await Post.find({ author: { $in: followingIds } })
+         .limit(20)
+         .sort({ createdAt: -1 })
+         .populate('author', 'username profilePicUrl');
+
+      res.status(200).json(feedPosts);
+   } catch (error) {
+      console.error(err);
+      res.status(500).json({ error: 'Failed to fetch feed' });
    }
 });
 
