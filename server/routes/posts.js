@@ -62,19 +62,32 @@ router.post('/', requireAuth, upload.single('postImage'), async (req, res) => {
 
 // Get a feed for logged in user (posts from users he follows)
 router.get('/feed', requireAuth, async (req, res) => {
+   const page = parseInt(req.query.page) || 1;
+   const limit = parseInt(req.query.limit) || 12;
+   const skip = (page - 1) * limit;
+
    try {
       // Get the array of ids logged in user follows
       const followingIds = await Follow.find({
          follower: req.user.id,
       }).distinct('following');
 
-      // posts of followed users
+      // Always include the logged-in user's own posts too
+      followingIds.push(req.user.id);
+
+      // Total of all feed posts
+      const total = await Post.countDocuments({
+         author: { $in: followingIds },
+      });
+
+      // posts of followed users PER PAGE
       const feedPosts = await Post.find({ author: { $in: followingIds } })
-         .limit(20)
          .sort({ createdAt: -1 })
+         .skip(skip)
+         .limit(limit)
          .populate('author', 'username profilePicUrl');
 
-      res.status(200).json(feedPosts);
+      res.status(200).json({ feedPosts, totalPages: Math.ceil(total / limit) });
    } catch (error) {
       console.error(err);
       res.status(500).json({ error: 'Failed to fetch feed' });
