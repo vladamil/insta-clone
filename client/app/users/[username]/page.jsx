@@ -13,6 +13,8 @@ export default function ProfilePage() {
    const [profile, setProfile] = useState(null);
    const [loading, setLoading] = useState(true);
    const [error, setError] = useState(null);
+   // const [posts, setPosts] = useState([]);
+   // const [postsLoading, setPostsLoading] = useState(true);
 
    useEffect(() => {
       const fetchUserData = async () => {
@@ -44,6 +46,31 @@ export default function ProfilePage() {
       fetchUserData();
    }, [username]);
 
+   // TODO: ADD SEPARATE STATE AND SEPARATE USE EFFECT FETCH FOR USER POSTS
+   // useEffect(() => {
+   //    async function fetchPosts() {
+   //       try {
+   //          const token = sessionStorage.getItem('token');
+   //          if (!token) return router.replace('/login');
+
+   //          const res = await fetch(
+   //             `${process.env.NEXT_PUBLIC_API_URL}/api/users/${username}/posts?page=1&limit=5`,
+   //             {
+   //                headers: { Authorization: `Bearer ${token}` },
+   //             }
+   //          );
+   //          const data = await res.json();
+
+   //          setPosts(data.posts);
+   //       } catch (err) {
+   //          console.error('Failed to fetch posts:', err);
+   //       } finally {
+   //          setPostsLoading(false);
+   //       }
+   //    }
+   //    fetchPosts();
+   // }, [username]);
+
    if (loading) return <div>LOADING!!!</div>;
    if (error) return <div>{error}</div>;
    if (!loading && !profile) return null;
@@ -57,7 +84,7 @@ export default function ProfilePage() {
          />
          <ProfileStats stats={profile.stats} />
          <ProfileFollowButton profile={profile} setProfile={setProfile} />
-         <ProfilePosts posts={profile.postsPrewiev} />
+         {/* <ProfilePosts posts={posts} loading={postsLoading} /> */}
       </div>
    );
 }

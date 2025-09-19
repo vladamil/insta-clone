@@ -35,10 +35,6 @@ router.get('/:username', requireAuth, async (req, res) => {
          following: user._id,
       });
 
-      const posts = await Post.find({ author: user._id })
-         .sort({ createdAt: -1 })
-         .limit(6);
-
       res.status(200).json({
          profilePicUrl: user.profilePicUrl || null,
          username: user.username,
@@ -50,12 +46,47 @@ router.get('/:username', requireAuth, async (req, res) => {
             following: followingCount,
             posts: postsCount,
          },
-
-         postsPreview: posts,
       });
    } catch (err) {
       console.error(err);
       res.status(500).json({ error: 'Failed to fetch user profile' });
+   }
+});
+
+// Get user's posts separately (for easier pagination)
+router.get('/:username/posts', requireAuth, async (req, res) => {
+   const page = parseInt(req.query.page) || 1;
+   const limit = parseInt(req.query.limit) || 12;
+   const skip = (page - 1) * limit;
+
+   try {
+      const username = req.params.username.toLowerCase().trim();
+
+      // Find user (case-insensitive)
+      const user = await User.findOne({ username }).select(
+         '-passwordHash -email'
+      );
+
+      if (!user) {
+         return res.status(404).json({ error: 'User not found' });
+      }
+
+      // total of user posts
+      const total = await Post.countDocuments({ author: user._id });
+
+      const posts = await Post.find({ author: user._id })
+         .sort({ createdAt: -1 })
+         .skip(skip)
+         .limit(limit);
+
+      res.status(200).json({
+         posts,
+         total,
+         totalPages: Math.ceil(total / limit),
+      });
+   } catch (err) {
+      console.error(err);
+      res.status(500).json({ error: 'Failed to fetch posts' });
    }
 });
 
