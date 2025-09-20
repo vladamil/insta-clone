@@ -80,14 +80,21 @@ router.get('/feed', requireAuth, async (req, res) => {
          author: { $in: followingIds },
       });
 
-      // posts of followed users PER PAGE
+      // Posts of followed users PER PAGE
       const feedPosts = await Post.find({ author: { $in: followingIds } })
          .sort({ createdAt: -1 })
          .skip(skip)
          .limit(limit)
          .populate('author', 'username profilePicUrl');
 
-      res.status(200).json({ feedPosts, totalPages: Math.ceil(total / limit) });
+      // Enrich posts with like status and likes count
+      const posts = feedPosts.map((post) => ({
+         ...post.toObject(),
+         isLiked: post.likes.some((id) => id.toString() === req.user.id),
+         likesCount: post.likes.length,
+      }));
+
+      res.status(200).json({ posts, totalPages: Math.ceil(total / limit) });
    } catch (error) {
       console.error(err);
       res.status(500).json({ error: 'Failed to fetch feed' });
@@ -105,7 +112,12 @@ router.get('/:id', requireAuth, async (req, res) => {
          return res.status(404).json({ error: 'Post not found' });
       }
 
-      res.status(200).json(post);
+      // Enrich with like status
+      const postObj = post.toObject();
+      postObj.likesCount = post.likes.length;
+      postObj.isLiked = post.likes.some((id) => id.toString() === req.user.id);
+
+      res.status(200).json(postObj);
    } catch (err) {
       console.error(err);
       res.status(500).json({ error: 'Failed to fetch post' });

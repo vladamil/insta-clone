@@ -74,10 +74,17 @@ router.get('/:username/posts', requireAuth, async (req, res) => {
       // total of user posts
       const total = await Post.countDocuments({ author: user._id });
 
-      const posts = await Post.find({ author: user._id })
+      const userPosts = await Post.find({ author: user._id })
          .sort({ createdAt: -1 })
          .skip(skip)
          .limit(limit);
+
+      // Enrich posts with like status and likes count
+      const posts = userPosts.map((post) => ({
+         ...post.toObject(),
+         isLiked: post.likes.some((id) => id.toString() === req.user.id),
+         likesCount: post.likes.length,
+      }));
 
       res.status(200).json({
          posts,
