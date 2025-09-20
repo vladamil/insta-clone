@@ -112,4 +112,43 @@ router.get('/:id', requireAuth, async (req, res) => {
    }
 });
 
+// Like a post
+router.post('/:id/like', requireAuth, async (req, res) => {
+   try {
+      const post = await Post.findById(req.params.id);
+
+      if (!post) return res.status(404).json({ error: 'Post not found' });
+
+      // Prevent duplicate likes
+      if (post.likes.includes(req.user.id)) {
+         return res.status(400).json({ error: 'Post already liked' });
+      }
+
+      post.likes.push(req.user.id);
+      await post.save();
+
+      res.json({ likesCount: post.likes.length });
+   } catch (error) {
+      res.status(500).json({ error: 'Failed to like post' });
+   }
+});
+
+// Unlike a post
+router.post('/:id/unlike', requireAuth, async (req, res) => {
+   try {
+      const post = await Post.findById(req.params.id);
+
+      if (!post) return res.status(404).json({ error: 'Post not found' });
+
+      post.likes = post.likes.filter(
+         (userID) => userID.toString() !== req.user.id
+      );
+      await post.save();
+
+      res.status(200).json({ likesCount: post.likes.length });
+   } catch (error) {
+      res.status(500).json({ error: 'Failed to unlike post' });
+   }
+});
+
 module.exports = router;
