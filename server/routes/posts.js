@@ -163,4 +163,20 @@ router.post('/:id/unlike', requireAuth, async (req, res) => {
    }
 });
 
+// List of users who liked a post
+router.get('/:id/likes', requireAuth, async (req, res) => {
+   try {
+      const post = await Post.findById(req.params.id).populate(
+         'likes',
+         'username profilePicUrl'
+      );
+      if (!post) return res.status(404).json({ error: 'Post not found' });
+
+      res.json(post.likes);
+   } catch (err) {
+      console.error(err);
+      res.status(500).json({ error: 'Failed to fetch likes' });
+   }
+});
+
 module.exports = router;
