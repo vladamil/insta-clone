@@ -4,6 +4,7 @@ const multer = require('multer');
 const { CloudinaryStorage } = require('multer-storage-cloudinary');
 const Post = require('../models/Post');
 const Follow = require('../models/Follow');
+const Comment = require('../models/Comment');
 const requireAuth = require('../middleware/requireAuth');
 
 const router = express.Router();
@@ -174,8 +175,27 @@ router.get('/:id/likes', requireAuth, async (req, res) => {
 
       res.json(post.likes);
    } catch (err) {
-      console.error(err);
       res.status(500).json({ error: 'Failed to fetch likes' });
+   }
+});
+
+// Create a comment on a post
+router.post('/:id/comment', requireAuth, async (req, res) => {
+   try {
+      const post = await Post.findById(req.params.id);
+
+      if (!post) return res.status(404).json({ error: 'Post not found' });
+
+      const { text } = req.body;
+      if (!text?.trim())
+         return res.status(400).json({ error: 'Comment text required' });
+
+      const comment = new Comment({ post: post.id, author: req.user.id, text });
+      await comment.save();
+
+      res.status(201).json(comment);
+   } catch (error) {
+      res.status(500).json({ error: 'Failed to post a comment' });
    }
 });
 
