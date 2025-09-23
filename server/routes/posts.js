@@ -199,4 +199,35 @@ router.post('/:id/comment', requireAuth, async (req, res) => {
    }
 });
 
+// Get all comments for a post (with replies)
+router.get('/:id/comments', requireAuth, async (req, res) => {
+   try {
+      // Top-level comments only
+      const parentComments = await Comment.find({
+         post: req.params.id,
+         parentComment: null,
+      })
+         .populate('author', 'username profilePicUrl')
+         .sort({ createdAt: -1 });
+
+      // Fetch replies for each parent comment
+      const comments = await Promise.all(
+         parentComments.map(async (comment) => {
+            const replies = await Comment.find({ parentComment: comment._id })
+               .populate('author', 'username profilePicUrl')
+               .sort({ createdAt: 1 }); // oldest first
+
+            return { ...comment.toObject(), replies };
+         })
+      );
+      const commentsCount = await Comment.countDocuments({
+         post: req.params.id,
+      });
+
+      res.json({ comments, commentsCount });
+   } catch (error) {
+      res.status(500).json({ error: 'Failed to fetch comments' });
+   }
+});
+
 module.exports = router;
