@@ -29,4 +29,58 @@ router.post('/:id/reply', requireAuth, async (req, res) => {
    }
 });
 
+// Edit a comment
+router.patch('/:id', requireAuth, async (req, res) => {
+   try {
+      const { text } = req.body;
+
+      if (!text?.trim()) {
+         return res.status(400).json({ error: 'Comment text required' });
+      }
+
+      const comment = await Comment.findById(req.params.id);
+      if (!comment) return res.status(404).json({ error: 'Comment not found' });
+
+      // Only the author can edit comment
+      if (comment.author.toString() !== req.user.id) {
+         return res
+            .status(403)
+            .json({ error: 'Not authorized to edit this comment' });
+      }
+
+      comment.text = text.trim();
+      await comment.save();
+
+      res.json(comment);
+   } catch (err) {
+      res.status(500).json({ error: 'Failed to edit comment' });
+   }
+});
+
+// Delete a comment (and its replies)
+router.delete('/:id', requireAuth, async (req, res) => {
+   try {
+      const comment = await Comment.findById(req.params.id);
+      if (!comment) return res.status(404).json({ error: 'Comment not found' });
+
+      // Only the author can delete comment
+      if (comment.author.toString() !== req.user.id) {
+         return res
+            .status(403)
+            .json({ error: 'Not authorized to delete this comment' });
+      }
+
+      // Delete replies first
+      await Comment.deleteMany({ parentComment: comment._id });
+
+      // Delete the comment itself
+      await comment.deleteOne();
+
+      res.json({ message: 'Comment deleted successfully' });
+   } catch (err) {
+      console.error(err);
+      res.status(500).json({ error: 'Failed to delete comment' });
+   }
+});
+
 module.exports = router;
