@@ -7,6 +7,7 @@ const userRoutes = require('./routes/user');
 const accountRoutes = require('./routes/account');
 const usersRoutes = require('./routes/users');
 const postsRoutes = require('./routes/posts');
+const commentRoutes = require('./routes/comment');
 
 const app = express();
 // Only OUR domain can make requests
@@ -29,6 +30,7 @@ app.use('/api', userRoutes);
 app.use('/api/account', accountRoutes);
 app.use('/api/users', usersRoutes);
 app.use('/api/posts', postsRoutes);
+app.use('/api/comments', commentRoutes);
 
 // Check if server works
 app.get('/', (req, res) => {
