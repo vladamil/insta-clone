@@ -22,6 +22,10 @@ const commentSchema = mongoose.Schema(
          ref: 'Comment',
          default: null, // null = top-level comment
       },
+      replyToUsername: {
+         type: String,
+         default: null,
+      },
    },
    { timestamps: true }
 );

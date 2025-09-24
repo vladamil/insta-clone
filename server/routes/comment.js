@@ -7,9 +7,17 @@ const router = express.Router();
 // Create a comment reply
 router.post('/:id/reply', requireAuth, async (req, res) => {
    try {
-      const parentComment = await Comment.findById(req.params.id);
+      const parentComment = await Comment.findById(req.params.id).populate(
+         'author',
+         'username'
+      );
       if (!parentComment)
          return res.status(404).json({ error: 'Comment not found' });
+
+      // Always use the top-level parent
+      const topParentId = parentComment.parentComment
+         ? parentComment.parentComment
+         : parentComment._id;
 
       const { text } = req.body;
       if (!text?.trim())
@@ -19,7 +27,8 @@ router.post('/:id/reply', requireAuth, async (req, res) => {
          post: parentComment.post, // same post as parent
          author: req.user.id,
          text: text.trim(),
-         parentComment: parentComment._id,
+         parentComment: topParentId,
+         replyToUsername: parentComment.author.username,
       });
 
       await reply.save();
