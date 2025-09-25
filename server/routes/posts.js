@@ -209,16 +209,29 @@ router.get('/:id/comments', requireAuth, async (req, res) => {
          .populate('author', 'username profilePicUrl')
          .sort({ createdAt: -1 });
 
-      // Fetch replies for each parent comment
-      const comments = await Promise.all(
-         parentComments.map(async (comment) => {
-            const replies = await Comment.find({ parentComment: comment._id })
-               .populate('author', 'username profilePicUrl')
-               .sort({ createdAt: 1 }); // oldest first
+      // Top-level comments IDs
+      const parentCommentsIds = parentComments.map((comment) => comment._id);
 
-            return { ...comment.toObject(), replies };
-         })
-      );
+      // All replies
+      const allReplies = await Comment.find({
+         parentComment: { $in: parentCommentsIds },
+      })
+         .populate('author', 'username profilePicUrl')
+         .sort({ createdAt: 1 }); // oldest first in thread;
+
+      // Replies by parentComment object ***
+      const repliesByParentComment = allReplies.reduce((acc, child) => {
+         if (!acc[child.parentComment]) acc[child.parentComment] = [];
+         acc[child.parentComment].push(child);
+         return acc;
+      }, {});
+
+      // Attach replies array to parentComment object
+      const comments = parentComments.map((parent) => ({
+         ...parent.toObject(),
+         replies: repliesByParentComment[parent.id] || [],
+      }));
+
       const commentsCount = await Comment.countDocuments({
          post: req.params.id,
       });
