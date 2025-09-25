@@ -21,8 +21,8 @@ router.get('/:username', requireAuth, async (req, res) => {
 
       // Calculate info data
       const [followersCount, followingCount, postsCount] = await Promise.all([
-         Follow.countDocuments({ following: user._id }),
-         Follow.countDocuments({ follower: user._id }),
+         Follow.countDocuments({ followingId: user._id }),
+         Follow.countDocuments({ followerId: user._id }),
          Post.countDocuments({ author: user._id }),
       ]);
 
@@ -31,8 +31,8 @@ router.get('/:username', requireAuth, async (req, res) => {
 
       // Check if relations already exists (already following)
       const isFollow = await Follow.exists({
-         follower: req.user.id,
-         following: user._id,
+         followerId: req.user.id,
+         followingId: user._id,
       });
 
       res.status(200).json({
@@ -48,7 +48,6 @@ router.get('/:username', requireAuth, async (req, res) => {
          },
       });
    } catch (err) {
-      console.error(err);
       res.status(500).json({ error: 'Failed to fetch user profile' });
    }
 });
@@ -92,7 +91,6 @@ router.get('/:username/posts', requireAuth, async (req, res) => {
          totalPages: Math.ceil(total / limit),
       });
    } catch (err) {
-      console.error(err);
       res.status(500).json({ error: 'Failed to fetch posts' });
    }
 });
@@ -114,14 +112,17 @@ router.post('/:username/follow', requireAuth, async (req, res) => {
       }
 
       // Follow logic
-      await Follow.create({ follower: req.user.id, following: targetUser._id });
+      await Follow.create({
+         followerId: req.user.id,
+         followingId: targetUser._id,
+      });
 
       // Return updated counts
       const followersCount = await Follow.countDocuments({
-         following: targetUser._id,
+         followingId: targetUser._id,
       });
       const followingCount = await Follow.countDocuments({
-         follower: targetUser._id,
+         followerId: targetUser._id,
       });
 
       res.status(200).json({
@@ -154,8 +155,8 @@ router.delete('/:username/follow', requireAuth, async (req, res) => {
 
       // Unfollow logic
       const follow = await Follow.findOneAndDelete({
-         follower: req.user.id,
-         following: targetUser._id,
+         followerId: req.user.id,
+         followingId: targetUser._id,
       });
 
       // Not following safeguard
@@ -167,10 +168,10 @@ router.delete('/:username/follow', requireAuth, async (req, res) => {
 
       // Return updated counts
       const followersCount = await Follow.countDocuments({
-         following: targetUser._id,
+         followingId: targetUser._id,
       });
       const followingCount = await Follow.countDocuments({
-         follower: targetUser._id,
+         followerId: targetUser._id,
       });
 
       res.status(200).json({

@@ -2,13 +2,13 @@ const mongoose = require('mongoose');
 
 const followSchema = new mongoose.Schema(
    {
-      follower: {
+      followerId: {
          type: mongoose.Schema.Types.ObjectId,
          ref: 'User',
          required: true,
          index: true,
       },
-      following: {
+      followingId: {
          type: mongoose.Schema.Types.ObjectId,
          ref: 'User',
          required: true,
@@ -19,6 +19,6 @@ const followSchema = new mongoose.Schema(
 );
 
 // Prevent duplicate follow relationships
-followSchema.index({ follower: 1, following: 1 }, { unique: true });
+followSchema.index({ followerId: 1, followingId: 1 }, { unique: true });
 
 module.exports = mongoose.model('Follow', followSchema);

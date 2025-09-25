@@ -70,8 +70,8 @@ router.get('/feed', requireAuth, async (req, res) => {
    try {
       // Get the array of ids logged in user follows
       const followingIds = await Follow.find({
-         follower: req.user.id,
-      }).distinct('following');
+         followerId: req.user.id,
+      }).distinct('followingId');
 
       // Always include the logged-in user's own posts too
       followingIds.push(req.user.id);
@@ -97,7 +97,6 @@ router.get('/feed', requireAuth, async (req, res) => {
 
       res.status(200).json({ posts, totalPages: Math.ceil(total / limit) });
    } catch (error) {
-      console.error(err);
       res.status(500).json({ error: 'Failed to fetch feed' });
    }
 });
