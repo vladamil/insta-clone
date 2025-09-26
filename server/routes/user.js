@@ -72,4 +72,23 @@ router.get('/discover', requireAuth, async (req, res) => {
    }
 });
 
+router.get('/search', async (req, res) => {
+   try {
+      const username = req.query.username?.trim();
+
+      if (!username) {
+         return res.status(400).json({ error: 'Username query is required' });
+      }
+
+      // Search users by username (case-insensitive, partial match)
+      const users = await User.find({
+         username: { $regex: username, $options: 'i' },
+      }).select('username profilePicUrl description');
+
+      res.json(users);
+   } catch (err) {
+      res.status(500).json({ error: 'Failed to search users' });
+   }
+});
+
 module.exports = router;
