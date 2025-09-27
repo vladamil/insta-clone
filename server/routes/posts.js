@@ -123,6 +123,37 @@ router.get('/:id', requireAuth, async (req, res) => {
    }
 });
 
+// Delete a post
+router.delete('/:id', requireAuth, async (req, res) => {
+   try {
+      const post = await Post.findById(req.params.id);
+
+      if (!post) return res.status(404).json({ error: 'Post not found' });
+
+      // Check ownership
+      if (post.author.toString() !== req.user.id) {
+         return res
+            .status(403)
+            .json({ error: 'Not authorized to delete this post' });
+      }
+
+      // Delete image from Cloudinary
+      if (post.imagePublicId) {
+         await cloudinary.uploader.destroy(post.imagePublicId);
+      }
+
+      // Delete comments on this post
+      await Comment.deleteMany({ post: post._id });
+
+      // Delete the post itself
+      await Post.findByIdAndDelete(post._id);
+
+      res.json({ message: 'Post deleted successfully' });
+   } catch (err) {
+      res.status(500).json({ error: 'Failed to delete post' });
+   }
+});
+
 // Like a post
 router.post('/:id/like', requireAuth, async (req, res) => {
    try {
