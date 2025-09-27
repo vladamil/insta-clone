@@ -4,6 +4,9 @@ const multer = require('multer');
 const { CloudinaryStorage } = require('multer-storage-cloudinary');
 const bcrypt = require('bcryptjs');
 const User = require('../models/User');
+const Post = require('../models/Post');
+const Comment = require('../models/Comment');
+const Follow = require('../models/Follow');
 const requireAuth = require('../middleware/requireAuth');
 
 const router = express.Router();
@@ -184,17 +187,44 @@ router.patch('/description', requireAuth, async (req, res) => {
 // Delete account
 router.delete('/', requireAuth, async (req, res) => {
    try {
-      const user = await User.findById(req.user.id);
+      const userId = req.user.id;
+      const user = await User.findById(userId);
 
+      // delete profile pic from cloudinary
       if (user.profilePicPublicId) {
          await cloudinary.uploader.destroy(user.profilePicPublicId);
       }
 
+      // delete posts (and related images + comments)
+      const posts = await Post.find({ author: userId });
+
+      for (let post of posts) {
+         // delete post image
+         if (post.imagePublicId) {
+            await cloudinary.uploader.destroy(post.imagePublicId);
+         }
+         // delete comments under the post
+         await Comment.deleteMany({ post: post._id });
+      }
+
+      await Post.deleteMany({ author: userId });
+
+      // delete comments authored by user (elsewhere)
+      await Comment.deleteMany({ author: userId });
+
+      // delete follows (both directions)
+      await Follow.deleteMany({
+         $or: [{ followerId: userId }, { followingId: userId }],
+      });
+
+      // remove likes from posts
+      await Post.updateMany({}, { $pull: { likes: userId } });
+
+      // delete the user
       await User.findByIdAndDelete(req.user.id);
 
       res.json({ message: 'Account deleted successfully' });
    } catch (err) {
-      console.error(err);
       res.status(500).json({ error: 'Failed to delete account' });
    }
 });
