@@ -2,7 +2,7 @@
 
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import useAuth from '@/hooks/useAuth';
+import { useAuth } from '@/context/AuthContext';
 
 import UpdateProfilePic from '@/components/account/UpdateProfilePic';
 import UpdateUsername from '@/components/account/UpdateUsername';
@@ -12,7 +12,7 @@ import DeleteAccount from '@/components/account/DeleteAccount';
 import UpdatePassword from '@/components/account/UpdatePassword';
 
 export default function AccountPage() {
-   const { user, loading, error } = useAuth();
+   const { user, loading, authError } = useAuth();
    const router = useRouter();
 
    useEffect(() => {
@@ -24,7 +24,7 @@ export default function AccountPage() {
 
    if (loading && !user) return <div>LOADING...</div>;
    if (!loading && !user) return null;
-   if (error) return <div>ERROR: {error.message}</div>;
+   if (authError) return <div>authError: {authError.message}</div>;
 
    return (
       <div>
