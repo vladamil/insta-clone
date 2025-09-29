@@ -96,11 +96,13 @@ router.post('/login', async (req, res) => {
          { expiresIn: '1d' }
       );
 
+      const { passwordHash, ...userWithoutPassword } = user.toObject();
+
       // Return token
       res.status(200).json({
          message: 'Login successful',
          token,
-         user,
+         user: userWithoutPassword,
       });
    } catch (error) {
       console.error(error);
