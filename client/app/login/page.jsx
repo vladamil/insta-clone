@@ -1,17 +1,14 @@
 'use client';
 import { useState } from 'react';
-import { useRouter } from 'next/navigation';
-import { API_URL } from '@/lib/constants';
+import { useAuth } from '@/context/AuthContext';
 
 export default function LoginPage() {
+   const { login, authError } = useAuth();
    const [formData, setFormData] = useState({
       username: '',
       password: '',
    });
    const [loading, setLoading] = useState(false);
-   const [error, setError] = useState('');
-   const [success, setSuccess] = useState('');
-   const router = useRouter();
 
    const handleChange = (e) => {
       setFormData((prev) => ({
@@ -23,35 +20,10 @@ export default function LoginPage() {
    const handleSubmit = async (e) => {
       e.preventDefault();
       setLoading(true);
-      setError('');
-      setSuccess('');
 
-      try {
-         const res = await fetch(`${API_URL}/api/login`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-               username: formData.username.trim().toLowerCase(),
-               password: formData.password.trim(),
-            }),
-         });
+      await login(formData.username, formData.password);
 
-         const data = await res.json();
-         if (!res.ok) throw new Error(data.error || 'Login failed');
-
-         // Save the token into session storage
-         sessionStorage.setItem('token', data.token);
-
-         setSuccess('Login successful!');
-         setFormData({ username: '', password: '' });
-
-         // Redirect after login
-         router.replace('/profile');
-      } catch (err) {
-         setError(err.message);
-      } finally {
-         setLoading(false);
-      }
+      setLoading(false);
    };
 
    return (
@@ -82,8 +54,7 @@ export default function LoginPage() {
             </button>
          </form>
 
-         {error && <p style={{ color: 'red' }}>❌ {error}</p>}
-         {success && <p style={{ color: 'green' }}>✅ {success}</p>}
+         {authError && <p style={{ color: 'red' }}>❌ {authError}</p>}
       </div>
    );
 }

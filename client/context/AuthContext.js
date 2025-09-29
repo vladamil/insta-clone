@@ -2,6 +2,7 @@
 
 import { createContext, useContext, useState, useEffect } from 'react';
 import { API_URL } from '@/lib/constants';
+import { useRouter } from 'next/navigation';
 
 const AuthContext = createContext();
 
@@ -10,7 +11,9 @@ export function AuthProvider({ children }) {
    const [loading, setLoading] = useState(true);
    const [authError, setAuthError] = useState(null);
 
-   // check token and fetch current user
+   const router = useRouter();
+
+   // Check token and fetch current user data
    useEffect(() => {
       const token = sessionStorage.getItem('token');
       if (!token) {
@@ -48,8 +51,44 @@ export function AuthProvider({ children }) {
       fetchUser();
    }, []);
 
+   // Login user function
+   const login = async (username, password) => {
+      try {
+         const res = await fetch(`${API_URL}/api/login`, {
+            method: 'POST',
+            headers: {
+               'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ username, password }),
+         });
+
+         const data = await res.json();
+
+         if (!res.ok) {
+            throw new Error(data.error || 'Login failed');
+         }
+
+         // save token
+         sessionStorage.setItem('token', data.token);
+
+         // set user from backend response directly and redirect
+         setUser(data.user);
+         setAuthError(null);
+         router.replace('/profile');
+      } catch (err) {
+         setAuthError(err.message);
+      }
+   };
+
+   // Logout user function
+   const logout = () => {
+      sessionStorage.removeItem('token');
+      setUser(null);
+      setAuthError(null);
+   };
+
    return (
-      <AuthContext.Provider value={{ user, loading, authError }}>
+      <AuthContext.Provider value={{ user, loading, authError, login, logout }}>
          {children}
       </AuthContext.Provider>
    );
