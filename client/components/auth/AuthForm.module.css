@@ -1,12 +1,3 @@
-.container {
-   display: flex;
-   justify-content: center;
-   align-items: center;
-   height: 100vh;
-   padding: 1rem;
-   background: #fafafa;
-}
-
 .form {
    background: #fff;
    padding: 2rem;
@@ -55,7 +46,7 @@
 }
 
 .error {
-   color: red;
+   color: #ff4d4f;
    font-size: 0.9rem;
    margin-bottom: 1rem;
 }
