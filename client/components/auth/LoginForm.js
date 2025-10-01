@@ -1,12 +1,16 @@
 import { useState } from 'react';
+import Link from 'next/link';
+import { useAuth } from '@/context/AuthContext';
 import styles from './AuthForm.module.css';
 
-export default function AuthForm({ login, authError }) {
+export default function AuthForm() {
    const [formData, setFormData] = useState({
       username: '',
       password: '',
    });
    const [loading, setLoading] = useState(false);
+
+   const { login, authError } = useAuth();
 
    const handleChange = (e) => {
       setFormData((prev) => ({
@@ -55,7 +59,7 @@ export default function AuthForm({ login, authError }) {
          </button>
 
          <p className={styles.switch}>
-            Don't have an account? <a href="/register">Register</a>
+            Don't have an account? <Link href="/register">Register</Link>
          </p>
       </form>
    );
