@@ -1,6 +1,6 @@
 'use client';
 import { useState } from 'react';
-import { API_URL } from '@/lib/constants';
+import { useAuth } from '@/context/AuthContext';
 
 const initialFormData = {
    username: '',
@@ -9,6 +9,7 @@ const initialFormData = {
 };
 
 export default function SignUpPage() {
+   const { register } = useAuth();
    const [formData, setFormData] = useState(initialFormData);
    const [repeatPassword, setRepeatPassword] = useState('');
    const [loading, setLoading] = useState(false);
@@ -69,25 +70,16 @@ export default function SignUpPage() {
          return;
       }
 
-      try {
-         const res = await fetch(`${API_URL}/api/register`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(formData), // repeatPassword is NOT included!
-         });
-
-         const data = await res.json();
-
-         if (!res.ok) throw new Error(data.error || 'Registration failed');
-
-         setSuccess('Registration successful! You can now log in.');
+      setLoading(true);
+      const result = await register(username, email, password);
+      if (result.success) {
+         setSuccess(result.message);
          setFormData(initialFormData);
          setRepeatPassword('');
-      } catch (err) {
-         setError(err.message);
-      } finally {
-         setLoading(false);
+      } else {
+         setError(result.message);
       }
+      setLoading(false);
    };
 
    return (
