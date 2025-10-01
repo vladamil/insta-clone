@@ -59,7 +59,10 @@ export default function AuthForm() {
          </button>
 
          <p className={styles.switch}>
-            Don't have an account? <Link href="/register">Register</Link>
+            Don't have an account?{' '}
+            <Link style={{ textDecoration: 'underline' }} href="/register">
+               Register
+            </Link>
          </p>
       </form>
    );

@@ -1,6 +1,8 @@
 'use client';
 import { useState } from 'react';
+import Link from 'next/link';
 import { useAuth } from '@/context/AuthContext';
+import styles from './AuthForm.module.css';
 
 const initialFormData = {
    username: '',
@@ -8,7 +10,7 @@ const initialFormData = {
    password: '',
 };
 
-export default function SignUpPage() {
+export default function RegisterForm() {
    const { register } = useAuth();
    const [formData, setFormData] = useState(initialFormData);
    const [repeatPassword, setRepeatPassword] = useState('');
@@ -70,7 +72,6 @@ export default function SignUpPage() {
          return;
       }
 
-      setLoading(true);
       const result = await register(username, email, password);
       if (result.success) {
          setSuccess(result.message);
@@ -83,52 +84,61 @@ export default function SignUpPage() {
    };
 
    return (
-      <div style={{ maxWidth: 400, margin: '0 auto' }}>
-         <h1>Register</h1>
-         <form onSubmit={handleSubmit}>
-            <input
-               name="username"
-               placeholder="Username"
-               value={formData.username}
-               onChange={handleChange}
-               required
-            />
-            <br />
-            <input
-               name="email"
-               type="email"
-               placeholder="Email"
-               value={formData.email}
-               onChange={handleChange}
-               required
-            />
-            <br />
-            <input
-               name="password"
-               type="password"
-               placeholder="Password"
-               value={formData.password}
-               onChange={handleChange}
-               required
-            />
-            <br />
-            <input
-               name="repeatPassword"
-               type="password"
-               placeholder="Repeat Password"
-               value={repeatPassword}
-               onChange={(e) => setRepeatPassword(e.target.value)}
-               required
-            />
-            <br />
+      <form className={styles.form} onSubmit={handleSubmit}>
+         <h1 className={styles.title}>Register</h1>
+         {error && <p className={styles.error}> {error}</p>}
+         <input
+            className={styles.input}
+            name="username"
+            placeholder="Username"
+            value={formData.username}
+            onChange={handleChange}
+            required
+         />
 
-            <button type="submit" disabled={loading}>
-               {loading ? 'Registering...' : 'Register'}
-            </button>
-         </form>
+         <input
+            className={styles.input}
+            name="email"
+            type="email"
+            placeholder="Email"
+            value={formData.email}
+            onChange={handleChange}
+            required
+         />
 
-         {error && <p style={{ color: 'red' }}>❌ {error}</p>}
-         {success && <p style={{ color: 'green' }}>✅ {success}</p>}
-      </div>
+         <input
+            className={styles.input}
+            name="password"
+            type="password"
+            placeholder="Password"
+            value={formData.password}
+            onChange={handleChange}
+            required
+         />
+
+         <input
+            className={styles.input}
+            name="repeatPassword"
+            type="password"
+            placeholder="Repeat Password"
+            value={repeatPassword}
+            onChange={(e) => setRepeatPassword(e.target.value)}
+            required
+         />
+         <br />
+
+         <button className={styles.button} type="submit" disabled={loading}>
+            {loading ? 'Registering...' : 'Register'}
+         </button>
+
+         {success && (
+            <p className={styles.switch}>
+               Registration successful! You can now{' '}
+               <Link style={{ textDecoration: 'underline' }} href="/login">
+                  login
+               </Link>
+            </p>
+         )}
+      </form>
    );
 }
