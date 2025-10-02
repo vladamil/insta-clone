@@ -25,6 +25,7 @@ const postSchema = new mongoose.Schema(
             ref: 'User',
          },
       ],
+      commentsCount: { type: Number, default: 0 },
    },
    { timestamps: true }
 );

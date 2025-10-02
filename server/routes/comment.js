@@ -1,5 +1,6 @@
 const express = require('express');
 const Comment = require('../models/Comment');
+const Post = require('../models/Post');
 const requireAuth = require('../middleware/requireAuth');
 
 const router = express.Router();
@@ -32,6 +33,12 @@ router.post('/:id/reply', requireAuth, async (req, res) => {
       });
 
       await reply.save();
+
+      // Increment commentsCount
+      await Post.findByIdAndUpdate(parentComment.post, {
+         $inc: { commentsCount: 1 },
+      });
+
       res.status(201).json(reply);
    } catch (error) {
       res.status(500).json({ error: 'Failed to add reply' });
@@ -79,11 +86,21 @@ router.delete('/:id', requireAuth, async (req, res) => {
             .json({ error: 'Not authorized to delete this comment' });
       }
 
+      // Count how many replies exist
+      const repliesCount = await Comment.countDocuments({
+         parentComment: comment._id,
+      });
+
       // Delete replies first
       await Comment.deleteMany({ parentComment: comment._id });
 
       // Delete the comment itself
       await comment.deleteOne();
+
+      // Decrement commentsCount
+      await Post.findByIdAndUpdate(comment.post, {
+         $inc: { commentsCount: -(repliesCount + 1) },
+      });
 
       res.json({ message: 'Comment deleted successfully' });
    } catch (err) {
