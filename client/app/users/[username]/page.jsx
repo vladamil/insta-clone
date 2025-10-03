@@ -2,10 +2,10 @@
 import { useState, useEffect } from 'react';
 import { useParams } from 'next/navigation';
 import { useRouter } from 'next/navigation';
-import ProfileHeader from '@/components/profile/ProfileHeader';
-import ProfileStats from '@/components/profile/ProfileStats';
-import ProfilePosts from '@/components/profile/ProfilePosts';
-import ProfileFollowButton from '@/components/profile/ProfileFollowButton';
+import ProfileHeader from '@/components/user/ProfileHeader';
+import ProfileStats from '@/components/user/ProfileStats';
+import ProfilePosts from '@/components/user/ProfilePosts';
+import ProfileFollowButton from '@/components/user/ProfileFollowButton';
 
 export default function ProfilePage() {
    const { username } = useParams();
