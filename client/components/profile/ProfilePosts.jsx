@@ -1,5 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import Image from 'next/image';
+import styles from './ProfilePosts.module.css';
 
 export default function ProfilePosts({ user, authLoading }) {
    const [posts, setPosts] = useState([]);
@@ -43,5 +45,23 @@ export default function ProfilePosts({ user, authLoading }) {
    if (error && !loading) return <div>ERROR: {error}</div>;
    if (!loading && !posts) return null;
 
-   return <div>YOUR POSTS: {posts.length}</div>;
+   return (
+      <div className={styles.grid}>
+         {posts.map((post) => (
+            <div key={post._id} className={styles.post}>
+               <Image
+                  src={post.imageUrl}
+                  alt={post.caption || 'Post'}
+                  fill
+                  sizes="(max-width: 768px) 50vw, (max-width: 1200px) 33vw, 400px"
+                  className={styles.postImage}
+               />
+               <div className={styles.overlay}>
+                  <span>❤️ {post.likesCount}</span>
+                  <span>💬 {post.commentsCount}</span>
+               </div>
+            </div>
+         ))}
+      </div>
+   );
 }
