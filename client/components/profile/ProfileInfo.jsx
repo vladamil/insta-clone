@@ -1,5 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import Image from 'next/image';
+import styles from './ProfileInfo.module.css';
 
 export default function ProfileInfo({ user, authLoading, logout }) {
    const [profile, setProfile] = useState(null);
@@ -46,16 +48,39 @@ export default function ProfileInfo({ user, authLoading, logout }) {
       fetchUserData();
    }, [user, authLoading]);
 
-   console.log(profile);
-
    if (loading && !profile) return <p>Loading...</p>;
    if (error && !loading) return <div>ERROR: {error}</div>;
    if (!loading && !profile) return null;
 
    return (
-      <div>
-         <h1>PROFILE: {profile.username}</h1>
-         <button onClick={logout}>Logout</button>
+      <div className={styles.header}>
+         <div className={styles.avatar}>
+            <Image
+               src={profile.profilePicUrl || '/default-avatar.png'}
+               alt={profile.username}
+               width={120}
+               height={120}
+            />
+         </div>
+         <div className={styles.info}>
+            <h2>{profile.username}</h2>
+            {/* {profile.fullName && <p>{profile.fullName}</p>} */}
+            {profile.description && (
+               <p className={styles.bio}>{profile.description}</p>
+            )}
+
+            <div className={styles.stats}>
+               <span>
+                  <strong>{profile.stats.posts}</strong> Posts
+               </span>
+               <span>
+                  <strong>{profile.stats.followers}</strong> Followers
+               </span>
+               <span>
+                  <strong>{profile.stats.following}</strong> Following
+               </span>
+            </div>
+         </div>
       </div>
    );
 }
