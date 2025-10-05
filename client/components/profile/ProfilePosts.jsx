@@ -41,12 +41,20 @@ export default function ProfilePosts({ user, authLoading }) {
       fetchPosts();
    }, [user, authLoading]);
 
-   if (loading && posts.length === 0) return <p>Loading...</p>;
-   if (error && !loading) return <div>ERROR: {error}</div>;
-   if (!loading && !posts) return null;
+   if (loading) return <p>Loading...</p>;
+   if (error) return <div>ERROR: {error}</div>;
+   if (!posts) return null;
 
    return (
       <div className={styles.grid}>
+         <div
+            className={styles.addPostCard}
+            onClick={() => console.log('OPEN POST MODAL')}
+         >
+            <p>PLUS</p>
+            <p className={styles.addPostText}>Add Post</p>
+         </div>
+
          {posts.map((post) => (
             <div key={post._id} className={styles.post}>
                <Image
