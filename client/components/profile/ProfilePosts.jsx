@@ -45,6 +45,18 @@ export default function ProfilePosts({ user, authLoading }) {
    if (error) return <div>ERROR: {error}</div>;
    if (!posts) return null;
 
+   // If no posts display button and message
+   if (posts.length === 0)
+      return (
+         <div className={styles.noPosts}>
+            <div className={styles.noPostsIcon}>📷</div>
+            <h3>No posts yet</h3>
+            <p>Share your first photo or memory!</p>
+            <button className={styles.addPostBtn}>+ Create Post</button>
+         </div>
+      );
+
+   // If there are posts, mapping them
    return (
       <div className={styles.grid}>
          <div
