@@ -63,8 +63,19 @@ export default function ProfileInfo({ user, authLoading, logout }) {
             />
          </div>
          <div className={styles.info}>
-            <h2>{profile.username}</h2>
-            {/* {profile.fullName && <p>{profile.fullName}</p>} */}
+            <div className={styles.topRow}>
+               <h2>{profile.username}</h2>
+               <button
+                  className={styles.settingsBtn}
+                  onClick={() => {
+                     router.push('/account');
+                  }}
+               >
+                  ⚙️
+                  <span>Settings</span>
+               </button>
+            </div>
+            {profile.fullName && <p>{profile.fullName}</p>}
             {profile.description && (
                <p className={styles.bio}>{profile.description}</p>
             )}

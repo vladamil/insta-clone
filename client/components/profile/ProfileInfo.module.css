@@ -11,9 +11,38 @@
    border: 3px solid #ddd;
 }
 
+.info {
+   width: 100%;
+}
+
 .info h2 {
    margin: 0;
    font-size: 1.8rem;
+}
+
+.topRow {
+   display: flex;
+   align-items: center;
+   justify-content: space-between;
+}
+
+.settingsBtn {
+   display: flex;
+   align-items: center;
+   gap: 0.4rem;
+   background: #f3f3f3;
+   border: none;
+   padding: 0.4rem 0.8rem;
+   border-radius: 6px;
+   font-size: 1rem;
+   font-family: inherit;
+   color: #333;
+   cursor: pointer;
+   transition: background 0.2s ease;
+}
+
+.settingsBtn:hover {
+   background: #e0e0e0;
 }
 
 .bio {
