@@ -3,7 +3,7 @@ import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import styles from './ProfilePosts.module.css';
 
-export default function ProfilePosts({ user, authLoading }) {
+export default function ProfilePosts({ user, authLoading, onOpenModal }) {
    const [posts, setPosts] = useState([]);
    const [loading, setLoading] = useState(true);
    const [error, setError] = useState(null);
@@ -59,10 +59,7 @@ export default function ProfilePosts({ user, authLoading }) {
    // If there are posts, mapping them
    return (
       <div className={styles.grid}>
-         <div
-            className={styles.addPostCard}
-            onClick={() => console.log('OPEN POST MODAL')}
-         >
+         <div className={styles.addPostCard} onClick={onOpenModal}>
             <p>PLUS</p>
             <p className={styles.addPostText}>Add Post</p>
          </div>

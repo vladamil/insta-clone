@@ -1,0 +1,123 @@
+'use client';
+
+import { useState } from 'react';
+import Image from 'next/image';
+import styles from './CreatePostModal.module.css';
+
+export default function CreatePostModal({ isOpen, onClose }) {
+   const [selectedFile, setSelectedFile] = useState(null);
+   const [previewUrl, setPreviewUrl] = useState(null);
+   const [caption, setCaption] = useState('');
+   const [loading, setLoading] = useState(false);
+   const [error, setError] = useState(null);
+
+   if (!isOpen) return null;
+
+   const handleFileChange = (e) => {
+      const file = e.target.files[0];
+      if (file) {
+         setSelectedFile(file);
+         setPreviewUrl(URL.createObjectURL(file));
+      }
+   };
+
+   const handleSubmit = async () => {
+      try {
+         setLoading(true);
+         setError(null);
+
+         const token = sessionStorage.getItem('token');
+         if (!token) throw new Error('Unauthorized: Please log in again.');
+
+         const formData = new FormData();
+         formData.append('postImage', selectedFile);
+         formData.append('caption', caption);
+
+         const res = await fetch(
+            `${process.env.NEXT_PUBLIC_API_URL}/api/posts`,
+            {
+               method: 'POST',
+               headers: {
+                  Authorization: `Bearer ${token}`,
+               },
+               body: formData,
+            }
+         );
+
+         const data = await res.json();
+         if (!res.ok) throw new Error(data.error || 'Failed to create post.');
+
+         // success – reset and close modal
+         setSelectedFile(null);
+         setPreviewUrl(null);
+         setCaption('');
+         onClose();
+      } catch (err) {
+         setError(err.message);
+      } finally {
+         setLoading(false);
+      }
+   };
+
+   const handleRemoveImage = () => {
+      setSelectedFile(null);
+      setPreviewUrl(null);
+   };
+
+   return (
+      <div className={styles.overlay}>
+         <div className={styles.modal}>
+            <button className={styles.closeBtn} onClick={onClose}>
+               X
+            </button>
+
+            <h2 className={styles.title}>Create New Post</h2>
+
+            {!previewUrl ? (
+               <label className={styles.uploadBox}>
+                  <input
+                     type="file"
+                     accept="image/*"
+                     onChange={handleFileChange}
+                     hidden
+                  />
+                  📷
+                  <p>Click or drag to upload image</p>
+               </label>
+            ) : (
+               <div className={styles.preview}>
+                  <Image
+                     src={previewUrl}
+                     alt="Preview"
+                     fill
+                     className={styles.image}
+                  />
+                  <button
+                     onClick={handleRemoveImage}
+                     className={styles.removeBtn}
+                  >
+                     X
+                  </button>
+               </div>
+            )}
+
+            <textarea
+               placeholder="Write a caption... (optional)"
+               value={caption}
+               onChange={(e) => setCaption(e.target.value)}
+               className={styles.caption}
+            />
+
+            {error && <p className={styles.error}>{error}</p>}
+
+            <button
+               onClick={handleSubmit}
+               className={styles.submitBtn}
+               disabled={!selectedFile || loading}
+            >
+               {loading ? 'Posting...' : 'Post'}
+            </button>
+         </div>
+      </div>
+   );
+}
