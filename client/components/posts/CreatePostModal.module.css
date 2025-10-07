@@ -19,7 +19,7 @@
    text-align: center;
 }
 
-/* .title {
+.title {
    font-size: 1rem;
    margin-bottom: 20px;
 }
@@ -118,4 +118,4 @@
 
 .submitBtn:hover:not(:disabled) {
    background: #007acc;
-} */
+}
