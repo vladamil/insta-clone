@@ -4,7 +4,7 @@ import { useState } from 'react';
 import Image from 'next/image';
 import styles from './CreatePostModal.module.css';
 
-export default function CreatePostModal({ isOpen, onClose }) {
+export default function CreatePostModal({ isOpen, onClose, onPostCreated }) {
    const [selectedFile, setSelectedFile] = useState(null);
    const [previewUrl, setPreviewUrl] = useState(null);
    const [caption, setCaption] = useState('');
@@ -52,6 +52,7 @@ export default function CreatePostModal({ isOpen, onClose }) {
          setPreviewUrl(null);
          setCaption('');
          onClose();
+         onPostCreated(data); // optimistic update (adding post) in UI
       } catch (err) {
          setError(err.message);
       } finally {
