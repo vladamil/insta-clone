@@ -2,8 +2,9 @@
 import Image from 'next/image';
 import styles from './SinglePostModal.module.css';
 
-const SinglePostModal = ({ post, onClose, onDelete }) => {
-   if (!post) return null;
+const SinglePostModal = ({ index, posts, onClose, onDelete }) => {
+   const post = posts[index];
+   if (!post) return;
 
    return (
       <div className={styles.overlay}>

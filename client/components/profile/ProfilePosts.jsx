@@ -9,7 +9,8 @@ export default function ProfilePosts({ user, authLoading, onOpenModal }) {
    const [posts, setPosts] = useState([]);
    const [loading, setLoading] = useState(true);
    const [error, setError] = useState(null);
-   const [showModal, setShowModal] = useState(false);
+   const [showCreatePostModal, setShowCreatePostModal] = useState(false);
+   const [postIndex, setPostIndex] = useState(null);
 
    const router = useRouter();
 
@@ -44,9 +45,15 @@ export default function ProfilePosts({ user, authLoading, onOpenModal }) {
       fetchPosts();
    }, [user, authLoading]);
 
-   // Callback passed to modal
+   // Update posts UI based on creating post
    const handlePostCreated = (newPost) => {
       setPosts((prev) => [newPost, ...prev]); // instantly show it in UI
+   };
+
+   // Update posts UI based on deleting post
+   const handlePostDeleted = (deletedId) => {
+      setPosts((prev) => prev.filter((p) => p._id !== deletedId));
+      setPostIndex(null);
    };
 
    if (loading) return <p>Loading...</p>;
@@ -70,14 +77,20 @@ export default function ProfilePosts({ user, authLoading, onOpenModal }) {
          <div className={styles.grid}>
             <div
                className={styles.addPostCard}
-               onClick={() => setShowModal(true)}
+               onClick={() => setShowCreatePostModal(true)}
             >
                <p>PLUS</p>
                <p className={styles.addPostText}>Add Post</p>
             </div>
 
-            {posts.map((post) => (
-               <div key={post._id} className={styles.post}>
+            {posts.map((post, index) => (
+               <div
+                  key={post._id}
+                  className={styles.post}
+                  onClick={() => {
+                     setPostIndex(index);
+                  }}
+               >
                   <Image
                      src={post.imageUrl}
                      alt={post.caption || 'Post'}
@@ -93,13 +106,19 @@ export default function ProfilePosts({ user, authLoading, onOpenModal }) {
             ))}
          </div>
 
-         {/* Modal for adding new post */}
+         {/* Modal for ADDING new post */}
          <CreatePostModal
-            isOpen={showModal}
-            onClose={() => setShowModal(false)}
+            isOpen={showCreatePostModal}
+            onClose={() => setShowCreatePostModal(false)}
             onPostCreated={handlePostCreated}
          />
-         <SinglePostModal post={posts[5]} onDelete={true} />
+         {/* Modal for VIEWING and DELETING post */}
+         <SinglePostModal
+            index={postIndex}
+            posts={posts}
+            onDelete={handlePostDeleted}
+            onClose={() => setPostIndex(null)}
+         />
       </>
    );
 }
