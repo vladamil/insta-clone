@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import CreatePostModal from '../posts/CreatePostModal';
+import SinglePostModal from '../posts/SinglePostModal';
 import styles from './ProfilePosts.module.css';
 
 export default function ProfilePosts({ user, authLoading, onOpenModal }) {
@@ -91,12 +92,14 @@ export default function ProfilePosts({ user, authLoading, onOpenModal }) {
                </div>
             ))}
          </div>
+
          {/* Modal for adding new post */}
          <CreatePostModal
             isOpen={showModal}
             onClose={() => setShowModal(false)}
             onPostCreated={handlePostCreated}
          />
+         <SinglePostModal post={posts[5]} onDelete={true} />
       </>
    );
 }

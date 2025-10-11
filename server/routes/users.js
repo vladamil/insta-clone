@@ -74,6 +74,7 @@ router.get('/:username/posts', requireAuth, async (req, res) => {
       const total = await Post.countDocuments({ author: user._id });
 
       const userPosts = await Post.find({ author: user._id })
+         .populate('author', 'username profilePicUrl')
          .sort({ createdAt: -1 })
          .skip(skip)
          .limit(limit);
