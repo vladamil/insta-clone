@@ -1,10 +1,44 @@
 'use client';
+import { useState } from 'react';
 import Image from 'next/image';
 import styles from './SinglePostModal.module.css';
 
 const SinglePostModal = ({ index, posts, onClose, onDelete }) => {
    const post = posts[index];
    if (!post) return;
+
+   const [loading, setLoading] = useState(false);
+   const [error, setError] = useState(null);
+
+   const handleDelete = async () => {
+      if (!confirm('Are you sure you want to delete this post?')) return;
+
+      try {
+         setLoading(true);
+         setError(null);
+         const token = sessionStorage.getItem('token');
+         if (!token) throw new Error('Unauthorized: Please log in again.');
+
+         const res = await fetch(
+            `${process.env.NEXT_PUBLIC_API_URL}/api/posts/${post._id}`,
+            {
+               method: 'DELETE',
+               headers: {
+                  Authorization: `Bearer ${token}`,
+               },
+            }
+         );
+
+         if (!res.ok) throw new Error('Failed to delete post!');
+
+         onDelete(post._id);
+      } catch (err) {
+         setError(err);
+         alert('Failed to delete post!');
+      } finally {
+         setLoading(false);
+      }
+   };
 
    return (
       <div className={styles.overlay}>
@@ -53,9 +87,10 @@ const SinglePostModal = ({ index, posts, onClose, onDelete }) => {
                {onDelete && (
                   <button
                      className={styles.deleteBtn}
-                     onClick={() => onDelete(post._id)}
+                     onClick={() => handleDelete(post._id)}
+                     disabled={loading}
                   >
-                     Delete Post
+                     {loading ? 'Deleting...' : 'Delete Post'}
                   </button>
                )}
             </div>

@@ -41,6 +41,7 @@
    position: relative;
    flex: 2.5;
    background: #000;
+   overflow: hidden;
 }
 
 .image {
