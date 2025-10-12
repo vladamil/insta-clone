@@ -63,12 +63,25 @@ export default function ProfilePosts({ user, authLoading, onOpenModal }) {
    // If no posts display button and message
    if (posts.length === 0)
       return (
-         <div className={styles.noPosts}>
-            <div className={styles.noPostsIcon}>📷</div>
-            <h3>No posts yet</h3>
-            <p>Share your first photo or memory!</p>
-            <button className={styles.addPostBtn}>+ Create Post</button>
-         </div>
+         <>
+            <div className={styles.noPosts}>
+               <div className={styles.noPostsIcon}>📷</div>
+               <h3>No posts yet</h3>
+               <p>Share your first photo or memory!</p>
+               <button
+                  className={styles.addPostBtn}
+                  onClick={() => setShowCreatePostModal(true)}
+               >
+                  + Create Post
+               </button>
+            </div>
+            {/* Modal for ADDING new post */}
+            <CreatePostModal
+               isOpen={showCreatePostModal}
+               onClose={() => setShowCreatePostModal(false)}
+               onPostCreated={handlePostCreated}
+            />
+         </>
       );
 
    // If there are posts, mapping them
@@ -113,12 +126,14 @@ export default function ProfilePosts({ user, authLoading, onOpenModal }) {
             onPostCreated={handlePostCreated}
          />
          {/* Modal for VIEWING and DELETING post */}
-         <SinglePostModal
-            index={postIndex}
-            posts={posts}
-            onDelete={handlePostDeleted}
-            onClose={() => setPostIndex(null)}
-         />
+         {postIndex !== null && (
+            <SinglePostModal
+               index={postIndex}
+               posts={posts}
+               onDelete={handlePostDeleted}
+               onClose={() => setPostIndex(null)}
+            />
+         )}
       </>
    );
 }

@@ -1,14 +1,51 @@
 'use client';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import styles from './SinglePostModal.module.css';
 
 const SinglePostModal = ({ index, posts, onClose, onDelete }) => {
-   const post = posts[index];
-   if (!post) return;
-
+   const [postIndex, setPostIndex] = useState(index);
    const [loading, setLoading] = useState(false);
    const [error, setError] = useState(null);
+
+   const post = posts[postIndex];
+   if (!post) return;
+
+   const hasPrev = postIndex > 0;
+   const hasNext = postIndex < posts.length - 1;
+
+   // Using Arrow keys and Esc key to navigate posts
+   useEffect(() => {
+      const handleKeyDown = (e) => {
+         if (e.key === 'ArrowLeft') {
+            if (hasPrev) {
+               setPostIndex((prev) => prev - 1);
+            }
+         } else if (e.key === 'ArrowRight') {
+            if (hasNext) {
+               setPostIndex((prev) => prev + 1);
+            }
+         } else if (e.key === 'Escape') {
+            onClose();
+         }
+      };
+
+      // Attach listener
+      window.addEventListener('keydown', handleKeyDown);
+
+      // Cleanup when modal unmounts
+      return () => {
+         window.removeEventListener('keydown', handleKeyDown);
+      };
+   }, [hasPrev, hasNext, onClose]);
+
+   const handlePrev = () => {
+      if (hasPrev) setPostIndex((prev) => prev - 1);
+   };
+
+   const handleNext = () => {
+      if (hasNext) setPostIndex((prev) => prev + 1);
+   };
 
    const handleDelete = async () => {
       if (!confirm('Are you sure you want to delete this post?')) return;
@@ -42,6 +79,15 @@ const SinglePostModal = ({ index, posts, onClose, onDelete }) => {
 
    return (
       <div className={styles.overlay}>
+         {hasPrev && (
+            <button
+               className={`${styles.navBtn} ${styles.prevBtn}`}
+               onClick={handlePrev}
+            >
+               ◀
+            </button>
+         )}
+
          <div className={styles.modal}>
             <button className={styles.closeBtn} onClick={onClose}>
                X
@@ -95,6 +141,14 @@ const SinglePostModal = ({ index, posts, onClose, onDelete }) => {
                )}
             </div>
          </div>
+         {hasNext && (
+            <button
+               className={`${styles.navBtn} ${styles.nextBtn}`}
+               onClick={handleNext}
+            >
+               ▶
+            </button>
+         )}
       </div>
    );
 };
