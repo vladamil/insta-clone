@@ -1,6 +1,7 @@
 'use client';
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
+import Comments from '../comments/CommentList';
 import styles from './SinglePostModal.module.css';
 
 const SinglePostModal = ({ index, posts, onClose, onDelete }) => {
@@ -128,6 +129,8 @@ const SinglePostModal = ({ index, posts, onClose, onDelete }) => {
                      💬 {post.comments?.length || 0}
                   </button>
                </div>
+
+               <Comments postId={post._id} />
 
                {/* Delete button visible only if allowed */}
                {onDelete && (
