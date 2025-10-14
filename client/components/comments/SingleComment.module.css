@@ -1,0 +1,66 @@
+.comment {
+   display: flex;
+   gap: 10px;
+   margin-bottom: 14px;
+}
+
+.reply {
+   margin-left: 20px; /* indentation for replies */
+}
+
+.avatarWrapper {
+   flex-shrink: 0;
+}
+
+.avatar {
+   border-radius: 50%;
+}
+
+.content {
+   flex: 1;
+}
+
+.header {
+   font-weight: 600;
+   display: flex;
+   align-items: center;
+   gap: 4px;
+}
+
+.username {
+   color: #111;
+}
+
+.replyingTo {
+   color: #7faddc;
+   font-size: 0.85rem;
+}
+
+.text {
+   margin: 4px 0 2px;
+   font-size: 0.95rem;
+   line-height: 1.4;
+   color: #4b4b4b;
+}
+
+.actions {
+   display: flex;
+   gap: 12px;
+}
+
+.replyBtn {
+   background: none;
+   border: none;
+   color: rgb(139, 139, 139);
+   cursor: pointer;
+   font-size: 0.7rem;
+   padding: 0;
+}
+
+.replyBtn:hover {
+   text-decoration: underline;
+}
+
+.repliesContainer {
+   margin-top: 8px;
+}

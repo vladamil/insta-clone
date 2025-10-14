@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-// import CommentItem from './CommentItem';
+import SingleComment from './SingleComment';
 import styles from './CommentList.module.css';
 
 export default function Comments({ postId }) {
@@ -68,11 +68,11 @@ export default function Comments({ postId }) {
          ) : (
             <ul className={styles.list}>
                {comments.map((c) => (
-                  // <CommentItem key={c._id || c.id} comment={c} level={0} />
-                  <div key={c._id}>
-                     <h3>{c.author.username}</h3>
-                     <p>{c.text}</p>
-                  </div>
+                  <SingleComment key={c._id} comment={c} />
+                  // <div key={c._id}>
+                  //    <h3>{c.author.username}</h3>
+                  //    <p>{c.text}</p>
+                  // </div>
                ))}
             </ul>
          )}
