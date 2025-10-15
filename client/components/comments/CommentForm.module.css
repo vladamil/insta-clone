@@ -57,3 +57,11 @@
 .cancelBtn:hover {
    background-color: #eee;
 }
+
+/* Reply mode – slightly distinct styling */
+.replyMode {
+   padding: 10px;
+   background-color: #fafafa;
+   border-left: 2px solid #d0e4ff;
+   border-radius: 6px;
+}

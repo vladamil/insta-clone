@@ -31,7 +31,12 @@ export default function CommentForm({
    };
 
    return (
-      <form className={styles.form} onSubmit={handleSubmit}>
+      <form
+         className={`${styles.form} ${
+            mode === 'reply' ? styles.replyMode : ''
+         }`}
+         onSubmit={handleSubmit}
+      >
          <textarea
             className={styles.textarea}
             placeholder={placeholders[mode]}
@@ -39,13 +44,6 @@ export default function CommentForm({
             onChange={(e) => setCommentText(e.target.value)}
          />
          <div className={styles.actions}>
-            <button
-               type="submit"
-               className={styles.submitBtn}
-               disabled={loading || !commentText.trim()}
-            >
-               {buttonLabels[mode]}
-            </button>
             {onCancel && (
                <button
                   type="button"
@@ -55,6 +53,13 @@ export default function CommentForm({
                   Cancel
                </button>
             )}
+            <button
+               type="submit"
+               className={styles.submitBtn}
+               disabled={loading || !commentText.trim()}
+            >
+               {buttonLabels[mode]}
+            </button>
          </div>
       </form>
    );

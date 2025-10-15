@@ -1,12 +1,14 @@
 'use client';
+import { useState } from 'react';
 import Image from 'next/image';
 import styles from './SingleComment.module.css';
+import CommentForm from './CommentForm';
 
 export default function SingleComment({ comment, onReplyClick }) {
-   const isReply = Boolean(comment.parentComment);
+   const [showReplyBox, setShowReplyBox] = useState(false);
 
    return (
-      <div className={`${styles.comment} ${isReply ? styles.reply : ''}`}>
+      <div className={`${styles.comment}`}>
          <div className={styles.avatarWrapper}>
             <Image
                src={comment.author.profilePicUrl || '/default-avatar.png'}
@@ -34,11 +36,20 @@ export default function SingleComment({ comment, onReplyClick }) {
             <div className={styles.actions}>
                <button
                   className={styles.replyBtn}
-                  onClick={() => onReplyClick(comment)}
+                  onClick={() => {
+                     setShowReplyBox(true);
+                  }}
                >
                   Reply
                </button>
             </div>
+
+            {showReplyBox && (
+               <CommentForm
+                  mode="reply"
+                  onCancel={() => setShowReplyBox(false)}
+               />
+            )}
 
             {/* Replies under this comment */}
             {comment.replies?.length > 0 && (

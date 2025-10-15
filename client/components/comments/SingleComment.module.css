@@ -4,10 +4,6 @@
    margin-bottom: 14px;
 }
 
-.reply {
-   margin-left: 20px; /* indentation for replies */
-}
-
 .avatarWrapper {
    flex-shrink: 0;
 }
