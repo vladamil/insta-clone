@@ -1,0 +1,59 @@
+.form {
+   display: flex;
+   flex-direction: column;
+   gap: 0.5rem;
+   width: 100%;
+}
+
+.textarea {
+   resize: none;
+   min-height: 60px;
+   font-size: 0.95rem;
+   padding: 0.5rem 0.7rem;
+   border-radius: 8px;
+   border: 1px solid #ccc;
+   outline: none;
+   color: #111;
+}
+
+.actions {
+   display: flex;
+   justify-content: flex-end;
+   align-items: center;
+   gap: 0.6rem;
+}
+
+.submitBtn {
+   background-color: #2d9bf0;
+   color: white;
+   border: none;
+   padding: 0.4rem 0.8rem;
+   border-radius: 6px;
+   font-size: 0.9rem;
+   cursor: pointer;
+   transition: background 0.2s ease;
+}
+
+.submitBtn:hover {
+   background-color: #1a83d8;
+}
+
+.submitBtn:disabled {
+   opacity: 0.6;
+   cursor: default;
+}
+
+.cancelBtn {
+   background-color: transparent;
+   border: 1px solid #ccc;
+   color: #555;
+   padding: 0.4rem 0.8rem;
+   border-radius: 6px;
+   font-size: 0.9rem;
+   cursor: pointer;
+   transition: background 0.2s ease;
+}
+
+.cancelBtn:hover {
+   background-color: #eee;
+}
