@@ -5,12 +5,14 @@ import styles from './CommentForm.module.css';
 
 export default function CommentForm({
    mode = 'create',
-   onSubmit,
-   initialText = '',
+   fetchComments,
+   initialText,
    onCancel,
+   postId,
 }) {
-   const [commentText, setCommentText] = useState(initialText);
+   const [commentText, setCommentText] = useState(initialText || '');
    const [loading, setLoading] = useState(false);
+   const [error, setError] = useState(null);
 
    //    Depending on mode, button and placeholder text
    const placeholders = {
@@ -25,9 +27,39 @@ export default function CommentForm({
       reply: 'Reply',
    };
 
-   const handleSubmit = (e) => {
+   const handleSubmit = async (e) => {
       e.preventDefault();
-      console.log('Form Submited!');
+      if (!commentText.trim()) return;
+
+      setLoading(true);
+      setError(null);
+
+      try {
+         const token = sessionStorage.getItem('token');
+         if (!token) return;
+
+         const res = await fetch(
+            `${process.env.NEXT_PUBLIC_API_URL}/api/posts/${postId}/comment`,
+            {
+               method: 'POST',
+               headers: {
+                  'Content-Type': 'application/json',
+                  Authorization: `Bearer ${token}`,
+               },
+               body: JSON.stringify({ text: commentText }),
+            }
+         );
+
+         const data = await res.json();
+         if (!res.ok) throw new Error(data.error || 'Failed to add comment');
+
+         setCommentText('');
+         await fetchComments(); // Refresh comments after success
+      } catch (err) {
+         setError(err.message);
+      } finally {
+         setLoading(false);
+      }
    };
 
    return (

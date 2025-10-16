@@ -36,15 +36,13 @@ export default function SingleComment({ comment, onReplyClick }) {
                )}
             </div>
 
-            {/* If editing show edit form or if not comment text */}
+            {/* If editing show edit form / if not show comment text */}
             {isEditing ? (
-               <p>
-                  <CommentForm
-                     mode="edit"
-                     initialText={comment.text}
-                     onCancel={() => setIsEditing(false)}
-                  />
-               </p>
+               <CommentForm
+                  mode="edit"
+                  initialText={comment.text}
+                  onCancel={() => setIsEditing(false)}
+               />
             ) : (
                <p className={styles.text}>{comment.text}</p>
             )}
