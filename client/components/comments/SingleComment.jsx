@@ -1,11 +1,16 @@
 'use client';
 import { useState } from 'react';
+import { useAuth } from '@/context/AuthContext';
 import Image from 'next/image';
 import styles from './SingleComment.module.css';
 import CommentForm from './CommentForm';
 
 export default function SingleComment({ comment, onReplyClick }) {
    const [showReplyBox, setShowReplyBox] = useState(false);
+   const [isEditing, setIsEditing] = useState(false);
+
+   const { user } = useAuth();
+   const isAuthor = user._id === comment.author._id;
 
    return (
       <div className={`${styles.comment}`}>
@@ -31,18 +36,48 @@ export default function SingleComment({ comment, onReplyClick }) {
                )}
             </div>
 
-            <p className={styles.text}>{comment.text}</p>
+            {/* If editing show edit form or if not comment text */}
+            {isEditing ? (
+               <p>
+                  <CommentForm
+                     mode="edit"
+                     initialText={comment.text}
+                     onCancel={() => setIsEditing(false)}
+                  />
+               </p>
+            ) : (
+               <p className={styles.text}>{comment.text}</p>
+            )}
 
-            <div className={styles.actions}>
-               <button
-                  className={styles.replyBtn}
-                  onClick={() => {
-                     setShowReplyBox(true);
-                  }}
-               >
-                  Reply
-               </button>
-            </div>
+            {!isEditing && (
+               <div className={styles.actions}>
+                  <button
+                     className={styles.actionBtn}
+                     onClick={() => {
+                        setShowReplyBox(true);
+                     }}
+                  >
+                     Reply
+                  </button>
+
+                  {isAuthor && (
+                     <>
+                        <button
+                           className={styles.actionBtn}
+                           onClick={() => setIsEditing(true)}
+                        >
+                           Edit
+                        </button>
+                        <button
+                           className={`${styles.actionBtn} ${styles.deleteBtn}`}
+                           onClick={() => console.log('Delete clicked!')}
+                        >
+                           Delete
+                        </button>
+                     </>
+                  )}
+               </div>
+            )}
 
             {showReplyBox && (
                <CommentForm

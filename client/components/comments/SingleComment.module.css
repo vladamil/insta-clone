@@ -41,10 +41,10 @@
 
 .actions {
    display: flex;
-   gap: 12px;
+   gap: 18px;
 }
 
-.replyBtn {
+.actionBtn {
    background: none;
    border: none;
    color: rgb(139, 139, 139);
@@ -53,8 +53,16 @@
    padding: 0;
 }
 
-.replyBtn:hover {
+.actionBtn:hover {
    text-decoration: underline;
+}
+
+.deleteBtn {
+   color: #e14c4c;
+}
+
+.deleteBtn:hover {
+   color: #c0392b;
 }
 
 .repliesContainer {
