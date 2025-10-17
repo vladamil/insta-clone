@@ -5,7 +5,11 @@ import Image from 'next/image';
 import styles from './SingleComment.module.css';
 import CommentForm from './CommentForm';
 
-export default function SingleComment({ comment, onReplyClick }) {
+export default function SingleComment({
+   comment,
+   onReplyClick,
+   fetchComments,
+}) {
    const [showReplyBox, setShowReplyBox] = useState(false);
    const [isEditing, setIsEditing] = useState(false);
 
@@ -81,6 +85,8 @@ export default function SingleComment({ comment, onReplyClick }) {
                <CommentForm
                   mode="reply"
                   onCancel={() => setShowReplyBox(false)}
+                  commentId={comment._id}
+                  fetchComments={fetchComments}
                />
             )}
 

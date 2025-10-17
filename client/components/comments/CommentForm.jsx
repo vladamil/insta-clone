@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import styles from './CommentForm.module.css';
 
 export default function CommentForm({
@@ -9,6 +9,7 @@ export default function CommentForm({
    initialText,
    onCancel,
    postId,
+   commentId,
 }) {
    const [commentText, setCommentText] = useState(initialText || '');
    const [loading, setLoading] = useState(false);
@@ -27,6 +28,23 @@ export default function CommentForm({
       reply: 'Reply',
    };
 
+   // Depending on mode, set url, method and body of HTTP request
+   let url, method, body;
+
+   if (mode === 'create') {
+      url = `${process.env.NEXT_PUBLIC_API_URL}/api/posts/${postId}/comment`;
+      method = 'POST';
+      body = { text: commentText };
+   } else if (mode === 'reply') {
+      url = `${process.env.NEXT_PUBLIC_API_URL}/api/comments/${commentId}/reply`;
+      method = 'POST';
+      body = { text: commentText };
+   } else if (mode === 'edit') {
+      url = `${process.env.NEXT_PUBLIC_API_URL}/api/comments/${commentId}`;
+      method = 'PATCH';
+      body = { text: commentText };
+   }
+
    const handleSubmit = async (e) => {
       e.preventDefault();
       if (!commentText.trim()) return;
@@ -38,17 +56,14 @@ export default function CommentForm({
          const token = sessionStorage.getItem('token');
          if (!token) return;
 
-         const res = await fetch(
-            `${process.env.NEXT_PUBLIC_API_URL}/api/posts/${postId}/comment`,
-            {
-               method: 'POST',
-               headers: {
-                  'Content-Type': 'application/json',
-                  Authorization: `Bearer ${token}`,
-               },
-               body: JSON.stringify({ text: commentText }),
-            }
-         );
+         const res = await fetch(url, {
+            method,
+            headers: {
+               'Content-Type': 'application/json',
+               Authorization: `Bearer ${token}`,
+            },
+            body: JSON.stringify(body),
+         });
 
          const data = await res.json();
          if (!res.ok) throw new Error(data.error || 'Failed to add comment');
@@ -61,6 +76,21 @@ export default function CommentForm({
          setLoading(false);
       }
    };
+
+   // Automatically clear error after 5s (for display error)
+   useEffect(() => {
+      if (error) {
+         const timer = setTimeout(() => setError(null), 5000);
+         return () => clearTimeout(timer);
+      }
+   }, [error]);
+
+   if (error)
+      return (
+         <p className={styles.errorMsg}>
+            Something went wrong. Please try again later ({error})
+         </p>
+      );
 
    return (
       <form

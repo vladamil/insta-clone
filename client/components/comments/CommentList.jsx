@@ -46,40 +46,6 @@ export default function CommentList({ postId }) {
    useEffect(() => {
       cancelledRef.current = false;
 
-      // const fetchComments = async () => {
-      //    setLoading(true);
-      //    setError(null);
-      //    try {
-      //       const token = sessionStorage.getItem('token');
-      //       const res = await fetch(
-      //          `${process.env.NEXT_PUBLIC_API_URL}/api/posts/${postId}/comments`,
-      //          {
-      //             headers: token ? { Authorization: `Bearer ${token}` } : {},
-      //          }
-      //       );
-
-      //       const data = await res.json();
-
-      //       if (!res.ok)
-      //          throw new Error(data.error || 'Failed to fetch comments');
-
-      //       if (!cancelled) {
-      //          setComments(data.comments || []);
-      //          setCount(data.commentsCount || 0);
-      //       }
-      //    } catch (err) {
-      //       if (!cancelled) setError(err.message);
-      //    } finally {
-      //       if (!cancelled) setLoading(false);
-      //    }
-      // };
-
-      // fetchComments();
-
-      // return () => {
-      //    cancelled = true;
-      // };
-
       fetchComments();
 
       return () => {
@@ -106,7 +72,11 @@ export default function CommentList({ postId }) {
          ) : (
             <ul className={styles.list}>
                {comments.map((c) => (
-                  <SingleComment key={c._id} comment={c} />
+                  <SingleComment
+                     key={c._id}
+                     comment={c}
+                     fetchComments={fetchComments}
+                  />
                ))}
             </ul>
          )}
