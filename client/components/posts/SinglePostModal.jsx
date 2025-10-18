@@ -78,6 +78,8 @@ const SinglePostModal = ({ index, posts, onClose, onDelete }) => {
       }
    };
 
+   console.log(post);
+
    return (
       <div className={styles.overlay}>
          {hasPrev && (
@@ -123,10 +125,10 @@ const SinglePostModal = ({ index, posts, onClose, onDelete }) => {
 
                <div className={styles.actions}>
                   <button className={styles.likeBtn}>
-                     ❤️ {post.likes?.length || 0}
+                     ❤️ {post.likesCount}
                   </button>
                   <button className={styles.commentBtn}>
-                     💬 {post.comments?.length || 0}
+                     💬 {post.commentsCount}
                   </button>
                </div>
 
