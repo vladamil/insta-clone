@@ -5,7 +5,12 @@ import CreatePostModal from '../posts/CreatePostModal';
 import SinglePostModal from '../posts/SinglePostModal';
 import styles from './ProfilePosts.module.css';
 
-export default function ProfilePosts({ user, authLoading, onOpenModal }) {
+export default function ProfilePosts({
+   user,
+   authLoading,
+   refresh,
+   triggerRefresh,
+}) {
    const [posts, setPosts] = useState([]);
    const [loading, setLoading] = useState(true);
    const [error, setError] = useState(null);
@@ -43,17 +48,19 @@ export default function ProfilePosts({ user, authLoading, onOpenModal }) {
       }
 
       fetchPosts();
-   }, [user, authLoading]);
+   }, [user, authLoading, refresh]);
 
    // Update posts UI based on creating post
    const handlePostCreated = (newPost) => {
       setPosts((prev) => [newPost, ...prev]); // instantly show it in UI
+      triggerRefresh();
    };
 
    // Update posts UI based on deleting post
    const handlePostDeleted = (deletedId) => {
       setPosts((prev) => prev.filter((p) => p._id !== deletedId));
       setPostIndex(null);
+      triggerRefresh();
    };
 
    if (loading) return <p>Loading...</p>;
@@ -131,7 +138,10 @@ export default function ProfilePosts({ user, authLoading, onOpenModal }) {
                index={postIndex}
                posts={posts}
                onDelete={handlePostDeleted}
-               onClose={() => setPostIndex(null)}
+               onClose={() => {
+                  setPostIndex(null);
+                  triggerRefresh();
+               }}
             />
          )}
       </>

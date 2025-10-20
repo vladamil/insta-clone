@@ -43,7 +43,6 @@ export default function CreatePostModal({ isOpen, onClose, onPostCreated }) {
                body: formData,
             }
          );
-         console.log('BODY:', body);
 
          const data = await res.json();
          if (!res.ok) throw new Error(data.error || 'Failed to create post.');

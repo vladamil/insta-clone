@@ -3,7 +3,7 @@ import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import styles from './ProfileInfo.module.css';
 
-export default function ProfileInfo({ user, authLoading, logout }) {
+export default function ProfileInfo({ user, authLoading, logout, refresh }) {
    const [profile, setProfile] = useState(null);
    const [loading, setLoading] = useState(true);
    const [error, setError] = useState(null);
@@ -46,7 +46,7 @@ export default function ProfileInfo({ user, authLoading, logout }) {
       };
 
       fetchUserData();
-   }, [user, authLoading]);
+   }, [user, authLoading, refresh]);
 
    if (loading && !profile) return <p>Loading...</p>;
    if (error && !loading) return <div>ERROR: {error}</div>;

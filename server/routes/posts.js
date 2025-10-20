@@ -222,8 +222,8 @@ router.post('/:id/comment', requireAuth, async (req, res) => {
       const comment = new Comment({ post: post.id, author: req.user.id, text });
       await comment.save();
 
-       // increment commentsCount
-    await Post.findByIdAndUpdate(post._id, { $inc: { commentsCount: 1 } });
+      // increment commentsCount
+      await Post.findByIdAndUpdate(post._id, { $inc: { commentsCount: 1 } });
 
       res.status(201).json(comment);
    } catch (error) {
