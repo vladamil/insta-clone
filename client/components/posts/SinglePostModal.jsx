@@ -1,8 +1,8 @@
 'use client';
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
-import { FaHeart, FaRegHeart } from 'react-icons/fa';
 import CommentList from '../comments/CommentList';
+import PostLikeButton from './PostLikeButton';
 import styles from './SinglePostModal.module.css';
 
 const SinglePostModal = ({ index, posts, onClose, onDelete }) => {
@@ -12,9 +12,6 @@ const SinglePostModal = ({ index, posts, onClose, onDelete }) => {
 
    const post = posts[postIndex];
    if (!post) return;
-
-   const [isLiked, setIsLiked] = useState(post.isLiked);
-   const [likeCount, setLikeCount] = useState(post.likesCount);
 
    const hasPrev = postIndex > 0;
    const hasNext = postIndex < posts.length - 1;
@@ -82,12 +79,6 @@ const SinglePostModal = ({ index, posts, onClose, onDelete }) => {
       }
    };
 
-   const handleLikeClick = () => {
-      // temporary optimistic UI update
-      setIsLiked((prev) => !prev);
-      setLikeCount((prev) => (isLiked ? prev - 1 : prev + 1));
-   };
-
    return (
       <div className={styles.overlay}>
          {hasPrev && (
@@ -131,20 +122,7 @@ const SinglePostModal = ({ index, posts, onClose, onDelete }) => {
                   <p className={styles.caption}>{post.caption}</p>
                )}
 
-               <div className={styles.actions}>
-                  <button
-                     className={styles.likeBtn}
-                     onClick={handleLikeClick}
-                     // aria-label={isLiked ? 'Unlike' : 'Like'}
-                  >
-                     {isLiked ? (
-                        <FaHeart className={styles.likedIcon} />
-                     ) : (
-                        <FaRegHeart className={styles.unlikedIcon} />
-                     )}
-                  </button>
-                  <span className={styles.likeCount}>{likeCount} like(s)</span>
-               </div>
+               <PostLikeButton post={post} />
 
                <CommentList postId={post._id} />
 
