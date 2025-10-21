@@ -1,0 +1,25 @@
+.deleteBtn {
+   margin-top: auto;
+   background: #ff4444;
+   color: white;
+   border: none;
+   padding: 10px 14px;
+   border-radius: 6px;
+   cursor: pointer;
+   font-weight: 500;
+   transition: background 0.2s;
+}
+
+.deleteBtn:hover {
+   background: #e03a3a;
+}
+
+.errorBox {
+   margin-top: auto;
+   display: flex;
+   flex-direction: column;
+   gap: 0.5rem;
+   align-items: center;
+   color: #ff4d4d;
+   font-size: 0.9rem;
+}

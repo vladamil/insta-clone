@@ -4,11 +4,10 @@ import Image from 'next/image';
 import CommentList from '../comments/CommentList';
 import PostLikeButton from './PostLikeButton';
 import styles from './SinglePostModal.module.css';
+import PostDeleteButton from './PostDeleteButton';
 
 const SinglePostModal = ({ index, posts, onClose, onDelete }) => {
    const [postIndex, setPostIndex] = useState(index);
-   const [loading, setLoading] = useState(false);
-   const [error, setError] = useState(null);
 
    const post = posts[postIndex];
    if (!post) return;
@@ -47,36 +46,6 @@ const SinglePostModal = ({ index, posts, onClose, onDelete }) => {
 
    const handleNext = () => {
       if (hasNext) setPostIndex((prev) => prev + 1);
-   };
-
-   const handleDelete = async () => {
-      if (!confirm('Are you sure you want to delete this post?')) return;
-
-      try {
-         setLoading(true);
-         setError(null);
-         const token = sessionStorage.getItem('token');
-         if (!token) throw new Error('Unauthorized: Please log in again.');
-
-         const res = await fetch(
-            `${process.env.NEXT_PUBLIC_API_URL}/api/posts/${post._id}`,
-            {
-               method: 'DELETE',
-               headers: {
-                  Authorization: `Bearer ${token}`,
-               },
-            }
-         );
-
-         if (!res.ok) throw new Error('Failed to delete post!');
-
-         onDelete(post._id);
-      } catch (err) {
-         setError(err);
-         alert('Failed to delete post!');
-      } finally {
-         setLoading(false);
-      }
    };
 
    return (
@@ -128,13 +97,7 @@ const SinglePostModal = ({ index, posts, onClose, onDelete }) => {
 
                {/* Delete button visible only if allowed */}
                {onDelete && (
-                  <button
-                     className={styles.deleteBtn}
-                     onClick={() => handleDelete(post._id)}
-                     disabled={loading}
-                  >
-                     {loading ? 'Deleting...' : 'Delete Post'}
-                  </button>
+                  <PostDeleteButton postId={post._id} onDelete={onDelete} />
                )}
             </div>
          </div>

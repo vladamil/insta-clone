@@ -79,7 +79,7 @@
    color: #333;
 }
 
-.deleteBtn {
+/* .deleteBtn {
    margin-top: auto;
    background: #ff4444;
    color: white;
@@ -93,7 +93,7 @@
 
 .deleteBtn:hover {
    background: #e03a3a;
-}
+} */
 
 /* Navigation buttons (Prev / Next) */
 .navBtn {
