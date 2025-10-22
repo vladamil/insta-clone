@@ -16,6 +16,9 @@ export default function ProfilePosts({
    const [error, setError] = useState(null);
    const [showCreatePostModal, setShowCreatePostModal] = useState(false);
    const [postIndex, setPostIndex] = useState(null);
+   // pagination states
+   const [page, setPage] = useState(1);
+   const [totalPages, setTotalPages] = useState(1);
 
    const router = useRouter();
 
@@ -33,13 +36,14 @@ export default function ProfilePosts({
          try {
             setLoading(true);
             const res = await fetch(
-               `${process.env.NEXT_PUBLIC_API_URL}/api/users/${user?.username}/posts`,
+               `${process.env.NEXT_PUBLIC_API_URL}/api/users/${user?.username}/posts?page=${page}&limit=11`,
                {
                   headers: { Authorization: `Bearer ${token}` },
                }
             );
             const data = await res.json();
             setPosts(data.posts);
+            setTotalPages(data.totalPages);
          } catch (err) {
             setError(err.message);
          } finally {
@@ -48,7 +52,7 @@ export default function ProfilePosts({
       }
 
       fetchPosts();
-   }, [user, authLoading, refresh]);
+   }, [user, authLoading, refresh, page]);
 
    // Update posts UI based on creating post
    const handlePostCreated = (newPost) => {
@@ -125,6 +129,39 @@ export default function ProfilePosts({
                </div>
             ))}
          </div>
+
+         {/* PAGINATION BUTTONS */}
+         {totalPages > 1 && (
+            <div className={styles.pagination}>
+               <button
+                  disabled={page === 1}
+                  onClick={() => setPage((prev) => prev - 1)}
+                  className={styles.pageBtn}
+               >
+                  ← Prev
+               </button>
+
+               {[...Array(totalPages)].map((_, i) => (
+                  <button
+                     key={i}
+                     onClick={() => setPage(i + 1)}
+                     className={`${styles.pageBtn} ${
+                        page === i + 1 ? styles.active : ''
+                     }`}
+                  >
+                     {i + 1}
+                  </button>
+               ))}
+
+               <button
+                  disabled={page === totalPages}
+                  onClick={() => setPage((prev) => prev + 1)}
+                  className={styles.pageBtn}
+               >
+                  Next →
+               </button>
+            </div>
+         )}
 
          {/* Modal for ADDING new post */}
          <CreatePostModal
