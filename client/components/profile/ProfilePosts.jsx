@@ -4,6 +4,7 @@ import Image from 'next/image';
 import CreatePostModal from '../posts/CreatePostModal';
 import SinglePostModal from '../posts/SinglePostModal';
 import styles from './ProfilePosts.module.css';
+import PostsPagination from '../posts/PostsPagination';
 
 export default function ProfilePosts({
    user,
@@ -132,35 +133,11 @@ export default function ProfilePosts({
 
          {/* PAGINATION BUTTONS */}
          {totalPages > 1 && (
-            <div className={styles.pagination}>
-               <button
-                  disabled={page === 1}
-                  onClick={() => setPage((prev) => prev - 1)}
-                  className={styles.pageBtn}
-               >
-                  ← Prev
-               </button>
-
-               {[...Array(totalPages)].map((_, i) => (
-                  <button
-                     key={i}
-                     onClick={() => setPage(i + 1)}
-                     className={`${styles.pageBtn} ${
-                        page === i + 1 ? styles.active : ''
-                     }`}
-                  >
-                     {i + 1}
-                  </button>
-               ))}
-
-               <button
-                  disabled={page === totalPages}
-                  onClick={() => setPage((prev) => prev + 1)}
-                  className={styles.pageBtn}
-               >
-                  Next →
-               </button>
-            </div>
+            <PostsPagination
+               page={page}
+               setPage={setPage}
+               totalPages={totalPages}
+            />
          )}
 
          {/* Modal for ADDING new post */}
