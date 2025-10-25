@@ -1,6 +1,8 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+
+import styles from './AccountSection.module.css';
 
 export default function UpdatePassword() {
    const [oldPassword, setOldPassword] = useState('');
@@ -49,25 +51,48 @@ export default function UpdatePassword() {
       }
    };
 
+   // Auto-clear messages after 3 seconds
+   useEffect(() => {
+      if (message) {
+         const timer = setTimeout(() => {
+            setMessage('');
+         }, 3000);
+
+         return () => clearTimeout(timer);
+      }
+   }, [message]);
+
    return (
-      <section>
+      <section className={styles.section}>
          <h2>Password</h2>
-         <label htmlFor="old">Old Password:</label>
-         <input
-            value={oldPassword}
-            type="password"
-            name="old"
-            onChange={(e) => setOldPassword(e.target.value)}
-         />
-         <label htmlFor="new">New Password:</label>
-         <input
-            value={newPassword}
-            type="password"
-            name="new"
-            onChange={(e) => setNewPassword(e.target.value)}
-         />
-         <button onClick={handleUpdate}>Update Password</button>
-         {message && <p>{message}</p>}
+         <div className={styles.formContainer}>
+            <label className={styles.label} htmlFor="old">
+               Old Password:
+            </label>
+            <input
+               className={styles.input}
+               value={oldPassword}
+               type="password"
+               name="old"
+               onChange={(e) => setOldPassword(e.target.value)}
+            />
+
+            <label className={styles.label} htmlFor="new">
+               New Password:
+            </label>
+            <input
+               className={styles.input}
+               value={newPassword}
+               type="password"
+               name="new"
+               onChange={(e) => setNewPassword(e.target.value)}
+            />
+            <button className={styles.btn} onClick={handleUpdate}>
+               Update Password
+            </button>
+
+            {message && <p className={styles.message}>{message}</p>}
+         </div>
       </section>
    );
 }

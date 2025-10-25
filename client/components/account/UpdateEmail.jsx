@@ -1,6 +1,7 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import styles from './AccountSection.module.css';
 
 export default function UpdateEmail({ currentEmail }) {
    const [email, setEmail] = useState(currentEmail || '');
@@ -35,18 +36,38 @@ export default function UpdateEmail({ currentEmail }) {
 
          const data = await res.json();
          if (!res.ok) throw new Error(data.error);
-         setMessage('✅ Email updated successfully!');
+         setMessage('Email updated successfully!');
       } catch (err) {
-         setMessage(`❌ ${err.message}`);
+         setMessage(`${err.message}`);
       }
    };
 
+   // Auto-clear messages after 3 seconds
+   useEffect(() => {
+      if (message) {
+         const timer = setTimeout(() => {
+            setMessage('');
+         }, 3000);
+
+         return () => clearTimeout(timer);
+      }
+   }, [message]);
+
    return (
-      <section>
+      <section className={styles.section}>
          <h2>Email</h2>
-         <input value={email} onChange={(e) => setEmail(e.target.value)} />
-         <button onClick={handleUpdate}>Update Email</button>
-         {message && <p>{message}</p>}
+         <div className={styles.formContainer}>
+            <input
+               className={styles.input}
+               value={email}
+               onChange={(e) => setEmail(e.target.value)}
+            />
+            <button className={styles.btn} onClick={handleUpdate}>
+               Update Email
+            </button>
+
+            {message && <p className={styles.message}>{message}</p>}
+         </div>
       </section>
    );
 }

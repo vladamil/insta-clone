@@ -1,9 +1,12 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+
+import styles from './AccountSection.module.css';
 
 export default function UpdateUsername({ currentUsername }) {
    const [username, setUsername] = useState(currentUsername || '');
+   const [loading, setLoading] = useState(false);
    const [message, setMessage] = useState('');
 
    const handleUpdate = async () => {
@@ -17,6 +20,7 @@ export default function UpdateUsername({ currentUsername }) {
          return;
       }
       try {
+         setLoading(true);
          const res = await fetch(
             `${process.env.NEXT_PUBLIC_API_URL}/api/account/username`,
             {
@@ -31,21 +35,44 @@ export default function UpdateUsername({ currentUsername }) {
 
          const data = await res.json();
          if (!res.ok) throw new Error(data.error);
-         setMessage('✅ Username updated successfully!');
+         setMessage('Username updated successfully!');
       } catch (err) {
-         setMessage(`❌ ${err.message}`);
+         setMessage(`${err.message}`);
+      } finally {
+         setLoading(false);
       }
    };
 
+   // Auto-clear messages after 3 seconds
+   useEffect(() => {
+      if (message) {
+         const timer = setTimeout(() => {
+            setMessage('');
+         }, 3000);
+
+         return () => clearTimeout(timer);
+      }
+   }, [message]);
+
    return (
-      <section>
+      <section className={styles.section}>
          <h2>Username</h2>
-         <input
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
-         />
-         <button onClick={handleUpdate}>Update Username</button>
-         {message && <p>{message}</p>}
+         <div className={styles.formContainer}>
+            <input
+               className={styles.input}
+               value={username}
+               onChange={(e) => setUsername(e.target.value)}
+            />
+            <button
+               className={styles.btn}
+               onClick={handleUpdate}
+               disabled={loading}
+            >
+               Update Username
+            </button>
+
+            {message && <p className={styles.message}>{message}</p>}
+         </div>
       </section>
    );
 }
