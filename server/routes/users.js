@@ -11,9 +11,7 @@ router.get('/:username', requireAuth, async (req, res) => {
       const username = req.params.username.toLowerCase().trim();
 
       // Find user (case-insensitive)
-      const user = await User.findOne({ username }).select(
-         '-passwordHash -email'
-      );
+      const user = await User.findOne({ username }).select('-passwordHash');
 
       if (!user) {
          return res.status(404).json({ error: 'User not found' });
@@ -37,6 +35,7 @@ router.get('/:username', requireAuth, async (req, res) => {
 
       res.status(200).json({
          profilePicUrl: user.profilePicUrl || null,
+         email: user.email,
          username: user.username,
          description: user.description || '',
          isFollowing: !!isFollow,
