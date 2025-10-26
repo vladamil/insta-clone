@@ -9,7 +9,11 @@ export default function UpdateDescription({ currentDescription }) {
    const [message, setMessage] = useState('');
 
    const handleUpdate = async () => {
-      // Validate bio
+      // Validate description
+      if (description.length > 150) {
+         setMessage('Description is too long (max 150 characters)');
+         return;
+      }
 
       try {
          const res = await fetch(

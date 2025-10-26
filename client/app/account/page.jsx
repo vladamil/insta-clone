@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
+import { FaCheck } from 'react-icons/fa';
 
 import UpdateProfilePic from '@/components/account/UpdateProfilePic';
 import UpdateUsername from '@/components/account/UpdateUsername';
@@ -82,6 +83,17 @@ export default function AccountPage() {
             <UpdatePassword />
             <UpdateDescription currentDescription={userData?.description} />
             <DeleteAccount />
+         </div>
+         <div className={styles.doneContainer}>
+            <button
+               className={styles.doneBtn}
+               onClick={() => {
+                  router.push('/profile');
+               }}
+            >
+               <FaCheck size={20} />
+               <span>Done</span>
+            </button>
          </div>
       </div>
    );

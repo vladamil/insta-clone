@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 import styles from './AccountSection.module.css';
 
@@ -8,6 +8,7 @@ export default function UpdateProfilePic({ currentPic }) {
    const [file, setFile] = useState(null);
    const [previewUrl, setPreviewUrl] = useState(currentPic);
    const [message, setMessage] = useState('');
+   const [loading, setLoading] = useState(false);
 
    const handleFileChange = (e) => {
       const selected = e.target.files[0];
@@ -24,6 +25,8 @@ export default function UpdateProfilePic({ currentPic }) {
 
    const handleUpload = async () => {
       if (!file) return;
+
+      setLoading(true);
 
       const formData = new FormData();
       formData.append('profilePic', file);
@@ -47,8 +50,21 @@ export default function UpdateProfilePic({ currentPic }) {
          setMessage('✅ Profile picture updated!');
       } catch (err) {
          setMessage(`❌ ${err.message}`);
+      } finally {
+         setLoading(false);
       }
    };
+
+   // Auto-clear messages after 3 seconds
+   useEffect(() => {
+      if (message) {
+         const timer = setTimeout(() => {
+            setMessage('');
+         }, 3000);
+
+         return () => clearTimeout(timer);
+      }
+   }, [message]);
 
    return (
       <section className={styles.section}>
@@ -88,7 +104,7 @@ export default function UpdateProfilePic({ currentPic }) {
             <button
                className={styles.uploadBtn}
                onClick={handleUpload}
-               disabled={!file}
+               disabled={!file || loading}
             >
                Upload
             </button>

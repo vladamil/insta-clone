@@ -8,7 +8,7 @@
 }
 
 .title {
-   font-size: 2rem;
+   font-size: 1.8rem;
    font-weight: 600;
    margin-bottom: 30px;
    color: #2a2a2a;
@@ -30,4 +30,38 @@
 .dangerZone h2 {
    border-left-color: #ff5555;
    color: #cc0000;
+}
+
+/* DONE BUTTON STYLING */
+
+.doneContainer {
+   display: flex;
+   justify-content: center;
+   margin-top: 2rem;
+}
+
+.doneBtn {
+   display: flex;
+   align-items: center;
+   gap: 0.5rem;
+   background: linear-gradient(90deg, #22c55e, #16a34a);
+   color: white;
+   border: none;
+   border-radius: 12px;
+   padding: 0.75rem 1.5rem;
+   font-size: 1.2rem;
+   font-weight: 500;
+   cursor: pointer;
+   transition: transform 0.15s ease, box-shadow 0.15s ease;
+   box-shadow: 0 2px 8px rgba(34, 197, 94, 0.4);
+}
+
+.doneBtn:hover {
+   transform: translateY(-1px);
+   box-shadow: 0 4px 12px rgba(34, 197, 94, 0.5);
+}
+
+.doneBtn:active {
+   transform: translateY(1px);
+   box-shadow: 0 1px 4px rgba(34, 197, 94, 0.4);
 }

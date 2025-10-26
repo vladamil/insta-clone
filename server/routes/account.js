@@ -166,7 +166,7 @@ router.patch('/description', requireAuth, async (req, res) => {
    try {
       const description = req.body.description?.trim();
 
-      if (description.length > 200) {
+      if (description.length > 150) {
          return res.status(400).json({ error: 'Description too long' });
       }
 
