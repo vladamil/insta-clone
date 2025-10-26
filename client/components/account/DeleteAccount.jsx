@@ -3,6 +3,8 @@
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 
+import styles from './AccountSection.module.css';
+
 export default function DeleteAccount() {
    const router = useRouter();
    const [message, setMessage] = useState('');
@@ -38,15 +40,14 @@ export default function DeleteAccount() {
    };
 
    return (
-      <section>
+      <section className={styles.section}>
          <h2>Delete Account</h2>
-         <button
-            onClick={handleDelete}
-            style={{ backgroundColor: 'red', color: 'white' }}
-         >
-            Delete Account
-         </button>
-         {message && <p>{message}</p>}
+         <div className={styles.formContainer}>
+            <button className={styles.deleteBtn} onClick={handleDelete}>
+               Delete Account
+            </button>
+            {message && <p className={styles.message}>{message}</p>}
+         </div>
       </section>
    );
 }
