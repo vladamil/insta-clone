@@ -31,7 +31,7 @@ router.get('/:id', requireAuth, async (req, res) => {
       });
 
       res.status(200).json({
-         id: user._id,
+         _id: user._id,
          profilePicUrl: user.profilePicUrl || null,
          email: user.email,
          username: user.username,

@@ -6,7 +6,7 @@ export default function ProfileFollowButton({ profile, setProfile }) {
    const handleFollow = async () => {
       try {
          const res = await fetch(
-            `${process.env.NEXT_PUBLIC_API_URL}/api/users/${profile.id}/follow`,
+            `${process.env.NEXT_PUBLIC_API_URL}/api/users/${profile._id}/follow`,
             {
                method: profile.isFollowing ? 'DELETE' : 'POST',
 
