@@ -6,12 +6,9 @@ const Post = require('../models/Post');
 const requireAuth = require('../middleware/requireAuth');
 
 // Get user profile by username
-router.get('/:username', requireAuth, async (req, res) => {
+router.get('/:id', requireAuth, async (req, res) => {
    try {
-      const username = req.params.username.toLowerCase().trim();
-
-      // Find user (case-insensitive)
-      const user = await User.findOne({ username }).select('-passwordHash');
+      const user = await User.findById(req.params.id).select('-passwordHash');
 
       if (!user) {
          return res.status(404).json({ error: 'User not found' });
@@ -34,6 +31,7 @@ router.get('/:username', requireAuth, async (req, res) => {
       });
 
       res.status(200).json({
+         id: user._id,
          profilePicUrl: user.profilePicUrl || null,
          email: user.email,
          username: user.username,
@@ -52,18 +50,13 @@ router.get('/:username', requireAuth, async (req, res) => {
 });
 
 // Get user's posts separately (for easier pagination)
-router.get('/:username/posts', requireAuth, async (req, res) => {
+router.get('/:id/posts', requireAuth, async (req, res) => {
    const page = parseInt(req.query.page) || 1;
    const limit = parseInt(req.query.limit) || 12;
    const skip = (page - 1) * limit;
 
    try {
-      const username = req.params.username.toLowerCase().trim();
-
-      // Find user (case-insensitive)
-      const user = await User.findOne({ username }).select(
-         '-passwordHash -email'
-      );
+      const user = await User.findById(req.params.id).select('-passwordHash');
 
       if (!user) {
          return res.status(404).json({ error: 'User not found' });
@@ -96,10 +89,9 @@ router.get('/:username/posts', requireAuth, async (req, res) => {
 });
 
 // Follow a user route
-router.post('/:username/follow', requireAuth, async (req, res) => {
+router.post('/:id/follow', requireAuth, async (req, res) => {
    try {
-      const username = req.params.username.toLowerCase().trim();
-      const targetUser = await User.findOne({ username }).select('_id');
+      const targetUser = await User.findById(req.params.id).select('_id');
 
       // Check if user exists
       if (!targetUser) {
@@ -142,11 +134,9 @@ router.post('/:username/follow', requireAuth, async (req, res) => {
 });
 
 // Unfollow a user route
-
-router.delete('/:username/follow', requireAuth, async (req, res) => {
+router.delete('/:id/follow', requireAuth, async (req, res) => {
    try {
-      const username = req.params.username.toLowerCase().trim();
-      const targetUser = await User.findOne({ username }).select('_id');
+      const targetUser = await User.findById(req.params.id).select('_id');
 
       // Check if user exists
       if (!targetUser) {

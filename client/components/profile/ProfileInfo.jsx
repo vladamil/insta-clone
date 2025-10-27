@@ -25,12 +25,14 @@ export default function ProfileInfo({ user, authLoading, logout, refresh }) {
          try {
             setLoading(true);
             const res = await fetch(
-               `${process.env.NEXT_PUBLIC_API_URL}/api/users/${user?.username}`,
+               `${process.env.NEXT_PUBLIC_API_URL}/api/users/${user?._id}`,
                {
                   headers: { Authorization: `Bearer ${token}` },
                }
             );
             const data = await res.json();
+
+            console.log('DATA', data);
 
             if (!res.ok) {
                throw new Error(data.error);
@@ -47,6 +49,8 @@ export default function ProfileInfo({ user, authLoading, logout, refresh }) {
 
       fetchUserData();
    }, [user, authLoading, refresh]);
+
+   // console.log('PROFILE', profile);
 
    if (loading && !profile) return <p>Loading...</p>;
    if (error && !loading) return <div>ERROR: {error}</div>;

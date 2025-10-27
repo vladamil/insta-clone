@@ -2,11 +2,11 @@ import { useRouter } from 'next/navigation';
 
 export default function ProfileFollowButton({ profile, setProfile }) {
    const router = useRouter();
-
+   console.log(profile);
    const handleFollow = async () => {
       try {
          const res = await fetch(
-            `${process.env.NEXT_PUBLIC_API_URL}/api/users/${profile.username}/follow`,
+            `${process.env.NEXT_PUBLIC_API_URL}/api/users/${profile.id}/follow`,
             {
                method: profile.isFollowing ? 'DELETE' : 'POST',
 
@@ -17,7 +17,6 @@ export default function ProfileFollowButton({ profile, setProfile }) {
          );
 
          const data = await res.json();
-         console.log('DATA:', data);
 
          if (!res.ok) {
             throw new Error(data.error);

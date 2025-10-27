@@ -37,7 +37,7 @@ export default function ProfilePosts({
          try {
             setLoading(true);
             const res = await fetch(
-               `${process.env.NEXT_PUBLIC_API_URL}/api/users/${user?.username}/posts?page=${page}&limit=11`,
+               `${process.env.NEXT_PUBLIC_API_URL}/api/users/${user?._id}/posts?page=${page}&limit=11`,
                {
                   headers: { Authorization: `Bearer ${token}` },
                }

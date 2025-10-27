@@ -40,7 +40,7 @@ export default function AccountPage() {
             if (!token) return;
 
             const res = await fetch(
-               `${process.env.NEXT_PUBLIC_API_URL}/api/users/${user?.username}`,
+               `${process.env.NEXT_PUBLIC_API_URL}/api/users/${user?._id}`,
                {
                   headers: {
                      Authorization: `Bearer ${token}`,
