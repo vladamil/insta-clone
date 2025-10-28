@@ -1,8 +1,10 @@
 import { useRouter } from 'next/navigation';
 
-export default function ProfileFollowButton({ profile, setProfile }) {
+import styles from './UserFollowButton.module.css';
+
+export default function UserFollowButton({ profile, setProfile }) {
    const router = useRouter();
-   console.log(profile);
+
    const handleFollow = async () => {
       try {
          const res = await fetch(
@@ -39,6 +41,7 @@ export default function ProfileFollowButton({ profile, setProfile }) {
    if (profile.isSelf)
       return (
          <button
+            className={`${styles.button} ${styles.edit}`}
             onClick={() => {
                router.push('/account');
             }}
@@ -48,7 +51,12 @@ export default function ProfileFollowButton({ profile, setProfile }) {
       );
 
    return (
-      <button onClick={handleFollow}>
+      <button
+         className={`${styles.button} ${
+            profile.isFollowing ? styles.unfollow : styles.follow
+         }`}
+         onClick={handleFollow}
+      >
          {profile.isFollowing ? 'Unfollow' : 'Follow'}
       </button>
    );

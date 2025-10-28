@@ -32,8 +32,6 @@ export default function ProfileInfo({ user, authLoading, logout, refresh }) {
             );
             const data = await res.json();
 
-            console.log('DATA', data);
-
             if (!res.ok) {
                throw new Error(data.error);
             }
@@ -49,8 +47,6 @@ export default function ProfileInfo({ user, authLoading, logout, refresh }) {
 
       fetchUserData();
    }, [user, authLoading, refresh]);
-
-   // console.log('PROFILE', profile);
 
    if (loading && !profile) return <p>Loading...</p>;
    if (error && !loading) return <div>ERROR: {error}</div>;

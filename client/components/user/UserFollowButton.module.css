@@ -1,0 +1,43 @@
+.button {
+   padding: 0.6rem 1.4rem;
+   border-radius: 10px;
+   font-size: 0.9rem;
+   font-weight: 500;
+   cursor: pointer;
+   transition: all 0.25s ease;
+   outline: none;
+}
+
+/* For your own profile */
+.edit {
+   background: var(--accent-color, #1e90ff);
+   color: white;
+   border: none;
+}
+
+.edit:hover {
+   opacity: 0.8;
+}
+
+/* For "Follow" */
+.follow {
+   background: var(--accent-color, #1e90ff);
+   color: white;
+   border: 2px solid transparent;
+}
+
+.follow:hover {
+   opacity: 0.8;
+}
+
+/* For "Unfollow" */
+.unfollow {
+   background: transparent;
+   border: 2px solid var(--accent-color, #1e90ff);
+   color: var(--accent-color, #1e90ff);
+}
+
+.unfollow:hover {
+   background: var(--accent-color, #1e90ff);
+   color: white;
+}
