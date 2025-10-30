@@ -1,87 +1,46 @@
 'use client';
-import { useState } from 'react';
-import { API_URL } from '@/lib/constants';
 
-export default function LoginPage() {
-   const [formData, setFormData] = useState({
-      username: '',
-      password: '',
-   });
-   const [loading, setLoading] = useState(false);
-   const [error, setError] = useState('');
-   const [success, setSuccess] = useState('');
+import Image from 'next/image';
+import LoginForm from '@/components/auth/LoginForm';
+import styles from './page.module.css';
 
-   const handleChange = (e) => {
-      setFormData((prev) => ({
-         ...prev,
-         [e.target.name]: e.target.value,
-      }));
-   };
-
-   const handleSubmit = async (e) => {
-      e.preventDefault();
-      setLoading(true);
-      setError('');
-      setSuccess('');
-
-      try {
-         const res = await fetch(`${API_URL}/api/login`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-               username: formData.username.trim().toLowerCase(),
-               password: formData.password.trim(),
-            }),
-         });
-
-         const data = await res.json();
-         if (!res.ok) throw new Error(data.error || 'Login failed');
-
-         // Save the token into session storage
-         sessionStorage.setItem('token', data.token);
-
-         setSuccess('Login successful!');
-         setFormData({ username: '', password: '' });
-
-         // Optional: Redirect after login
-         // window.location.href = '/dashboard';
-      } catch (err) {
-         setError(err.message);
-      } finally {
-         setLoading(false);
-      }
-   };
-
+export default function HomePage() {
    return (
-      <div style={{ maxWidth: 400, margin: '0 auto' }}>
-         <h1>Login</h1>
-         <form onSubmit={handleSubmit}>
-            <input
-               name="username"
-               type="text"
-               placeholder="Username"
-               value={formData.username}
-               onChange={handleChange}
-               required
-            />
-            <br />
-            <input
-               name="password"
-               type="password"
-               placeholder="Password"
-               value={formData.password}
-               onChange={handleChange}
-               required
-            />
-            <br />
+      <div className={styles.container}>
+         <div className={styles.left}>
+            <h1 className={styles.title}>Instaclone</h1>
+            <div className={styles.fan}>
+               <img
+                  src="/img0.jpg"
+                  alt="Main"
+                  className={`${styles.img} ${styles.center}`}
+               />
+               <img
+                  src="/img1.jpg"
+                  alt="Left 1"
+                  className={`${styles.img} ${styles.left1}`}
+               />
+               <img
+                  src="/img2.jpg"
+                  alt="Right 1"
+                  className={`${styles.img} ${styles.right1}`}
+               />
+               <img
+                  src="/img3.jpg"
+                  alt="Left 2"
+                  className={`${styles.img} ${styles.left2}`}
+               />
+               <img
+                  src="/img4.jpg"
+                  alt="Right 2"
+                  className={`${styles.img} ${styles.right2}`}
+               />
+            </div>
+         </div>
 
-            <button type="submit" disabled={loading}>
-               {loading ? 'Logging in...' : 'Login'}
-            </button>
-         </form>
-
-         {error && <p style={{ color: 'red' }}>❌ {error}</p>}
-         {success && <p style={{ color: 'green' }}>✅ {success}</p>}
+         <div className={styles.right}>
+            <LoginForm />
+         </div>
       </div>
    );
 }
