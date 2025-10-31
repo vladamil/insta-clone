@@ -9,29 +9,30 @@ export default function HomePage() {
       <div className={styles.container}>
          <div className={styles.left}>
             <h1 className={styles.title}>Instaclone</h1>
+
             <div className={styles.fan}>
                <img
-                  src="/img0.jpg"
+                  src="images/img0.jpg"
                   alt="Main"
                   className={`${styles.img} ${styles.center}`}
                />
                <img
-                  src="/img1.jpg"
+                  src="images/img1.jpg"
                   alt="Left 1"
                   className={`${styles.img} ${styles.left1}`}
                />
                <img
-                  src="/img2.jpg"
+                  src="images/img2.jpg"
                   alt="Right 1"
                   className={`${styles.img} ${styles.right1}`}
                />
                <img
-                  src="/img3.jpg"
+                  src="images/img3.jpg"
                   alt="Left 2"
                   className={`${styles.img} ${styles.left2}`}
                />
                <img
-                  src="/img4.jpg"
+                  src="images/img4.jpg"
                   alt="Right 2"
                   className={`${styles.img} ${styles.right2}`}
                />
