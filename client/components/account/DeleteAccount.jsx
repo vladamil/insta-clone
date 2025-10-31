@@ -33,7 +33,7 @@ export default function DeleteAccount() {
 
          sessionStorage.removeItem('token'); // Remove session
          setMessage('✅ Account deleted. Redirecting...');
-         setTimeout(() => router.replace('/signup'), 1500); // Redirect after short delay for UX
+         setTimeout(() => router.replace('/'), 1500); // Redirect after short delay for UX
       } catch (err) {
          setMessage(`❌ ${err.message}`);
       }

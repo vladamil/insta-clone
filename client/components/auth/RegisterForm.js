@@ -10,7 +10,7 @@ const initialFormData = {
    password: '',
 };
 
-export default function RegisterForm() {
+export default function RegisterForm({ fromHome, onToggle }) {
    const { register } = useAuth();
    const [formData, setFormData] = useState(initialFormData);
    const [repeatPassword, setRepeatPassword] = useState('');
@@ -131,12 +131,45 @@ export default function RegisterForm() {
             {loading ? 'Registering...' : 'Register'}
          </button>
 
+         {/* DEFAULT REGISTER MESSAGE */}
+         {!success && (
+            <p className={styles.switch}>
+               Already have an account? You can{' '}
+               {!fromHome && (
+                  <Link style={{ textDecoration: 'underline' }} href="/login">
+                     Login
+                  </Link>
+               )}
+               {/* if from HOME PAGE just toggle view */}
+               {fromHome && (
+                  <span
+                     style={{ textDecoration: 'underline', cursor: 'pointer' }}
+                     onClick={onToggle}
+                  >
+                     Login
+                  </span>
+               )}
+            </p>
+         )}
+
+         {/* AFTER REGISTRATION MESSAGE */}
          {success && (
             <p className={styles.switch}>
                Registration successful! You can now{' '}
-               <Link style={{ textDecoration: 'underline' }} href="/login">
-                  login
-               </Link>
+               {!fromHome && (
+                  <Link style={{ textDecoration: 'underline' }} href="/login">
+                     Login
+                  </Link>
+               )}
+               {/* if from HOME PAGE just toggle view */}
+               {fromHome && (
+                  <span
+                     style={{ textDecoration: 'underline', cursor: 'pointer' }}
+                     onClick={onToggle}
+                  >
+                     Login
+                  </span>
+               )}
             </p>
          )}
       </form>

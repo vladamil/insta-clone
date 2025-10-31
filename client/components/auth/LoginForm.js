@@ -3,7 +3,7 @@ import Link from 'next/link';
 import { useAuth } from '@/context/AuthContext';
 import styles from './AuthForm.module.css';
 
-export default function AuthForm() {
+export default function LoginForm({ fromHome, onToggle }) {
    const [formData, setFormData] = useState({
       username: '',
       password: '',
@@ -60,9 +60,20 @@ export default function AuthForm() {
 
          <p className={styles.switch}>
             Don't have an account?{' '}
-            <Link style={{ textDecoration: 'underline' }} href="/register">
-               Register
-            </Link>
+            {!fromHome && (
+               <Link style={{ textDecoration: 'underline' }} href="/register">
+                  Register
+               </Link>
+            )}
+            {/* if from HOME PAGE just toggle view */}
+            {fromHome && (
+               <span
+                  style={{ textDecoration: 'underline', cursor: 'pointer' }}
+                  onClick={onToggle}
+               >
+                  Register
+               </span>
+            )}
          </p>
       </form>
    );

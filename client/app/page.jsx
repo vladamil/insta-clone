@@ -1,10 +1,13 @@
 'use client';
 
-import Image from 'next/image';
+import { useState } from 'react';
 import LoginForm from '@/components/auth/LoginForm';
+import RegisterForm from '@/components/auth/RegisterForm';
 import styles from './page.module.css';
 
 export default function HomePage() {
+   const [showRegister, setShowRegister] = useState(false);
+
    return (
       <div className={styles.container}>
          <div className={styles.left}>
@@ -40,7 +43,17 @@ export default function HomePage() {
          </div>
 
          <div className={styles.right}>
-            <LoginForm />
+            {showRegister ? (
+               <RegisterForm
+                  fromHome={true}
+                  onToggle={() => setShowRegister(false)}
+               />
+            ) : (
+               <LoginForm
+                  fromHome={true}
+                  onToggle={() => setShowRegister(true)}
+               />
+            )}
          </div>
       </div>
    );
