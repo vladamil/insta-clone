@@ -1,60 +1,10 @@
 'use client';
 
-import { useState } from 'react';
-import LoginForm from '@/components/auth/LoginForm';
-import RegisterForm from '@/components/auth/RegisterForm';
-import styles from './page.module.css';
+import { useAuth } from '@/context/AuthContext';
+import GuestHome from '@/components/home/GuestHome';
 
 export default function HomePage() {
-   const [showRegister, setShowRegister] = useState(false);
-
-   return (
-      <div className={styles.container}>
-         <div className={styles.left}>
-            <h1 className={styles.title}>Instaclone</h1>
-
-            <div className={styles.fan}>
-               <img
-                  src="images/img0.jpg"
-                  alt="Main"
-                  className={`${styles.img} ${styles.center}`}
-               />
-               <img
-                  src="images/img1.jpg"
-                  alt="Left 1"
-                  className={`${styles.img} ${styles.left1}`}
-               />
-               <img
-                  src="images/img2.jpg"
-                  alt="Right 1"
-                  className={`${styles.img} ${styles.right1}`}
-               />
-               <img
-                  src="images/img3.jpg"
-                  alt="Left 2"
-                  className={`${styles.img} ${styles.left2}`}
-               />
-               <img
-                  src="images/img4.jpg"
-                  alt="Right 2"
-                  className={`${styles.img} ${styles.right2}`}
-               />
-            </div>
-         </div>
-
-         <div className={styles.right}>
-            {showRegister ? (
-               <RegisterForm
-                  fromHome={true}
-                  onToggle={() => setShowRegister(false)}
-               />
-            ) : (
-               <LoginForm
-                  fromHome={true}
-                  onToggle={() => setShowRegister(true)}
-               />
-            )}
-         </div>
-      </div>
-   );
+   const { user, loading } = useAuth();
+   if (loading) return <p>Loading...</p>;
+   return user ? <h1>Hello {user.username}</h1> : <GuestHome />;
 }
