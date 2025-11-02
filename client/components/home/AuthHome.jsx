@@ -8,6 +8,29 @@ import styles from './AuthHome.module.css';
 export default function AuthHome({ user }) {
    return (
       <>
+         {/* HERO SECTION */}
+         <section className={styles.hero}>
+            <div className={styles.banner}></div>
+
+            <div className={styles.userInfo}>
+               <div className={styles.avatarWrapper}>
+                  <Image
+                     src={user?.profilePicUrl || '/default-avatar.png'}
+                     alt={user?.username || 'User avatar'}
+                     fill
+                     className={styles.avatar}
+                  />
+               </div>
+
+               <div className={styles.text}>
+                  <h1>
+                     Welcome, <span>{user?.username || 'Friend'}</span>!
+                  </h1>
+                  <p>What’s inspiring you today?</p>
+               </div>
+            </div>
+         </section>
+
          <div className={styles.container}>
             {/* LEFT SIDEBAR (optional, for future navigation) */}
             <aside className={styles.leftSidebar}>
