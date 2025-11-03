@@ -2,6 +2,7 @@
 
 import Image from 'next/image';
 import FeedPosts from './FeedPosts';
+import Suggestions from './Suggestions';
 
 import styles from './AuthHome.module.css';
 
@@ -54,20 +55,7 @@ export default function AuthHome({ user }) {
             </main>
 
             {/* SUGGESTIONS SIDEBAR */}
-            <aside className={styles.rightSidebar}>
-               <div className={styles.suggestionsBox}>
-                  <h2>Suggestions</h2>
-                  {[...Array(4)].map((_, i) => (
-                     <div key={i} className={styles.suggestionItem}>
-                        <div className={styles.suggestionAvatar}></div>
-                        <div className={styles.suggestionInfo}>
-                           <span>@suggested_user{i}</span>
-                           <button>Follow</button>
-                        </div>
-                     </div>
-                  ))}
-               </div>
-            </aside>
+            <Suggestions />
          </div>
       </>
    );
