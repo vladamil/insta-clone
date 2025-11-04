@@ -25,7 +25,7 @@ export default function AuthHome({ user }) {
 
                <div className={styles.text}>
                   <h1>
-                     Welcome, <span>{user?.username || 'Friend'}</span>!
+                     Welcome, <span>{user?.username || 'Guest'}</span>!
                   </h1>
                   <p>What’s inspiring you today?</p>
                </div>

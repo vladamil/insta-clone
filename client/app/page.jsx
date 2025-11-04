@@ -1,13 +1,24 @@
 'use client';
 
+import { useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
 import GuestHome from '@/components/home/GuestHome';
-import AuthHome from '@/components/home/AuthHome';
 
 export default function HomePage() {
    const { user, loading } = useAuth();
 
-   if (loading) return <p>Loading...</p>;
+   const router = useRouter();
 
-   return user ? <AuthHome user={user} /> : <GuestHome />;
+   // Redirect to /Home if there is a User
+   useEffect(() => {
+      if (!loading && user) {
+         router.replace('/home');
+      }
+   }, [loading, user, router]);
+
+   if (loading) return <p>Loading...</p>;
+   if (user) return null;
+
+   return <GuestHome />;
 }
