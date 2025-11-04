@@ -3,6 +3,9 @@
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
+import Navigation from '@/components/navigation/Navigation';
+
+import styles from './Layout.module.css';
 
 export default function NavLayout({ children }) {
    const { user, loading } = useAuth();
@@ -18,9 +21,12 @@ export default function NavLayout({ children }) {
    if (!user) return null;
 
    return (
-      <>
-         <h1>LAYOUT FOR NAVIGATION</h1>
-         <main>{children}</main>
-      </>
+      <div className={styles.container}>
+         <aside className={styles.sidebar}>
+            <Navigation />
+         </aside>
+
+         <main className={styles.main}>{children}</main>
+      </div>
    );
 }

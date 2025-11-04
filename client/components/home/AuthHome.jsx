@@ -33,24 +33,9 @@ export default function AuthHome({ user }) {
          </section>
 
          <div className={styles.container}>
-            {/* LEFT SIDEBAR (optional, for future navigation) */}
-            <aside className={styles.leftSidebar}>
-               <div className={styles.leftBox}>
-                  <h2>Menu</h2>
-                  <ul>
-                     <li>🏠 Home</li>
-                     <li>🔍 Explore</li>
-                     <li>💬 Messages</li>
-                     <li>👤 Profile</li>
-                  </ul>
-               </div>
-            </aside>
-
+            
             {/* FEED SECTION */}
             <main className={styles.feed}>
-               <div className={styles.feedHeader}>
-                  <h1>Home Feed</h1>
-               </div>
                <FeedPosts />
             </main>
 
