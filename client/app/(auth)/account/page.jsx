@@ -22,15 +22,6 @@ export default function AccountPage() {
    const router = useRouter();
 
    useEffect(() => {
-      if (!loading && !user) {
-         // Redirect to login if not authenticated
-         router.replace('/login');
-      }
-   }, [user, loading]);
-
-   console.log(user);
-
-   useEffect(() => {
       if (loading) return;
 
       const fetchUserData = async () => {
@@ -52,7 +43,6 @@ export default function AccountPage() {
             const data = await res.json();
             setUserData(data);
          } catch (err) {
-            console.error(err);
             setError(err.message);
          } finally {
             setLoadData(false);

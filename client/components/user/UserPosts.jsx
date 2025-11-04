@@ -8,8 +8,8 @@ import SinglePostModal from '../posts/SinglePostModal';
 import styles from '../profile/ProfilePosts.module.css';
 
 export default function UserPosts({ id }) {
-   const [posts, setPosts] = useState([]);
-   const [loading, setLoading] = useState(true);
+   const [posts, setPosts] = useState(null);
+   const [loading, setLoading] = useState(false);
    const [error, setError] = useState(null);
    const [postIndex, setPostIndex] = useState(null);
    const [refresh, setRefresh] = useState(0);

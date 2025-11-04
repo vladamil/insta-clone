@@ -5,7 +5,7 @@ import styles from './ProfileInfo.module.css';
 
 export default function ProfileInfo({ user, authLoading, logout, refresh }) {
    const [profile, setProfile] = useState(null);
-   const [loading, setLoading] = useState(true);
+   const [loading, setLoading] = useState(false);
    const [error, setError] = useState(null);
 
    const router = useRouter();
@@ -13,13 +13,8 @@ export default function ProfileInfo({ user, authLoading, logout, refresh }) {
    useEffect(() => {
       if (authLoading) return;
 
-      if (!user) {
-         router.replace('/login');
-         return;
-      }
-
       const token = sessionStorage.getItem('token');
-      if (!token) return router.replace('/login');
+      if (!token) return;
 
       const fetchUserData = async () => {
          try {

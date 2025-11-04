@@ -1,5 +1,4 @@
 import { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import CreatePostModal from '../posts/CreatePostModal';
 import SinglePostModal from '../posts/SinglePostModal';
@@ -12,8 +11,8 @@ export default function ProfilePosts({
    refresh,
    triggerRefresh,
 }) {
-   const [posts, setPosts] = useState([]);
-   const [loading, setLoading] = useState(true);
+   const [posts, setPosts] = useState(null);
+   const [loading, setLoading] = useState(false);
    const [error, setError] = useState(null);
    const [showCreatePostModal, setShowCreatePostModal] = useState(false);
    const [postIndex, setPostIndex] = useState(null);
@@ -21,17 +20,11 @@ export default function ProfilePosts({
    const [page, setPage] = useState(1);
    const [totalPages, setTotalPages] = useState(1);
 
-   const router = useRouter();
-
    useEffect(() => {
       if (authLoading) return;
 
-      if (!user) {
-         router.replace('/login');
-         return;
-      }
       const token = sessionStorage.getItem('token');
-      if (!token) return router.replace('/login');
+      if (!token) return;
 
       async function fetchPosts() {
          try {

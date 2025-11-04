@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import UserFollowButton from './UserFollowButton';
 
@@ -9,17 +8,15 @@ import styles from '../profile/ProfileInfo.module.css'; // SHARED STYLES WITH PR
 
 export default function UserHeader({ id }) {
    const [profile, setProfile] = useState(null);
-   const [loading, setLoading] = useState(true);
+   const [loading, setLoading] = useState(false);
    const [error, setError] = useState(null);
-
-   const router = useRouter();
 
    useEffect(() => {
       const fetchUserData = async () => {
          try {
             setLoading(true);
             const token = sessionStorage.getItem('token');
-            if (!token) return router.replace('/login');
+            if (!token) return;
 
             const res = await fetch(
                `${process.env.NEXT_PUBLIC_API_URL}/api/users/${id}`,
