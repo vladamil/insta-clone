@@ -51,3 +51,7 @@
    display: flex;
    align-items: center;
 }
+
+.logout:hover {
+   color: rgb(124, 4, 4);
+}

@@ -1,0 +1,112 @@
+.overlay {
+   position: fixed;
+   inset: 0;
+   background: rgba(0, 0, 0, 0.6);
+   display: flex;
+   justify-content: center;
+   align-items: flex-start;
+   padding-top: 5rem;
+   z-index: 1000;
+}
+
+.modal {
+   background: #fff;
+   width: 90%;
+   max-width: 500px;
+   min-height: 50vh;
+   border-radius: 12px;
+   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+   overflow: hidden;
+   animation: fadeIn 0.25s ease;
+}
+
+.header {
+   display: flex;
+   align-items: center;
+   justify-content: space-between;
+   padding: 0.8rem 1rem;
+   border-bottom: 1px solid #eee;
+}
+
+.inputWrapper {
+   position: relative;
+   flex: 1;
+}
+
+.inputWrapper input {
+   width: 100%;
+   padding: 0.6rem 0.6rem 0.6rem 2rem;
+   border: 1px solid #ccc;
+   border-radius: 8px;
+   outline: none;
+   font-size: 0.95rem;
+}
+
+.searchIcon {
+   position: absolute;
+   left: 0.6rem;
+   top: 50%;
+   transform: translateY(-50%);
+   color: #888;
+}
+
+.closeBtn {
+   background: none;
+   border: none;
+   color: #444;
+   font-size: 1.1rem;
+   margin-left: 0.6rem;
+   cursor: pointer;
+}
+
+.results {
+   max-height: 400px;
+   overflow-y: auto;
+}
+
+.resultItem {
+   display: flex;
+   align-items: center;
+   padding: 0.7rem 1rem;
+   border-bottom: 1px solid #f1f1f1;
+   transition: background 0.2s ease;
+}
+
+.resultItem:hover {
+   background: #f8f8f8;
+}
+
+.avatar {
+   flex-shrink: 0;
+}
+
+.userInfo {
+   margin-left: 0.8rem;
+}
+
+.username {
+   font-weight: 600;
+   color: #111;
+}
+
+.fullname {
+   font-size: 0.9rem;
+   color: #777;
+}
+
+.info {
+   text-align: center;
+   padding: 1rem;
+   color: #666;
+}
+
+@keyframes fadeIn {
+   from {
+      opacity: 0;
+      transform: translateY(-10px);
+   }
+   to {
+      opacity: 1;
+      transform: translateY(0);
+   }
+}

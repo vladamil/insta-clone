@@ -10,7 +10,7 @@ import styles from './Layout.module.css';
 
 export default function NavLayout({ children }) {
    const [showCreatePostModal, setShowCreatePostModal] = useState(false);
-   const { user, loading } = useAuth();
+   const { user, loading, logout } = useAuth();
    const router = useRouter();
 
    useEffect(() => {
@@ -26,7 +26,10 @@ export default function NavLayout({ children }) {
       <>
          <div className={styles.container}>
             <aside className={styles.sidebar}>
-               <Navigation onCreate={() => setShowCreatePostModal(true)} />
+               <Navigation
+                  onCreate={() => setShowCreatePostModal(true)}
+                  logout={logout}
+               />
             </aside>
 
             <main className={styles.main}>{children}</main>

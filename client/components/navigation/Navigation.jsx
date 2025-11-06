@@ -10,10 +10,11 @@ import {
    FaImage,
    FaSignOutAlt,
 } from 'react-icons/fa';
+import SearchModal from './SearchModal';
 
 import styles from './Navigation.module.css';
 
-export default function Navigation({ onCreate }) {
+export default function Navigation({ onCreate, logout }) {
    const pathname = usePathname();
 
    const navLinks = [
@@ -41,9 +42,7 @@ export default function Navigation({ onCreate }) {
                      </Link>
                   </li>
                ))}
-               <li
-                  className={`${styles.navItem} ${false ? styles.active : ''}`}
-               >
+               <li className={styles.navItem}>
                   <div className={styles.link}>
                      <span className={styles.icon}>
                         <FaSearch size={20} />
@@ -51,9 +50,7 @@ export default function Navigation({ onCreate }) {
                      <span>Search</span>
                   </div>
                </li>
-               <li
-                  className={`${styles.navItem} ${false ? styles.active : ''}`}
-               >
+               <li className={styles.navItem}>
                   <div className={styles.link} onClick={onCreate}>
                      <span className={styles.icon}>
                         <FaImage size={20} />
@@ -63,10 +60,11 @@ export default function Navigation({ onCreate }) {
                </li>
             </ul>
 
-            <div className={styles.link}>
+            <div className={`${styles.link} ${styles.logout}`} onClick={logout}>
                <FaSignOutAlt size={20} /> Logout
             </div>
          </nav>
+         <SearchModal isOpen={true} />
       </>
    );
 }
