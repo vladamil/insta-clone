@@ -10,11 +10,23 @@ export default function SearchModal({ isOpen, onClose }) {
    const [query, setQuery] = useState('');
    const [results, setResults] = useState([]);
    const [loading, setLoading] = useState(false);
+   const [error, setError] = useState(null);
+
+   const handleCloseSearch = () => {
+      onClose();
+      setQuery('');
+   };
 
    // Close modal on ESC
    useEffect(() => {
-      const handleEsc = (e) => e.key === 'Escape' && onClose();
+      const handleEsc = (e) => {
+         if (e.key === 'Escape') {
+            handleCloseSearch();
+         }
+      };
+
       document.addEventListener('keydown', handleEsc);
+
       return () => document.removeEventListener('keydown', handleEsc);
    }, [onClose]);
 
@@ -36,7 +48,7 @@ export default function SearchModal({ isOpen, onClose }) {
             const data = await res.json();
             setResults(data);
          } catch (error) {
-            console.error('Search error:', error);
+            setError(error.message);
          } finally {
             setLoading(false);
          }
@@ -48,8 +60,8 @@ export default function SearchModal({ isOpen, onClose }) {
    if (!isOpen) return null;
 
    const modalContent = (
-      <div className={styles.overlay} onClick={onClose}>
-         <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
+      <div className={styles.overlay}>
+         <div className={styles.modal}>
             {/* HEADER */}
             <div className={styles.header}>
                <div className={styles.inputWrapper}>
@@ -62,7 +74,7 @@ export default function SearchModal({ isOpen, onClose }) {
                      autoFocus
                   />
                </div>
-               <button className={styles.closeBtn} onClick={onClose}>
+               <button className={styles.closeBtn} onClick={handleCloseSearch}>
                   <FaTimes />
                </button>
             </div>
@@ -73,21 +85,22 @@ export default function SearchModal({ isOpen, onClose }) {
                {!loading && query && results.length === 0 && (
                   <p className={styles.info}>No users found</p>
                )}
-
+               {error && <p className={styles.info}>${error}</p>}
                {!loading &&
                   results.map((user) => (
                      <Link
                         key={user._id}
                         href={`/users/${user.username}-${user._id}`}
                         className={styles.resultItem}
-                        onClick={onClose}
+                        onClick={handleCloseSearch}
                      >
-                        <div className={styles.avatar}>
+                        <div>
                            <Image
                               src={user.profilePicUrl || '/default-avatar.png'}
                               alt={user.username}
                               width={40}
                               height={40}
+                              className={styles.avatar}
                            />
                         </div>
                         <div className={styles.userInfo}>

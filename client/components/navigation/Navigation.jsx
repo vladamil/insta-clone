@@ -18,6 +18,7 @@ import styles from './Navigation.module.css';
 
 export default function Navigation({ logout }) {
    const [showCreatePostModal, setShowCreatePostModal] = useState(false);
+   const [showSearchModal, setShowSearchModal] = useState(false);
    const pathname = usePathname();
    const router = useRouter();
 
@@ -47,7 +48,10 @@ export default function Navigation({ logout }) {
                   </li>
                ))}
                <li className={styles.navItem}>
-                  <div className={styles.link}>
+                  <div
+                     className={styles.link}
+                     onClick={() => setShowSearchModal(true)}
+                  >
                      <span className={styles.icon}>
                         <FaSearch size={20} />
                      </span>
@@ -72,7 +76,12 @@ export default function Navigation({ logout }) {
             </div>
          </nav>
          {/* SEARCH MODAL */}
-         <SearchModal isOpen={false} />
+         <SearchModal
+            isOpen={showSearchModal}
+            onClose={() => {
+               setShowSearchModal(false);
+            }}
+         />
          {/* CREATE MODAL */}
          <CreatePostModal
             isOpen={showCreatePostModal}
