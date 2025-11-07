@@ -1,5 +1,6 @@
 'use client';
 import { useState, useEffect } from 'react';
+import ReactDOM from 'react-dom';
 import Image from 'next/image';
 import CommentList from '../comments/CommentList';
 import PostLikeButton from './PostLikeButton';
@@ -48,7 +49,7 @@ const SinglePostModal = ({ index, posts, onClose, onDelete }) => {
       if (hasNext) setPostIndex((prev) => prev + 1);
    };
 
-   return (
+   const modalContent = (
       <div className={styles.overlay}>
          {hasPrev && (
             <button
@@ -111,6 +112,7 @@ const SinglePostModal = ({ index, posts, onClose, onDelete }) => {
          )}
       </div>
    );
+   return ReactDOM.createPortal(modalContent, document.body);
 };
 
 export default SinglePostModal;

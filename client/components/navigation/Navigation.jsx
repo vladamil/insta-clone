@@ -1,7 +1,8 @@
 'use client';
 
+import { useState } from 'react';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import {
    FaHome,
    FaUser,
@@ -10,12 +11,15 @@ import {
    FaImage,
    FaSignOutAlt,
 } from 'react-icons/fa';
+import CreatePostModal from '../posts/CreatePostModal';
 import SearchModal from './SearchModal';
 
 import styles from './Navigation.module.css';
 
-export default function Navigation({ onCreate, logout }) {
+export default function Navigation({ logout }) {
+   const [showCreatePostModal, setShowCreatePostModal] = useState(false);
    const pathname = usePathname();
+   const router = useRouter();
 
    const navLinks = [
       { href: '/home', label: 'Home', icon: <FaHome size={20} /> },
@@ -51,7 +55,10 @@ export default function Navigation({ onCreate, logout }) {
                   </div>
                </li>
                <li className={styles.navItem}>
-                  <div className={styles.link} onClick={onCreate}>
+                  <div
+                     className={styles.link}
+                     onClick={() => setShowCreatePostModal(true)}
+                  >
                      <span className={styles.icon}>
                         <FaImage size={20} />
                      </span>
@@ -64,7 +71,18 @@ export default function Navigation({ onCreate, logout }) {
                <FaSignOutAlt size={20} /> Logout
             </div>
          </nav>
-         <SearchModal isOpen={true} />
+         {/* SEARCH MODAL */}
+         <SearchModal isOpen={false} />
+         {/* CREATE MODAL */}
+         <CreatePostModal
+            isOpen={showCreatePostModal}
+            onClose={() => {
+               setShowCreatePostModal(false);
+            }}
+            onPostCreated={() => {
+               router.replace('/');
+            }}
+         />
       </>
    );
 }

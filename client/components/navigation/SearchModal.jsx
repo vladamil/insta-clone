@@ -84,7 +84,7 @@ export default function SearchModal({ isOpen, onClose }) {
                      >
                         <div className={styles.avatar}>
                            <Image
-                              src={user.avatar || '/default-avatar.png'}
+                              src={user.profilePicUrl || '/default-avatar.png'}
                               alt={user.username}
                               width={40}
                               height={40}
@@ -92,7 +92,7 @@ export default function SearchModal({ isOpen, onClose }) {
                         </div>
                         <div className={styles.userInfo}>
                            <p className={styles.username}>{user.username}</p>
-                           <p className={styles.fullname}>{user.fullName}</p>
+                           <p className={styles.fullname}>Jelena Kerkez</p>
                         </div>
                      </Link>
                   ))}

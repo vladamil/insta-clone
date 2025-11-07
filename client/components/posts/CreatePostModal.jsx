@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import ReactDOM from 'react-dom';
 import Image from 'next/image';
 import styles from './CreatePostModal.module.css';
 
@@ -65,7 +66,7 @@ export default function CreatePostModal({ isOpen, onClose, onPostCreated }) {
       setPreviewUrl(null);
    };
 
-   return (
+   const modalContent = (
       <div className={styles.overlay}>
          <div className={styles.modal}>
             <button className={styles.closeBtn} onClick={onClose}>
@@ -121,4 +122,6 @@ export default function CreatePostModal({ isOpen, onClose, onPostCreated }) {
          </div>
       </div>
    );
+
+   return ReactDOM.createPortal(modalContent, document.body);
 }
