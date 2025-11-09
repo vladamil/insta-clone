@@ -1,7 +1,8 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import ReactDOM from 'react-dom';
+import { FaTimes, FaCamera } from 'react-icons/fa';
 import Image from 'next/image';
 import styles from './CreatePostModal.module.css';
 
@@ -11,6 +12,19 @@ export default function CreatePostModal({ isOpen, onClose, onPostCreated }) {
    const [caption, setCaption] = useState('');
    const [loading, setLoading] = useState(false);
    const [error, setError] = useState(null);
+
+   // Close modal on ESC
+   useEffect(() => {
+      const handleEsc = (e) => {
+         if (e.key === 'Escape') {
+            onClose();
+         }
+      };
+
+      document.addEventListener('keydown', handleEsc);
+
+      return () => document.removeEventListener('keydown', handleEsc);
+   }, [onClose]);
 
    if (!isOpen) return null;
 
@@ -70,7 +84,7 @@ export default function CreatePostModal({ isOpen, onClose, onPostCreated }) {
       <div className={styles.overlay}>
          <div className={styles.modal}>
             <button className={styles.closeBtn} onClick={onClose}>
-               X
+               <FaTimes />
             </button>
 
             <h2 className={styles.title}>Create New Post</h2>
@@ -83,8 +97,8 @@ export default function CreatePostModal({ isOpen, onClose, onPostCreated }) {
                      onChange={handleFileChange}
                      hidden
                   />
-                  📷
-                  <p>Click or drag to upload image</p>
+                  <FaCamera size={60} />
+                  <p>Click to upload image</p>
                </label>
             ) : (
                <div className={styles.preview}>
@@ -95,6 +109,7 @@ export default function CreatePostModal({ isOpen, onClose, onPostCreated }) {
                      className={styles.image}
                   />
                   <button
+                     hidden={loading}
                      onClick={handleRemoveImage}
                      className={styles.removeBtn}
                   >
