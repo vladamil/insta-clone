@@ -2,6 +2,7 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/context/AuthContext';
 import Image from 'next/image';
+import Link from 'next/link';
 import styles from './SingleComment.module.css';
 import CommentForm from './CommentForm';
 
@@ -17,6 +18,7 @@ export default function SingleComment({
 
    const { user } = useAuth();
    const isAuthor = user._id === comment.author._id;
+   const link = `/users/${comment.author.username}-${comment.author._id}`;
 
    // Delete comment handler
    const handleDelete = async () => {
@@ -65,7 +67,7 @@ export default function SingleComment({
 
    return (
       <div className={`${styles.comment}`}>
-         <div className={styles.avatarWrapper}>
+         <Link href={link} className={styles.avatarWrapper}>
             <Image
                src={comment.author.profilePicUrl || '/default-avatar.png'}
                alt={comment.author.username}
@@ -73,13 +75,13 @@ export default function SingleComment({
                height={40}
                className={styles.avatar}
             />
-         </div>
+         </Link>
 
          <div className={styles.content}>
             <div className={styles.header}>
-               <span className={styles.username}>
+               <Link href={link} className={styles.username}>
                   {comment.author.username}
-               </span>
+               </Link>
                {comment.replyToUsername && (
                   <span className={styles.replyingTo}>
                      → @{comment.replyToUsername}

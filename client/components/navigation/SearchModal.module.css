@@ -65,36 +65,8 @@
 }
 
 .resultItem {
-   /* display: flex;
-   align-items: center; */
-   /* padding: 12rem; */
    border-bottom: 1px solid #f1f1f1;
-   /* text-decoration: none; */
-   /* transition: background 0.2s ease; */
 }
-
-/* .resultItem:hover {
-   background: #f8f8f8;
-}
-
-.avatar {
-   border-radius: 50%;
-   object-fit: cover;
-}
-
-.userInfo {
-   margin-left: 0.8rem;
-}
-
-.username {
-   font-weight: 600;
-   color: #111;
-}
-
-.fullname {
-   font-size: 0.9rem;
-   color: #777;
-} */
 
 .info {
    text-align: center;

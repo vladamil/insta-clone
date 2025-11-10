@@ -26,6 +26,11 @@
 
 .username {
    color: #111;
+   text-decoration: none;
+}
+
+.username:hover {
+   text-decoration: underline;
 }
 
 .replyingTo {
