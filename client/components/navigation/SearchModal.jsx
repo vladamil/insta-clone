@@ -5,6 +5,7 @@ import styles from './SearchModal.module.css';
 import { FaSearch, FaTimes } from 'react-icons/fa';
 import Image from 'next/image';
 import Link from 'next/link';
+import UserLink from '../user/UserLink';
 
 export default function SearchModal({ isOpen, onClose }) {
    const [query, setQuery] = useState('');
@@ -88,26 +89,33 @@ export default function SearchModal({ isOpen, onClose }) {
                {error && <p className={styles.info}>${error}</p>}
                {!loading &&
                   results.map((user) => (
-                     <Link
+                     // <Link
+                     //    key={user._id}
+                     //    href={`/users/${user.username}-${user._id}`}
+                     //    className={styles.resultItem}
+                     //    onClick={handleCloseSearch}
+                     // >
+                     //    <div>
+                     //       <Image
+                     //          src={user.profilePicUrl || '/default-avatar.png'}
+                     //          alt={user.username}
+                     //          width={40}
+                     //          height={40}
+                     //          className={styles.avatar}
+                     //       />
+                     //    </div>
+                     //    <div className={styles.userInfo}>
+                     //       <p className={styles.username}>{user.username}</p>
+                     //       <p className={styles.fullname}>Jelena Kerkez</p>
+                     //    </div>
+                     // </Link>
+                     <UserLink
                         key={user._id}
-                        href={`/users/${user.username}-${user._id}`}
-                        className={styles.resultItem}
+                        user={user}
+                        showFullInfo={true}
                         onClick={handleCloseSearch}
-                     >
-                        <div>
-                           <Image
-                              src={user.profilePicUrl || '/default-avatar.png'}
-                              alt={user.username}
-                              width={40}
-                              height={40}
-                              className={styles.avatar}
-                           />
-                        </div>
-                        <div className={styles.userInfo}>
-                           <p className={styles.username}>{user.username}</p>
-                           <p className={styles.fullname}>Jelena Kerkez</p>
-                        </div>
-                     </Link>
+                        className={styles.resultItem}
+                     />
                   ))}
             </div>
          </div>

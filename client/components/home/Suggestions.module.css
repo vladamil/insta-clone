@@ -39,7 +39,7 @@
    background: #f7f9fc;
 }
 
-.userInfo {
+/* .userInfo {
    display: flex;
    align-items: center;
    gap: 0.6rem;
@@ -65,7 +65,7 @@
 .realname {
    font-size: 0.7rem;
    color: #666;
-}
+} */
 
 .followBtn {
    background: #0095f6;

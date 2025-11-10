@@ -69,8 +69,8 @@ export default function SingleComment({
             <Image
                src={comment.author.profilePicUrl || '/default-avatar.png'}
                alt={comment.author.username}
-               width={36}
-               height={36}
+               width={40}
+               height={40}
                className={styles.avatar}
             />
          </div>

@@ -1,0 +1,43 @@
+.link {
+   display: flex;
+   align-items: center;
+   gap: 0.6rem;
+   padding: 0.5rem 0.6rem;
+   border-radius: 0.6rem;
+   text-decoration: none;
+   color: inherit;
+   transition: background 0.25s ease, transform 0.15s ease;
+}
+
+.link:hover {
+   background: #f8f8f8;
+}
+
+.avatarWrapper {
+   width: 40px;
+   height: 40px;
+   border-radius: 50%;
+   overflow: hidden;
+}
+
+.avatar {
+   object-fit: cover;
+   border-radius: 50%;
+}
+
+.info {
+   display: flex;
+   flex-direction: column;
+   line-height: 1.1;
+}
+
+.username {
+   font-weight: 600;
+   font-size: 1rem;
+   color: #111;
+}
+
+.fullName {
+   font-size: 0.7rem;
+   color: #888;
+}

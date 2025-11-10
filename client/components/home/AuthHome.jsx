@@ -33,7 +33,6 @@ export default function AuthHome({ user }) {
          </section>
 
          <div className={styles.container}>
-            
             {/* FEED SECTION */}
             <main className={styles.feed}>
                <FeedPosts />

@@ -65,15 +65,15 @@
 }
 
 .resultItem {
-   display: flex;
-   align-items: center;
-   padding: 1rem;
+   /* display: flex;
+   align-items: center; */
+   /* padding: 12rem; */
    border-bottom: 1px solid #f1f1f1;
-   text-decoration: none;
-   transition: background 0.2s ease;
+   /* text-decoration: none; */
+   /* transition: background 0.2s ease; */
 }
 
-.resultItem:hover {
+/* .resultItem:hover {
    background: #f8f8f8;
 }
 
@@ -94,7 +94,7 @@
 .fullname {
    font-size: 0.9rem;
    color: #777;
-}
+} */
 
 .info {
    text-align: center;

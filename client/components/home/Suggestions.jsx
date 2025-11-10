@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
+import UserLink from '../user/UserLink';
 
 import styles from './Suggestions.module.css';
 
@@ -79,7 +80,7 @@ export default function Suggestions() {
             ) : (
                users.map((user) => (
                   <div key={user._id} className={styles.userItem}>
-                     <div className={styles.userInfo}>
+                     {/* <div className={styles.userInfo}>
                         <Image
                            src={user.profilePicUrl || '/default-avatar.png'}
                            alt={user.username}
@@ -91,7 +92,8 @@ export default function Suggestions() {
                            <p className={styles.username}>{user.username}</p>
                            <p className={styles.realname}>Jelena Kerkez</p>
                         </div>
-                     </div>
+                     </div> */}
+                     <UserLink user={user} showFullInfo={true} />
 
                      <button
                         onClick={() => handleFollow(user._id, user.isFollowing)}
