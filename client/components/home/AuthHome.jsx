@@ -3,6 +3,7 @@
 import Image from 'next/image';
 import FeedPosts from './FeedPosts';
 import Suggestions from './Suggestions';
+import UserListModal from '../common/UserListModal';
 
 import styles from './AuthHome.module.css';
 
@@ -41,6 +42,17 @@ export default function AuthHome({ user }) {
             {/* SUGGESTIONS SIDEBAR */}
             <Suggestions />
          </div>
+         <UserListModal
+            isOpen={true}
+            title="Discover"
+            fetchUsers={() =>
+               fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/discover`, {
+                  headers: {
+                     Authorization: `Bearer ${sessionStorage.getItem('token')}`,
+                  },
+               })
+            }
+         />
       </>
    );
 }
