@@ -2,15 +2,12 @@
 
 import { useEffect, useState } from 'react';
 import ReactDOM from 'react-dom';
-import styles from './UserListModal.module.css';
+import { FaTimes } from 'react-icons/fa';
 import UserLink from '../user/UserLink';
 
-export default function UserListModal({
-   isOpen,
-   onClose,
-   title,
-   fetchUsers, // () => Promise<users[]>
-}) {
+import styles from './UserListModal.module.css';
+
+export default function UserListModal({ isOpen, onClose, title, fetchUsers }) {
    const [users, setUsers] = useState([]);
    const [filtered, setFiltered] = useState([]);
    const [loading, setLoading] = useState(false);
@@ -37,8 +34,10 @@ export default function UserListModal({
 
    // Local search filter
    useEffect(() => {
-      const filteredData = users.filter((u) =>
-         u.username.toLowerCase().includes(searchTerm.toLowerCase())
+      const filteredData = users.filter(
+         (user) =>
+            user.username.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            user.realname?.toLowerCase().includes(searchTerm.toLowerCase())
       );
       setFiltered(filteredData);
    }, [searchTerm, users]);
@@ -50,19 +49,18 @@ export default function UserListModal({
       return () => document.removeEventListener('keydown', handleEsc);
    }, [onClose]);
 
-   console.log(users);
    if (!isOpen) return null;
 
-   return ReactDOM.createPortal(
+   const modalContent = (
       <div className={styles.backdrop} onClick={onClose}>
          <div
             className={styles.modal}
             onClick={(e) => e.stopPropagation()} // prevent closing on content click
          >
             <div className={styles.header}>
-               <h3>{title}</h3>
+               <h3 className={styles.title}>{title}</h3>
                <button className={styles.closeBtn} onClick={onClose}>
-                  ✕
+                  <FaTimes />
                </button>
             </div>
 
@@ -88,12 +86,14 @@ export default function UserListModal({
                      <UserLink
                         key={user._id}
                         user={user}
+                        showFullInfo={true}
                         className={styles.userItem}
                      />
                   ))}
             </div>
          </div>
-      </div>,
-      document.body
+      </div>
    );
+
+   return ReactDOM.createPortal(modalContent, document.body);
 }
