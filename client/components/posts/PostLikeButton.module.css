@@ -32,3 +32,8 @@
    font-size: 0.9rem;
    color: #555;
 }
+
+.likeCount:hover {
+   text-decoration: underline;
+   cursor: pointer;
+}
