@@ -35,6 +35,7 @@
 .title {
    flex: 2;
    text-align: center;
+   text-transform: capitalize;
 }
 
 .closeBtn {

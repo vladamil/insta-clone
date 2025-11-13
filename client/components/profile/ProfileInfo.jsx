@@ -1,12 +1,16 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
+import UserListModal from '../common/UserListModal';
 import styles from './ProfileInfo.module.css';
 
-export default function ProfileInfo({ user, authLoading, logout, refresh }) {
+export default function ProfileInfo({ user, authLoading, refresh }) {
    const [profile, setProfile] = useState(null);
    const [loading, setLoading] = useState(false);
    const [error, setError] = useState(null);
+   // for users list search
+   const [type, setType] = useState('');
+   const [openUserList, setOpenUserList] = useState(false);
 
    const router = useRouter();
 
@@ -48,45 +52,81 @@ export default function ProfileInfo({ user, authLoading, logout, refresh }) {
    if (!loading && !profile) return null;
 
    return (
-      <div className={styles.header}>
-         <div className={styles.avatar}>
-            <Image
-               src={profile.profilePicUrl || '/default-avatar.png'}
-               alt={profile.username}
-               width={120}
-               height={120}
-            />
-         </div>
-         <div className={styles.info}>
-            <div className={styles.topRow}>
-               <h2>{profile.username}</h2>
-               <button
-                  className={styles.settingsBtn}
-                  onClick={() => {
-                     router.push('/account');
-                  }}
-               >
-                  ⚙️
-                  <span>Settings</span>
-               </button>
+      <>
+         <div className={styles.header}>
+            <div className={styles.avatar}>
+               <Image
+                  src={profile.profilePicUrl || '/default-avatar.png'}
+                  alt={profile.username}
+                  width={120}
+                  height={120}
+               />
             </div>
-            {profile.fullName && <p>{profile.fullName}</p>}
-            {profile.description && (
-               <p className={styles.bio}>{profile.description}</p>
-            )}
+            <div className={styles.info}>
+               <div className={styles.topRow}>
+                  <h2>{profile.username}</h2>
+                  <button
+                     className={styles.settingsBtn}
+                     onClick={() => {
+                        router.push('/account');
+                     }}
+                  >
+                     ⚙️
+                     <span>Settings</span>
+                  </button>
+               </div>
+               {profile.fullName && <p>{profile.fullName}</p>}
+               {profile.description && (
+                  <p className={styles.bio}>{profile.description}</p>
+               )}
 
-            <div className={styles.stats}>
-               <span>
-                  <strong>{profile.stats.posts}</strong> Posts
-               </span>
-               <span>
-                  <strong>{profile.stats.followers}</strong> Followers
-               </span>
-               <span>
-                  <strong>{profile.stats.following}</strong> Following
-               </span>
+               <div className={styles.stats}>
+                  <span>
+                     <strong>{profile.stats.posts}</strong> Posts
+                  </span>
+                  <span
+                     className={styles.followList}
+                     onClick={() => {
+                        setType('followers');
+                        setOpenUserList(true);
+                     }}
+                  >
+                     <strong>{profile.stats.followers}</strong> Followers
+                  </span>
+                  <span
+                     className={styles.followList}
+                     onClick={() => {
+                        setType('followings');
+                        setOpenUserList(true);
+                     }}
+                  >
+                     <strong>{profile.stats.following}</strong> Following
+                  </span>
+               </div>
             </div>
          </div>
-      </div>
+
+         {/* MODAL FOR SHOWING LIST OF FOLLOWERS/FOLLOWINGS */}
+         <UserListModal
+            isOpen={openUserList}
+            title={type}
+            onClose={() => {
+               setOpenUserList(false);
+               setType('');
+            }}
+            fetchUsers={() => {
+               return fetch(
+                  `${process.env.NEXT_PUBLIC_API_URL}/api/users/${user._id}/${type}`,
+                  {
+                     headers: {
+                        Authorization: `Bearer ${sessionStorage.getItem(
+                           'token'
+                        )}`,
+                     },
+                  }
+               );
+            }}
+         />
+      </>
    );
 }
