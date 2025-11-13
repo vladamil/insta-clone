@@ -175,4 +175,44 @@ router.delete('/:id/follow', requireAuth, async (req, res) => {
    }
 });
 
+// Get all followers of a user
+router.get('/:id/followers', requireAuth, async (req, res) => {
+   try {
+      const userId = req.params.id;
+
+      // Find all follow relationships where `following` = target user
+      const followers = await Follow.find({ followingId: userId })
+         .populate('followerId', 'username fullName profilePicUrl')
+         .lean();
+
+      // Extract the follower user objects only
+      const followerUsers = followers.map((follower) => follower.followerId);
+
+      res.json(followerUsers);
+   } catch (err) {
+      res.status(500).json({ error: 'Failed to fetch followers' });
+   }
+});
+
+// Get all users that this user follows
+router.get('/:id/followings', requireAuth, async (req, res) => {
+   try {
+      const userId = req.params.id;
+
+      // Find all follow relationships where `follower` = target user
+      const following = await Follow.find({ followerId: userId })
+         .populate('followingId', 'username fullName profilePicUrl')
+         .lean();
+
+      // ✅ Extract the following user objects only
+      const followingUsers = following.map(
+         (following) => following.followingId
+      );
+
+      res.json(followingUsers);
+   } catch (err) {
+      res.status(500).json({ error: 'Failed to fetch following users' });
+   }
+});
+
 module.exports = router;
