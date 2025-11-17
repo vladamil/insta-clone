@@ -56,31 +56,32 @@
 .center {
    z-index: 5;
    animation: fadeInCenter 0.5s ease forwards;
+   animation-delay: 0.3s;
 }
 
 /* first pair */
 .left1 {
    animation: fanLeft1 0.7s ease forwards;
-   animation-delay: 0.7s;
+   animation-delay: 1s;
    z-index: 4;
 }
 
 .right1 {
    animation: fanRight1 0.7s ease forwards;
-   animation-delay: 0.7s;
+   animation-delay: 1s;
    z-index: 4;
 }
 
 /* second pair */
 .left2 {
    animation: fanLeft2 0.7s ease forwards;
-   animation-delay: 1.5s;
+   animation-delay: 1.7s;
    z-index: 3;
 }
 
 .right2 {
    animation: fanRight2 0.7s ease forwards;
-   animation-delay: 1.5s;
+   animation-delay: 1.7s;
    z-index: 3;
 }
 

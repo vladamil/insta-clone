@@ -1,8 +1,10 @@
 'use client';
 
 import { useState } from 'react';
+import Image from 'next/image';
 import LoginForm from '@/components/auth/LoginForm';
 import RegisterForm from '@/components/auth/RegisterForm';
+
 import styles from './GuestHome.module.css';
 
 export default function HomePage() {
@@ -17,30 +19,40 @@ export default function HomePage() {
             <h1 className={styles.title}>Instaclone</h1>
 
             <div className={styles.fan}>
-               <img
-                  src="images/img0.jpg"
+               <Image
+                  src="/images/img0.jpg"
                   alt="Main"
                   className={`${styles.img} ${styles.center}`}
+                  fill
+                  sizes="(max-width: 768px) 50vw, 400px"
                />
-               <img
-                  src="images/img1.jpg"
+               <Image
+                  src="/images/img1.jpg"
                   alt="Left 1"
                   className={`${styles.img} ${styles.left1}`}
+                  fill
+                  sizes="(max-width: 768px) 50vw, 400px"
                />
-               <img
-                  src="images/img2.jpg"
+               <Image
+                  src="/images/img2.jpg"
                   alt="Right 1"
                   className={`${styles.img} ${styles.right1}`}
+                  fill
+                  sizes="(max-width: 768px) 50vw, 400px"
                />
-               <img
-                  src="images/img3.jpg"
+               <Image
+                  src="/images/img3.jpg"
                   alt="Left 2"
                   className={`${styles.img} ${styles.left2}`}
+                  fill
+                  sizes="(max-width: 768px) 50vw, 400px"
                />
-               <img
-                  src="images/img4.jpg"
+               <Image
+                  src="/images/img4.jpg"
                   alt="Right 2"
                   className={`${styles.img} ${styles.right2}`}
+                  fill
+                  sizes="(max-width: 768px) 50vw, 400px"
                />
             </div>
 
