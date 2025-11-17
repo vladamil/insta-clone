@@ -7,10 +7,13 @@ import styles from './GuestHome.module.css';
 
 export default function HomePage() {
    const [showRegister, setShowRegister] = useState(false);
+   const [showHomeBanner, setShowHomeBanner] = useState(true);
 
    return (
       <div className={styles.container}>
-         <div className={styles.left}>
+         <div
+            className={`${styles.left} ${!showHomeBanner ? styles.hidden : ''}`}
+         >
             <h1 className={styles.title}>Instaclone</h1>
 
             <div className={styles.fan}>
@@ -40,6 +43,14 @@ export default function HomePage() {
                   className={`${styles.img} ${styles.right2}`}
                />
             </div>
+
+            {/* MOBILE ONLY BUTTON */}
+            <button
+               className={styles.mobileContinueBtn}
+               onClick={() => setShowHomeBanner(false)}
+            >
+               Continue →
+            </button>
          </div>
 
          <div className={styles.right}>
