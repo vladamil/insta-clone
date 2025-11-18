@@ -1,0 +1,27 @@
+.mobileNav {
+   display: none;
+}
+
+@media (max-width: 768px) {
+   .mobileNav {
+      display: flex;
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 60px;
+      padding: 0 10px;
+      background: #fff;
+      border-top: 1px solid #ddd;
+      justify-content: space-around;
+      align-items: center;
+      z-index: 9999;
+   }
+
+   .mobileNav button {
+      background: none;
+      border: none;
+      font-size: 22px;
+      padding: 10px;
+   }
+}

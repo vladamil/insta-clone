@@ -4,6 +4,7 @@ import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
 import Navigation from '@/components/navigation/Navigation';
+import MobileNavigation from '@/components/navigation/MobileNavigation';
 
 import styles from './Layout.module.css';
 
@@ -27,6 +28,7 @@ export default function NavLayout({ children }) {
          </aside>
 
          <main className={styles.main}>{children}</main>
+         <MobileNavigation />
       </div>
    );
 }
