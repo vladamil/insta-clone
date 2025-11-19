@@ -69,3 +69,10 @@
    font-size: 0.9rem;
    padding: 2rem 0;
 }
+
+/* DONT SHOW ON SMALLER SCREENS */
+@media screen and (max-width: 1200px) {
+   .suggestions {
+      display: none;
+   }
+}

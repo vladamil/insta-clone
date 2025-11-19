@@ -102,3 +102,8 @@
    background-color: #0077cc;
 }
 
+@media screen and (max-width: 960px) {
+   .grid {
+      grid-template-columns: repeat(3, 1fr);
+   }
+}

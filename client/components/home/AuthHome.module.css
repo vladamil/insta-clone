@@ -71,3 +71,35 @@
    flex: 3;
    background: transparent;
 }
+
+/* MOBILE STYLING */
+@media screen and (max-width: 768px) {
+   .banner {
+      height: 40px;
+   }
+
+   .userInfo {
+      padding-bottom: 0.5rem;
+      margin-top: -30px; /* lifts avatar above banner */
+   }
+   
+   .avatarWrapper {
+      width: 60px;
+      height: 60px;
+      border: 3px solid #fff;
+   }
+
+   .text {
+      margin-top: 0.3rem;
+   }
+
+   .text h1 {
+      font-size: 1.1rem;
+      font-weight: 600;
+   }
+
+   .text p {
+      font-size: 0.8rem;
+      margin-top: 0.2rem;
+   }
+}
