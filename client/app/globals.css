@@ -29,3 +29,19 @@ body {
    padding: 0;
    margin: 0;
 }
+
+.desktopModalWrapper {
+   display: block;
+}
+.mobileModalWrapper {
+   display: none;
+}
+
+@media (max-width: 768px) {
+   .desktopModalWrapper {
+      display: none;
+   }
+   .mobileModalWrapper {
+      display: block;
+   }
+}

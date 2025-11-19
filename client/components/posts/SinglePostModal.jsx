@@ -6,6 +6,7 @@ import CommentList from '../comments/CommentList';
 import PostLikeButton from './PostLikeButton';
 import styles from './SinglePostModal.module.css';
 import PostDeleteButton from './PostDeleteButton';
+import MobileSinglePost from './MobileSinglePost';
 
 const SinglePostModal = ({ index, posts, onClose, onDelete }) => {
    const [postIndex, setPostIndex] = useState(index);
@@ -50,67 +51,85 @@ const SinglePostModal = ({ index, posts, onClose, onDelete }) => {
    };
 
    const modalContent = (
-      <div className={styles.overlay}>
-         {hasPrev && (
-            <button
-               className={`${styles.navBtn} ${styles.prevBtn}`}
-               onClick={handlePrev}
-            >
-               ◀
-            </button>
-         )}
-
-         <div className={styles.modal}>
-            <button className={styles.closeBtn} onClick={onClose}>
-               X
-            </button>
-
-            <div className={styles.imageWrapper}>
-               <Image
-                  src={post.imageUrl}
-                  alt={post.caption || 'Post image'}
-                  fill
-                  className={styles.image}
-               />
-            </div>
-
-            <div className={styles.details}>
-               <div className={styles.header}>
-                  <Image
-                     src={post.author.profilePicUrl || '/default-avatar.png'}
-                     alt={post.author.username}
-                     width={40}
-                     height={40}
-                     className={styles.avatar}
-                  />
-                  <span className={styles.username}>
-                     {post.author.username}
-                  </span>
-               </div>
-
-               {post.caption && (
-                  <p className={styles.caption}>{post.caption}</p>
+      <>
+         <div className="desktopModalWrapper">
+            <div className={styles.overlay}>
+               {hasPrev && (
+                  <button
+                     className={`${styles.navBtn} ${styles.prevBtn}`}
+                     onClick={handlePrev}
+                  >
+                     ◀
+                  </button>
                )}
 
-               <PostLikeButton post={post} />
+               <div className={styles.modal}>
+                  <button className={styles.closeBtn} onClick={onClose}>
+                     X
+                  </button>
 
-               <CommentList postId={post._id} />
+                  <div className={styles.imageWrapper}>
+                     <Image
+                        src={post.imageUrl}
+                        alt={post.caption || 'Post image'}
+                        fill
+                        className={styles.image}
+                     />
+                  </div>
 
-               {/* Delete button visible only if allowed */}
-               {onDelete && (
-                  <PostDeleteButton postId={post._id} onDelete={onDelete} />
+                  <div className={styles.details}>
+                     <div className={styles.header}>
+                        <Image
+                           src={
+                              post.author.profilePicUrl || '/default-avatar.png'
+                           }
+                           alt={post.author.username}
+                           width={40}
+                           height={40}
+                           className={styles.avatar}
+                        />
+                        <span className={styles.username}>
+                           {post.author.username}
+                        </span>
+                     </div>
+
+                     {post.caption && (
+                        <p className={styles.caption}>{post.caption}</p>
+                     )}
+
+                     <PostLikeButton post={post} />
+
+                     <CommentList postId={post._id} />
+
+                     {/* Delete button visible only if allowed */}
+                     {onDelete && (
+                        <PostDeleteButton
+                           postId={post._id}
+                           onDelete={onDelete}
+                        />
+                     )}
+                  </div>
+               </div>
+               {hasNext && (
+                  <button
+                     className={`${styles.navBtn} ${styles.nextBtn}`}
+                     onClick={handleNext}
+                  >
+                     ▶
+                  </button>
                )}
             </div>
          </div>
-         {hasNext && (
-            <button
-               className={`${styles.navBtn} ${styles.nextBtn}`}
-               onClick={handleNext}
-            >
-               ▶
-            </button>
-         )}
-      </div>
+         <div className="mobileModalWrapper">
+            <MobileSinglePost
+               post={post}
+               onClose={onClose}
+               handlePrev={handlePrev}
+               handleNext={handleNext}
+               onDelete={true}
+            />
+         </div>
+      </>
    );
    return ReactDOM.createPortal(modalContent, document.body);
 };
