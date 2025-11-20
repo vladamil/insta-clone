@@ -6,7 +6,7 @@ import styles from './UserLink.module.css';
 
 export default function UserLink({
    user,
-   showFullInfo = false,
+   showFullInfo = true,
    onClick,
    className = '',
 }) {

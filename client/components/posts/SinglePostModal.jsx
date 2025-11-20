@@ -126,7 +126,6 @@ const SinglePostModal = ({ index, posts, onClose, onDelete }) => {
                onClose={onClose}
                handlePrev={handlePrev}
                handleNext={handleNext}
-               onDelete={true}
             />
          </div>
       </>

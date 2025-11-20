@@ -1,7 +1,7 @@
 .actions {
    display: flex;
    gap: 8px;
-   margin-top: 10px;
+   margin: 8px;
    align-items: center;
 }
 

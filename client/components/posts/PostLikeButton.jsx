@@ -70,7 +70,11 @@ export default function PostLikeButton({ post }) {
    };
 
    if (loading || isLiked === null)
-      return <FaHeart className={styles.likedIcon} />;
+      return (
+         <div className={styles.actions}>
+            <FaHeart className={styles.likedIcon} />
+         </div>
+      );
    if (error) return <p>{error}</p>;
 
    return (
