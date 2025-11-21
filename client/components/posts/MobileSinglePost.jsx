@@ -1,3 +1,4 @@
+import { useSwipeable } from 'react-swipeable';
 import Image from 'next/image';
 import PostLikeButton from './PostLikeButton';
 import CommentList from '../comments/CommentList';
@@ -11,12 +12,18 @@ export default function MobileSinglePost({
    onDelete,
    handleNext,
    handlePrev,
-   hasNext,
-   hasPrev,
 }) {
+   const swipeHandlers = useSwipeable({
+      onSwipedLeft: () => handleNext && handleNext(),
+      onSwipedRight: () => handlePrev && handlePrev(),
+      preventScrollOnSwipe: true,
+      trackTouch: true,
+      trackMouse: false,
+   });
+
    return (
       <div className={styles.overlay}>
-         <div className={styles.modal}>
+         <div className={styles.modal} {...swipeHandlers}>
             {/* Header */}
             <div className={styles.header}>
                <UserLink user={post.author} />
