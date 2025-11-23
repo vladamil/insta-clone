@@ -8,6 +8,10 @@
    outline: none;
 }
 
+.btnMobile {
+   display: none;
+}
+
 /* For your own profile */
 .edit {
    background: var(--accent-color, #1e90ff);
@@ -40,4 +44,17 @@
 .unfollow:hover {
    background: var(--accent-color, #1e90ff);
    color: white;
+}
+
+@media screen and (max-width: 768px) {
+   /* Two buttons - one for mobile, one for desktop */
+   .btnDesktop {
+      display: none;
+   }
+
+   .btnMobile {
+      display: block;
+      margin-top: 1.5rem;
+      width: 100%;
+   }
 }

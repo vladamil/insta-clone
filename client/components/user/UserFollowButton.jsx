@@ -2,7 +2,7 @@ import { useRouter } from 'next/navigation';
 
 import styles from './UserFollowButton.module.css';
 
-export default function UserFollowButton({ profile, setProfile }) {
+export default function UserFollowButton({ profile, setProfile, desktop }) {
    const router = useRouter();
 
    const handleFollow = async () => {
@@ -41,7 +41,9 @@ export default function UserFollowButton({ profile, setProfile }) {
    if (profile.isSelf)
       return (
          <button
-            className={`${styles.button} ${styles.edit}`}
+            className={`${styles.button} ${styles.edit} ${
+               desktop ? styles.btnDesktop : styles.btnMobile
+            }`}
             onClick={() => {
                router.push('/account');
             }}
@@ -54,7 +56,7 @@ export default function UserFollowButton({ profile, setProfile }) {
       <button
          className={`${styles.button} ${
             profile.isFollowing ? styles.unfollow : styles.follow
-         }`}
+         } ${desktop ? styles.btnDesktop : styles.btnMobile}`}
          onClick={handleFollow}
       >
          {profile.isFollowing ? 'Unfollow' : 'Follow'}

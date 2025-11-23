@@ -63,11 +63,17 @@ export default function UserHeader({ id }) {
             </div>
             <div className={styles.info}>
                <div className={styles.topRow}>
-                  <h2>{profile.username}</h2>
+                  <h2 className={styles.username}>{profile.username}</h2>
 
-                  <UserFollowButton profile={profile} setProfile={setProfile} />
+                  <UserFollowButton
+                     profile={profile}
+                     setProfile={setProfile}
+                     desktop={true}
+                  />
                </div>
-               {profile.fullName && <p>{profile.fullName}</p>}
+               {!profile.fullName && (
+                  <p className={styles.fullname}>Jelena Kerkez</p>
+               )}
                {profile.description && (
                   <p className={styles.bio}>{profile.description}</p>
                )}
@@ -96,6 +102,11 @@ export default function UserHeader({ id }) {
                   </span>
                </div>
             </div>
+            <UserFollowButton
+               profile={profile}
+               setProfile={setProfile}
+               mobile={true}
+            />
          </div>
 
          {/* MODAL FOR SHOWING LIST OF FOLLOWERS/FOLLOWINGS */}
