@@ -64,7 +64,7 @@ export default function ProfileInfo({ user, authLoading, refresh }) {
             </div>
             <div className={styles.info}>
                <div className={styles.topRow}>
-                  <h2>{profile.username}</h2>
+                  <h2 className={styles.username}>{profile.username}</h2>
                   <button
                      className={styles.settingsBtn}
                      onClick={() => {
@@ -75,7 +75,9 @@ export default function ProfileInfo({ user, authLoading, refresh }) {
                      <span>Settings</span>
                   </button>
                </div>
-               {profile.fullName && <p>{profile.fullName}</p>}
+               {!profile.fullName && (
+                  <p className={styles.fullname}>Jelena Kerkez</p>
+               )}
                {profile.description && (
                   <p className={styles.bio}>{profile.description}</p>
                )}

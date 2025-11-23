@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { FaCamera } from 'react-icons/fa';
 import Image from 'next/image';
 import CreatePostModal from '../posts/CreatePostModal';
 import SinglePostModal from '../posts/SinglePostModal';
@@ -97,8 +98,8 @@ export default function ProfilePosts({
                className={styles.addPostCard}
                onClick={() => setShowCreatePostModal(true)}
             >
-               <p>PLUS</p>
-               <p className={styles.addPostText}>Add Post</p>
+               <FaCamera size={30} />
+               <p className={styles.addPostText}>Add New Post</p>
             </div>
 
             {posts.map((post, index) => (

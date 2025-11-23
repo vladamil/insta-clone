@@ -15,8 +15,8 @@
    width: 100%;
 }
 
-.info h2 {
-   margin: 0;
+.username {
+   /* margin: 0; */
    font-size: 1.8rem;
 }
 
@@ -26,9 +26,15 @@
    justify-content: space-between;
 }
 
+.fullname {
+   font-size: 0.85rem;
+   font-weight: 300;
+   color: #333;
+}
+
 .settingsBtn {
    display: flex;
-   align-items: center;
+   align-items: end;
    gap: 0.4rem;
    background: #f3f3f3;
    border: none;
@@ -60,4 +66,48 @@
 .followList:hover {
    text-decoration: underline;
    cursor: pointer;
+}
+
+/* MOBILE STYLING */
+@media screen and (max-width: 768px) {
+   .header {
+      display: block;
+      text-align: center;
+      background-color: rgb(233, 229, 229);
+      padding: 0.5rem;
+      border-radius: 10px;
+      margin-bottom: 1rem;
+   }
+
+   .topRow {
+      display: block;
+   }
+   .avatar img {
+      width: 80px;
+      height: 80px;
+   }
+
+   .username {
+      margin: 0;
+      font-size: 1.4rem;
+   }
+
+   .fullname {
+      font-size: 0.8rem;
+   }
+
+   .bio {
+      font-size: 0.9rem;
+   }
+
+   .stats {
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      gap: 1.5rem;
+   }
+
+   .settingsBtn {
+      display: none;
+   }
 }
