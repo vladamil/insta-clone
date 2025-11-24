@@ -187,3 +187,26 @@
    background: #ccc;
    cursor: not-allowed;
 }
+
+/* MOBILE STYLE */
+
+@media screen and (max-width: 768px) {
+   .section {
+      padding: 15px 10px;
+   }
+
+   .section h2 {
+      font-size: 1rem;
+      padding-left: 8px;
+   }
+
+   .input {
+      padding: 0.3rem 0.5rem;
+      font-size: 0.9rem;
+   }
+
+   .imageWrapper {
+      width: 100px;
+      height: 100px;
+   }
+}
