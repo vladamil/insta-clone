@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import Link from 'next/link';
 import { FaCamera } from 'react-icons/fa';
 import Image from 'next/image';
 import CreatePostModal from '../posts/CreatePostModal';
@@ -48,6 +49,15 @@ export default function ProfilePosts({
 
       fetchPosts();
    }, [user, authLoading, refresh, page]);
+
+   // Handle post link for both modal and new page
+   const handlePostLink = (e, index) => {
+      // Only left click, not middle-click, not ctrl-click, not cmd-click, not right-click
+      if (e.button === 0 && !e.ctrlKey && !e.metaKey && !e.shiftKey) {
+         e.preventDefault();
+         setPostIndex(index);
+      }
+   };
 
    // Update posts UI based on creating post
    const handlePostCreated = (newPost) => {
@@ -103,12 +113,11 @@ export default function ProfilePosts({
             </div>
 
             {posts.map((post, index) => (
-               <div
+               <Link
                   key={post._id}
+                  href={`/posts/${post._id}`}
                   className={styles.post}
-                  onClick={() => {
-                     setPostIndex(index);
-                  }}
+                  onClick={(e) => handlePostLink(e, index)}
                >
                   <Image
                      src={post.imageUrl}
@@ -121,7 +130,7 @@ export default function ProfilePosts({
                      <span>❤️ {post.likesCount}</span>
                      <span>💬 {post.commentsCount}</span>
                   </div>
-               </div>
+               </Link>
             ))}
          </div>
 

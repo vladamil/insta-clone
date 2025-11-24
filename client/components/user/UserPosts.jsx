@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import Link from 'next/link';
 import Image from 'next/image';
 import PostsPagination from '../posts/PostsPagination';
 import SinglePostModal from '../posts/SinglePostModal';
@@ -44,6 +45,15 @@ export default function UserPosts({ id }) {
       fetchPosts();
    }, [id, page, refresh]);
 
+   // Handle post link for both modal and new page
+   const handlePostLink = (e, index) => {
+      // Only left click, not middle-click, not ctrl-click, not cmd-click, not right-click
+      if (e.button === 0 && !e.ctrlKey && !e.metaKey && !e.shiftKey) {
+         e.preventDefault();
+         setPostIndex(index);
+      }
+   };
+
    if (loading) return <p>Loading...</p>;
    if (error) return <div>ERROR: {error}</div>;
    if (!posts) return null;
@@ -63,12 +73,11 @@ export default function UserPosts({ id }) {
       <>
          <div className={styles.grid}>
             {posts.map((post, index) => (
-               <div
+               <Link
                   key={post._id}
+                  href={`/posts/${post._id}`}
                   className={styles.post}
-                  onClick={() => {
-                     setPostIndex(index);
-                  }}
+                  onClick={(e) => handlePostLink(e, index)}
                >
                   <Image
                      src={post.imageUrl}
@@ -81,7 +90,7 @@ export default function UserPosts({ id }) {
                      <span>❤️ {post.likesCount}</span>
                      <span>💬 {post.commentsCount}</span>
                   </div>
-               </div>
+               </Link>
             ))}
          </div>
 
