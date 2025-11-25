@@ -13,7 +13,7 @@ export default function UserFollowButton({ profile, setProfile, desktop }) {
                method: profile.isFollowing ? 'DELETE' : 'POST',
 
                headers: {
-                  Authorization: `Bearer ${sessionStorage.getItem('token')}`,
+                  Authorization: `Bearer ${localStorage.getItem('token')}`,
                },
             }
          );

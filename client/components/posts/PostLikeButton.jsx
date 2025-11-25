@@ -22,7 +22,7 @@ export default function PostLikeButton({ post }) {
                `${process.env.NEXT_PUBLIC_API_URL}/api/posts/${post._id}`,
                {
                   headers: {
-                     Authorization: `Bearer ${sessionStorage.getItem('token')}`,
+                     Authorization: `Bearer ${localStorage.getItem('token')}`,
                   },
                }
             );
@@ -44,7 +44,7 @@ export default function PostLikeButton({ post }) {
       setLoading(true);
 
       try {
-         const token = sessionStorage.getItem('token');
+         const token = localStorage.getItem('token');
          if (!token) return;
 
          const res = await fetch(
@@ -108,7 +108,7 @@ export default function PostLikeButton({ post }) {
                   `${process.env.NEXT_PUBLIC_API_URL}/api/posts/${post._id}/likes`,
                   {
                      headers: {
-                        Authorization: `Bearer ${sessionStorage.getItem(
+                        Authorization: `Bearer ${localStorage.getItem(
                            'token'
                         )}`,
                      },

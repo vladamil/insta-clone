@@ -3,8 +3,6 @@ import { useState, useEffect } from 'react';
 import ReactDOM from 'react-dom';
 import styles from './SearchModal.module.css';
 import { FaSearch, FaTimes } from 'react-icons/fa';
-import Image from 'next/image';
-import Link from 'next/link';
 import UserLink from '../user/UserLink';
 
 export default function SearchModal({ isOpen, onClose }) {

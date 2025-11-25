@@ -23,7 +23,7 @@ export default function FeedPosts({ id }) {
       async function fetchFeedPosts() {
          try {
             setLoading(true);
-            const token = sessionStorage.getItem('token');
+            const token = localStorage.getItem('token');
             if (!token) return;
 
             const res = await fetch(

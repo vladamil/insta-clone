@@ -15,7 +15,7 @@ export function AuthProvider({ children }) {
 
    // Check token and fetch current user data
    useEffect(() => {
-      const token = sessionStorage.getItem('token');
+      const token = localStorage.getItem('token');
       if (!token) {
          setLoading(false);
          return;
@@ -30,7 +30,7 @@ export function AuthProvider({ children }) {
             });
 
             if (!res.ok) {
-               sessionStorage.removeItem('token'); // token invalid/expired
+               localStorage.removeItem('token'); // token invalid/expired
                setUser(null);
                setAuthError('Session expired, please log in again.');
             } else {
@@ -40,7 +40,7 @@ export function AuthProvider({ children }) {
             }
          } catch (err) {
             console.error('Auth error:', err);
-            sessionStorage.removeItem('token');
+            localStorage.removeItem('token');
             setAuthError('Failed to authenticate. Try again.');
             setUser(null);
          } finally {
@@ -98,7 +98,7 @@ export function AuthProvider({ children }) {
          }
 
          // save token
-         sessionStorage.setItem('token', data.token);
+         localStorage.setItem('token', data.token);
 
          // set user from backend response directly and redirect
          setUser(data.user);
@@ -111,7 +111,7 @@ export function AuthProvider({ children }) {
 
    // Logout user function
    const logout = () => {
-      sessionStorage.removeItem('token');
+      localStorage.removeItem('token');
       setUser(null);
       setAuthError(null);
    };

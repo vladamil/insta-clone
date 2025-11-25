@@ -27,7 +27,7 @@ export default function AccountPage() {
       const fetchUserData = async () => {
          try {
             setLoadData(true);
-            const token = sessionStorage.getItem('token');
+            const token = localStorage.getItem('token');
             if (!token) return;
 
             const res = await fetch(

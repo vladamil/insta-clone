@@ -19,7 +19,7 @@ export default function UserHeader({ id }) {
       const fetchUserData = async () => {
          try {
             setLoading(true);
-            const token = sessionStorage.getItem('token');
+            const token = localStorage.getItem('token');
             if (!token) return;
 
             const res = await fetch(
@@ -122,7 +122,7 @@ export default function UserHeader({ id }) {
                   `${process.env.NEXT_PUBLIC_API_URL}/api/users/${id}/${type}`,
                   {
                      headers: {
-                        Authorization: `Bearer ${sessionStorage.getItem(
+                        Authorization: `Bearer ${localStorage.getItem(
                            'token'
                         )}`,
                      },

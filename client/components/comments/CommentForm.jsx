@@ -53,7 +53,7 @@ export default function CommentForm({
       setError(null);
 
       try {
-         const token = sessionStorage.getItem('token');
+         const token = localStorage.getItem('token');
          if (!token) return;
 
          const res = await fetch(url, {

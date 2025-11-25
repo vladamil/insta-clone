@@ -12,7 +12,7 @@ export default function Suggestions() {
    const [error, setError] = useState(null);
 
    useEffect(() => {
-      const token = sessionStorage.getItem('token');
+      const token = localStorage.getItem('token');
       if (!token) return;
 
       const fetchSuggestions = async () => {
@@ -49,7 +49,7 @@ export default function Suggestions() {
             {
                method: isFollowing ? 'DELETE' : 'POST',
                headers: {
-                  Authorization: `Bearer ${sessionStorage.getItem('token')}`,
+                  Authorization: `Bearer ${localStorage.getItem('token')}`,
                },
             }
          );

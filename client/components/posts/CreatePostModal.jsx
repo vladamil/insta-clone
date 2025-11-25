@@ -41,7 +41,7 @@ export default function CreatePostModal({ isOpen, onClose, onPostCreated }) {
          setLoading(true);
          setError(null);
 
-         const token = sessionStorage.getItem('token');
+         const token = localStorage.getItem('token');
          if (!token) throw new Error('Unauthorized: Please log in again.');
 
          const formData = new FormData();

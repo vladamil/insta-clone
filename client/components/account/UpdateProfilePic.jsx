@@ -37,7 +37,7 @@ export default function UpdateProfilePic({ currentPic }) {
             {
                method: 'PATCH',
                headers: {
-                  Authorization: `Bearer ${sessionStorage.getItem('token')}`,
+                  Authorization: `Bearer ${localStorage.getItem('token')}`,
                },
                body: formData,
             }

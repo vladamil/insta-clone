@@ -20,7 +20,7 @@ export default function CommentList({ postId }) {
       setError(null);
 
       try {
-         const token = sessionStorage.getItem('token');
+         const token = localStorage.getItem('token');
          const res = await fetch(
             `${process.env.NEXT_PUBLIC_API_URL}/api/posts/${postId}/comments`,
             {

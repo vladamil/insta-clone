@@ -23,7 +23,7 @@ export default function DeleteAccount() {
             {
                method: 'DELETE',
                headers: {
-                  Authorization: `Bearer ${sessionStorage.getItem('token')}`,
+                  Authorization: `Bearer ${localStorage.getItem('token')}`,
                },
             }
          );
@@ -31,7 +31,7 @@ export default function DeleteAccount() {
          const data = await res.json();
          if (!res.ok) throw new Error(data.error);
 
-         sessionStorage.removeItem('token'); // Remove session
+         localStorage.removeItem('token'); // Remove from local storage
          setMessage('✅ Account deleted. Redirecting...');
          setTimeout(() => router.replace('/'), 1500); // Redirect after short delay for UX
       } catch (err) {

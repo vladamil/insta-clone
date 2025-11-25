@@ -25,7 +25,7 @@ export default function ProfilePosts({
    useEffect(() => {
       if (authLoading) return;
 
-      const token = sessionStorage.getItem('token');
+      const token = localStorage.getItem('token');
       if (!token) return;
 
       async function fetchPosts() {

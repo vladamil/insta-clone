@@ -35,7 +35,7 @@ export default function UpdatePassword() {
                method: 'PATCH',
                headers: {
                   'Content-Type': 'application/json',
-                  Authorization: `Bearer ${sessionStorage.getItem('token')}`,
+                  Authorization: `Bearer ${localStorage.getItem('token')}`,
                },
                body: JSON.stringify({ oldPassword, newPassword }),
             }

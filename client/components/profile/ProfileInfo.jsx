@@ -17,7 +17,7 @@ export default function ProfileInfo({ user, authLoading, refresh }) {
    useEffect(() => {
       if (authLoading) return;
 
-      const token = sessionStorage.getItem('token');
+      const token = localStorage.getItem('token');
       if (!token) return;
 
       const fetchUserData = async () => {
@@ -121,7 +121,7 @@ export default function ProfileInfo({ user, authLoading, refresh }) {
                   `${process.env.NEXT_PUBLIC_API_URL}/api/users/${user._id}/${type}`,
                   {
                      headers: {
-                        Authorization: `Bearer ${sessionStorage.getItem(
+                        Authorization: `Bearer ${localStorage.getItem(
                            'token'
                         )}`,
                      },

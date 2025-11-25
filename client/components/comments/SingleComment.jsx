@@ -33,7 +33,7 @@ export default function SingleComment({
          setIsDeleting(true);
          setDeleteError(null);
 
-         const token = sessionStorage.getItem('token');
+         const token = localStorage.getItem('token');
          const res = await fetch(
             `${process.env.NEXT_PUBLIC_API_URL}/api/comments/${comment._id}`,
             {
