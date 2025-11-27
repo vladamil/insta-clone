@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 
 import styles from './AccountSection.module.css';
+import { getValidToken } from '@/utils/getValidToken';
 
 export default function UpdatePassword() {
    const [oldPassword, setOldPassword] = useState('');
@@ -29,13 +30,15 @@ export default function UpdatePassword() {
       }
 
       try {
+         const token = getValidToken();
+
          const res = await fetch(
             `${process.env.NEXT_PUBLIC_API_URL}/api/account/password`,
             {
                method: 'PATCH',
                headers: {
                   'Content-Type': 'application/json',
-                  Authorization: `Bearer ${localStorage.getItem('token')}`,
+                  Authorization: `Bearer ${token}`,
                },
                body: JSON.stringify({ oldPassword, newPassword }),
             }

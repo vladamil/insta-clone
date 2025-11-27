@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { getValidToken } from '@/utils/getValidToken';
 
 import styles from './AccountSection.module.css';
 
@@ -20,6 +21,8 @@ export default function UpdateUsername({ currentUsername }) {
          return;
       }
       try {
+         const token = getValidToken();
+
          setLoading(true);
          const res = await fetch(
             `${process.env.NEXT_PUBLIC_API_URL}/api/account/username`,
@@ -27,7 +30,7 @@ export default function UpdateUsername({ currentUsername }) {
                method: 'PATCH',
                headers: {
                   'Content-Type': 'application/json',
-                  Authorization: `Bearer ${localStorage.getItem('token')}`,
+                  Authorization: `Bearer ${token}`,
                },
                body: JSON.stringify({ username }),
             }

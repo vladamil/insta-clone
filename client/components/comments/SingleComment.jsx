@@ -1,10 +1,12 @@
 'use client';
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/context/AuthContext';
+import { getValidToken } from '@/utils/getValidToken';
 import Image from 'next/image';
 import Link from 'next/link';
-import styles from './SingleComment.module.css';
 import CommentForm from './CommentForm';
+
+import styles from './SingleComment.module.css';
 
 export default function SingleComment({
    comment,
@@ -33,7 +35,7 @@ export default function SingleComment({
          setIsDeleting(true);
          setDeleteError(null);
 
-         const token = localStorage.getItem('token');
+         const token = getValidToken();
          const res = await fetch(
             `${process.env.NEXT_PUBLIC_API_URL}/api/comments/${comment._id}`,
             {

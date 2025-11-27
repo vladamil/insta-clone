@@ -1,8 +1,9 @@
 'use client';
 
 import { createContext, useContext, useState, useEffect } from 'react';
-import { API_URL } from '@/lib/constants';
 import { useRouter } from 'next/navigation';
+import { API_URL } from '@/lib/constants';
+import { getValidToken } from '@/utils/getValidToken';
 
 const AuthContext = createContext();
 
@@ -15,7 +16,7 @@ export function AuthProvider({ children }) {
 
    // Check token and fetch current user data
    useEffect(() => {
-      const token = localStorage.getItem('token');
+      const token = getValidToken();
       if (!token) {
          setLoading(false);
          return;

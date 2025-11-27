@@ -2,6 +2,8 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import UserListModal from '../common/UserListModal';
+import { getValidToken } from '@/utils/getValidToken';
+
 import styles from './ProfileInfo.module.css';
 
 export default function ProfileInfo({ user, authLoading, refresh }) {
@@ -17,8 +19,7 @@ export default function ProfileInfo({ user, authLoading, refresh }) {
    useEffect(() => {
       if (authLoading) return;
 
-      const token = localStorage.getItem('token');
-      if (!token) return;
+      const token = getValidToken();
 
       const fetchUserData = async () => {
          try {
@@ -121,9 +122,7 @@ export default function ProfileInfo({ user, authLoading, refresh }) {
                   `${process.env.NEXT_PUBLIC_API_URL}/api/users/${user._id}/${type}`,
                   {
                      headers: {
-                        Authorization: `Bearer ${localStorage.getItem(
-                           'token'
-                        )}`,
+                        Authorization: `Bearer ${getValidToken()}`,
                      },
                   }
                );

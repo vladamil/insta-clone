@@ -2,8 +2,10 @@
 
 import { FaHeart, FaRegHeart } from 'react-icons/fa';
 import { useEffect, useState } from 'react';
-import styles from './PostLikeButton.module.css';
+import { getValidToken } from '@/utils/getValidToken';
 import UserListModal from '../common/UserListModal';
+
+import styles from './PostLikeButton.module.css';
 
 export default function PostLikeButton({ post }) {
    const [isLiked, setIsLiked] = useState(null);
@@ -18,11 +20,12 @@ export default function PostLikeButton({ post }) {
       setLoading(true);
       const fetchPost = async () => {
          try {
+            const token = getValidToken();
             const res = await fetch(
                `${process.env.NEXT_PUBLIC_API_URL}/api/posts/${post._id}`,
                {
                   headers: {
-                     Authorization: `Bearer ${localStorage.getItem('token')}`,
+                     Authorization: `Bearer ${token}`,
                   },
                }
             );
@@ -44,7 +47,7 @@ export default function PostLikeButton({ post }) {
       setLoading(true);
 
       try {
-         const token = localStorage.getItem('token');
+         const token = getValidToken();
          if (!token) return;
 
          const res = await fetch(
@@ -108,9 +111,7 @@ export default function PostLikeButton({ post }) {
                   `${process.env.NEXT_PUBLIC_API_URL}/api/posts/${post._id}/likes`,
                   {
                      headers: {
-                        Authorization: `Bearer ${localStorage.getItem(
-                           'token'
-                        )}`,
+                        Authorization: `Bearer ${getValidToken()}`,
                      },
                   }
                )

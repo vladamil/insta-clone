@@ -1,6 +1,8 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { getValidToken } from '@/utils/getValidToken';
+
 import styles from './CommentForm.module.css';
 
 export default function CommentForm({
@@ -53,8 +55,8 @@ export default function CommentForm({
       setError(null);
 
       try {
-         const token = localStorage.getItem('token');
-         if (!token) return;
+         const token = getValidToken();
+         
 
          const res = await fetch(url, {
             method,

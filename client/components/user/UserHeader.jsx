@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
+import { getValidToken } from '@/utils/getValidToken';
 import UserFollowButton from './UserFollowButton';
 import UserListModal from '../common/UserListModal';
 
@@ -19,8 +20,7 @@ export default function UserHeader({ id }) {
       const fetchUserData = async () => {
          try {
             setLoading(true);
-            const token = localStorage.getItem('token');
-            if (!token) return;
+            const token = getValidToken();
 
             const res = await fetch(
                `${process.env.NEXT_PUBLIC_API_URL}/api/users/${id}`,
@@ -122,9 +122,8 @@ export default function UserHeader({ id }) {
                   `${process.env.NEXT_PUBLIC_API_URL}/api/users/${id}/${type}`,
                   {
                      headers: {
-                        Authorization: `Bearer ${localStorage.getItem(
-                           'token'
-                        )}`,
+                        Authorization: `Bearer ${ getValidToken()
+                        }`,
                      },
                   }
                );

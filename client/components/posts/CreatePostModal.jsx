@@ -4,6 +4,8 @@ import { useState, useEffect } from 'react';
 import ReactDOM from 'react-dom';
 import { FaTimes, FaCamera } from 'react-icons/fa';
 import Image from 'next/image';
+import { getValidToken } from '@/utils/getValidToken';
+
 import styles from './CreatePostModal.module.css';
 
 export default function CreatePostModal({ isOpen, onClose, onPostCreated }) {
@@ -41,7 +43,7 @@ export default function CreatePostModal({ isOpen, onClose, onPostCreated }) {
          setLoading(true);
          setError(null);
 
-         const token = localStorage.getItem('token');
+         const token = getValidToken();
          if (!token) throw new Error('Unauthorized: Please log in again.');
 
          const formData = new FormData();

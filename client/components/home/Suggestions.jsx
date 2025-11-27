@@ -1,8 +1,8 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import Image from 'next/image';
 import UserLink from '../user/UserLink';
+import { getValidToken } from '@/utils/getValidToken';
 
 import styles from './Suggestions.module.css';
 
@@ -12,8 +12,7 @@ export default function Suggestions() {
    const [error, setError] = useState(null);
 
    useEffect(() => {
-      const token = localStorage.getItem('token');
-      if (!token) return;
+      const token = getValidToken();
 
       const fetchSuggestions = async () => {
          setLoading(true);
@@ -44,12 +43,14 @@ export default function Suggestions() {
 
    const handleFollow = async (id, isFollowing) => {
       try {
+         const token = getValidToken();
+
          const res = await fetch(
             `${process.env.NEXT_PUBLIC_API_URL}/api/users/${id}/follow`,
             {
                method: isFollowing ? 'DELETE' : 'POST',
                headers: {
-                  Authorization: `Bearer ${localStorage.getItem('token')}`,
+                  Authorization: `Bearer ${token}`,
                },
             }
          );

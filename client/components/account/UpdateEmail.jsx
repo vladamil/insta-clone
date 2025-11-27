@@ -1,6 +1,8 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { getValidToken } from '@/utils/getValidToken';
+
 import styles from './AccountSection.module.css';
 
 export default function UpdateEmail({ currentEmail }) {
@@ -22,13 +24,15 @@ export default function UpdateEmail({ currentEmail }) {
       }
 
       try {
+         const token = getValidToken();
+
          const res = await fetch(
             `${process.env.NEXT_PUBLIC_API_URL}/api/account/email`,
             {
                method: 'PATCH',
                headers: {
                   'Content-Type': 'application/json',
-                  Authorization: `Bearer ${localStorage.getItem('token')}`,
+                  Authorization: `Bearer ${token}`,
                },
                body: JSON.stringify({ email }),
             }

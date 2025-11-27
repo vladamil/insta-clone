@@ -1,4 +1,5 @@
 import { useRouter } from 'next/navigation';
+import { getValidToken } from '@/utils/getValidToken';
 
 import styles from './UserFollowButton.module.css';
 
@@ -7,13 +8,15 @@ export default function UserFollowButton({ profile, setProfile, desktop }) {
 
    const handleFollow = async () => {
       try {
+         const token = getValidToken();
+
          const res = await fetch(
             `${process.env.NEXT_PUBLIC_API_URL}/api/users/${profile._id}/follow`,
             {
                method: profile.isFollowing ? 'DELETE' : 'POST',
 
                headers: {
-                  Authorization: `Bearer ${localStorage.getItem('token')}`,
+                  Authorization: `Bearer ${token}`,
                },
             }
          );

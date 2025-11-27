@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { getValidToken } from '@/utils/getValidToken';
 import styles from './PostDeleteButton.module.css';
 
 export default function PostDeleteButton({ postId, onDelete }) {
@@ -13,7 +14,7 @@ export default function PostDeleteButton({ postId, onDelete }) {
       try {
          setLoading(true);
          setError(null);
-         const token = localStorage.getItem('token');
+         const token = getValidToken();
          if (!token) throw new Error('Unauthorized: Please log in again.');
 
          const res = await fetch(

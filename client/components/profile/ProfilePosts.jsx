@@ -2,10 +2,12 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { FaCamera } from 'react-icons/fa';
 import Image from 'next/image';
+import { getValidToken } from '@/utils/getValidToken';
 import CreatePostModal from '../posts/CreatePostModal';
 import SinglePostModal from '../posts/SinglePostModal';
-import styles from './ProfilePosts.module.css';
 import PostsPagination from '../posts/PostsPagination';
+
+import styles from './ProfilePosts.module.css';
 
 export default function ProfilePosts({
    user,
@@ -25,7 +27,7 @@ export default function ProfilePosts({
    useEffect(() => {
       if (authLoading) return;
 
-      const token = localStorage.getItem('token');
+      const token = getValidToken();
       if (!token) return;
 
       async function fetchPosts() {

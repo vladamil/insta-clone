@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
+import { getValidToken } from '@/utils/getValidToken';
 import { FaCheck } from 'react-icons/fa';
 
 import UpdateProfilePic from '@/components/account/UpdateProfilePic';
@@ -27,8 +28,7 @@ export default function AccountPage() {
       const fetchUserData = async () => {
          try {
             setLoadData(true);
-            const token = localStorage.getItem('token');
-            if (!token) return;
+            const token = getValidToken();
 
             const res = await fetch(
                `${process.env.NEXT_PUBLIC_API_URL}/api/users/${user?._id}`,

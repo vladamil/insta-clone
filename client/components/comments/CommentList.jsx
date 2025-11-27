@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState, useRef, useCallback } from 'react';
+import { getValidToken } from '@/utils/getValidToken';
 import SingleComment from './SingleComment';
 import CommentForm from './CommentForm';
 import styles from './CommentList.module.css';
@@ -20,7 +21,7 @@ export default function CommentList({ postId }) {
       setError(null);
 
       try {
-         const token = localStorage.getItem('token');
+         const token = getValidToken();
          const res = await fetch(
             `${process.env.NEXT_PUBLIC_API_URL}/api/posts/${postId}/comments`,
             {

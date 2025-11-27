@@ -2,6 +2,7 @@
 
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
+import { getValidToken } from '@/utils/getValidToken';
 
 import styles from './AccountSection.module.css';
 
@@ -18,12 +19,14 @@ export default function DeleteAccount() {
          return;
 
       try {
+         const token = getValidToken();
+
          const res = await fetch(
             `${process.env.NEXT_PUBLIC_API_URL}/api/account`,
             {
                method: 'DELETE',
                headers: {
-                  Authorization: `Bearer ${localStorage.getItem('token')}`,
+                  Authorization: `Bearer ${token}`,
                },
             }
          );

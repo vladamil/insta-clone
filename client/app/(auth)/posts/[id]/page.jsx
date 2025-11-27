@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useParams } from 'next/navigation';
 import Image from 'next/image';
+import { getValidToken } from '@/utils/getValidToken';
 import PostLikeButton from '@/components/posts/PostLikeButton';
 import CommentList from '@/components/comments/CommentList';
 import UserLink from '@/components/user/UserLink';
@@ -20,8 +21,7 @@ export default function PostPage() {
       const fetchPostData = async () => {
          try {
             setLoading(true);
-            const token = localStorage.getItem('token');
-            if (!token) return;
+            const token = getValidToken();
 
             const res = await fetch(
                `${process.env.NEXT_PUBLIC_API_URL}/api/posts/${postId}`,

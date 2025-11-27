@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
+import { getValidToken } from '@/utils/getValidToken';
 import PostsPagination from '../posts/PostsPagination';
 import SinglePostModal from '../posts/SinglePostModal';
 
@@ -23,8 +24,7 @@ export default function FeedPosts({ id }) {
       async function fetchFeedPosts() {
          try {
             setLoading(true);
-            const token = localStorage.getItem('token');
-            if (!token) return;
+            const token = getValidToken();
 
             const res = await fetch(
                `${process.env.NEXT_PUBLIC_API_URL}/api/posts/feed?page=${page}&limit=12`,
