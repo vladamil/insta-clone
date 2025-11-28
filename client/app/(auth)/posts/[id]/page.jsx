@@ -2,13 +2,9 @@
 
 import { useState, useEffect } from 'react';
 import { useParams } from 'next/navigation';
-import Image from 'next/image';
 import { getValidToken } from '@/utils/getValidToken';
-import PostLikeButton from '@/components/posts/PostLikeButton';
-import CommentList from '@/components/comments/CommentList';
-import UserLink from '@/components/user/UserLink';
 
-import styles from '@/components/posts/DesktopSinglePost.module.css';
+import DesktopPostPage from '@/components/postPage/DesktopPostPage';
 
 export default function PostPage() {
    const postId = useParams().id;
@@ -20,8 +16,8 @@ export default function PostPage() {
    useEffect(() => {
       const fetchPostData = async () => {
          try {
-            setLoading(true);
             const token = getValidToken();
+            setLoading(true);
 
             const res = await fetch(
                `${process.env.NEXT_PUBLIC_API_URL}/api/posts/${postId}`,
@@ -54,35 +50,7 @@ export default function PostPage() {
    return (
       <>
          <div className="desktopModalWrapper">
-            <div
-               style={{
-                  display: 'flex',
-                  padding: '60px 30px',
-                  height: '100vh',
-               }}
-            >
-               <div className={styles.imageWrapper}>
-                  <Image
-                     src={post.imageUrl}
-                     alt={post.caption || 'Post image'}
-                     fill
-                     className={styles.image}
-                  />
-               </div>
-               <div className={styles.details}>
-                  <div className={styles.header}>
-                     <UserLink user={post.author} />
-                  </div>
-
-                  {post.caption && (
-                     <p className={styles.caption}>{post.caption}</p>
-                  )}
-
-                  <PostLikeButton post={post} />
-
-                  <CommentList postId={post._id} />
-               </div>
-            </div>
+            <DesktopPostPage post={post} />
          </div>
 
          <div className="mobileModalWrapper">
