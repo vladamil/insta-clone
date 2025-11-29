@@ -5,6 +5,7 @@ import { useParams } from 'next/navigation';
 import { getValidToken } from '@/utils/getValidToken';
 
 import DesktopPostPage from '@/components/postPage/DesktopPostPage';
+import MobilePostPage from '@/components/postPage/MobilePostPage';
 
 export default function PostPage() {
    const postId = useParams().id;
@@ -54,7 +55,7 @@ export default function PostPage() {
          </div>
 
          <div className="mobileModalWrapper">
-            THIS IS MOBILE POST WITH {postId}
+            <MobilePostPage post={post} />
          </div>
       </>
    );
