@@ -3,7 +3,6 @@
 import { createContext, useContext, useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { API_URL } from '@/lib/constants';
-import { getValidToken } from '@/utils/getValidToken';
 
 const AuthContext = createContext();
 
@@ -16,7 +15,7 @@ export function AuthProvider({ children }) {
 
    // Check token and fetch current user data
    useEffect(() => {
-      const token = getValidToken();
+      const token = localStorage.getItem('token');
       if (!token) {
          setLoading(false);
          return;
@@ -40,7 +39,6 @@ export function AuthProvider({ children }) {
                setAuthError(null);
             }
          } catch (err) {
-            console.error('Auth error:', err);
             localStorage.removeItem('token');
             setAuthError('Failed to authenticate. Try again.');
             setUser(null);

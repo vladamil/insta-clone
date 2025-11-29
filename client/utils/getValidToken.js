@@ -1,10 +1,11 @@
 import { jwtDecode } from 'jwt-decode';
 
 export function getValidToken() {
-   //   if (typeof window === "undefined") return null;
-
    const token = localStorage.getItem('token');
-   if (!token) return null;
+   if (!token) {
+      window.location.href = '/';
+      return null;
+   }
 
    try {
       const decoded = jwtDecode(token);
