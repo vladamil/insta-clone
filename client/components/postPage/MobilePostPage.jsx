@@ -7,7 +7,6 @@ import styles from './MobilePostPage.module.css';
 
 export default function MobilePostPage({ post }) {
    return (
-      <div className="noMargin">
          <div className={styles.container}>
             {/* Header */}
             <div className={styles.header}>
@@ -35,6 +34,5 @@ export default function MobilePostPage({ post }) {
                <CommentList postId={post._id} />
             </div>
          </div>
-      </div>
    );
 }
