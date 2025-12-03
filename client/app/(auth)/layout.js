@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
 import Navigation from '@/components/navigation/Navigation';
 import MobileNavigation from '@/components/navigation/MobileNavigation';
+import PageLoader from '@/components/common/PageLoader';
 
 import styles from './Layout.module.css';
 
@@ -18,7 +19,8 @@ export default function NavLayout({ children }) {
       }
    }, [loading, user]);
 
-   if (loading) return <div>LOADING FROM LAYOUT...</div>;
+   // if (loading) return <div>LOADING FROM LAYOUT...</div>;
+   if (loading) return <PageLoader />;
    if (!user) return null;
 
    return (
