@@ -10,11 +10,10 @@
    color: #222;
 }
 
-.loading,
-.error,
 .empty {
-   color: #666;
+   color: #a3a3a3;
    padding: 12px 0;
+   text-align: center;
 }
 
 .list {

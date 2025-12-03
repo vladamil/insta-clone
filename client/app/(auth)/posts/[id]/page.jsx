@@ -6,6 +6,7 @@ import { getValidToken } from '@/utils/getValidToken';
 
 import DesktopPostPage from '@/components/postPage/DesktopPostPage';
 import MobilePostPage from '@/components/postPage/MobilePostPage';
+import Spinner from '@/components/common/Spinner';
 
 export default function PostPage() {
    const postId = useParams().id;
@@ -44,7 +45,7 @@ export default function PostPage() {
       fetchPostData();
    }, [postId]);
 
-   if (loading) return <p>Loading DATA</p>;
+   if (loading) return <Spinner />;
    if (error) return <div>ERROR: {error}</div>;
    if (!loading && !post) return null;
 

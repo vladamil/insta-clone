@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import UserLink from '../user/UserLink';
 import { getValidToken } from '@/utils/getValidToken';
+import Spinner from '../common/Spinner';
 
 import styles from './Suggestions.module.css';
 
@@ -68,32 +69,18 @@ export default function Suggestions() {
       }
    };
 
-   if (loading) return <div>LOADING...</div>;
    if (error) return <div>{error}</div>;
 
    return (
       <aside className={styles.suggestions}>
+         {loading && <Spinner />} {/* loading state spinner */}
          <h3>Suggested for you</h3>
-
          <div className={styles.list}>
             {users.length === 0 ? (
                <p className={styles.empty}>No suggestions yet</p>
             ) : (
                users.map((user) => (
                   <div key={user._id} className={styles.userItem}>
-                     {/* <div className={styles.userInfo}>
-                        <Image
-                           src={user.profilePicUrl || '/default-avatar.png'}
-                           alt={user.username}
-                           width={40}
-                           height={40}
-                           className={styles.avatar}
-                        />
-                        <div className={styles.names}>
-                           <p className={styles.username}>{user.username}</p>
-                           <p className={styles.realname}>Jelena Kerkez</p>
-                        </div>
-                     </div> */}
                      <UserLink user={user} showFullInfo={true} />
 
                      <button

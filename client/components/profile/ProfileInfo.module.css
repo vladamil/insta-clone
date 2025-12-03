@@ -34,7 +34,7 @@
 
 .settingsBtn {
    display: flex;
-   align-items: end;
+   align-items: flex-end;
    gap: 0.4rem;
    background: #f3f3f3;
    border: none;

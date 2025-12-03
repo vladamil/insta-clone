@@ -19,7 +19,6 @@ export default function NavLayout({ children }) {
       }
    }, [loading, user]);
 
-   // if (loading) return <div>LOADING FROM LAYOUT...</div>;
    if (loading) return <PageLoader />;
    if (!user) return null;
 

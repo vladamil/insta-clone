@@ -1,9 +1,12 @@
 'use client';
 
 import { useEffect, useState, useRef, useCallback } from 'react';
+import { FaCommentDots } from 'react-icons/fa';
 import { getValidToken } from '@/utils/getValidToken';
 import SingleComment from './SingleComment';
 import CommentForm from './CommentForm';
+import Spinner from '@/components/common/Spinner';
+
 import styles from './CommentList.module.css';
 
 export default function CommentList({ postId }) {
@@ -54,7 +57,7 @@ export default function CommentList({ postId }) {
       };
    }, [fetchComments]);
 
-   if (loading) return <div className={styles.loading}>Loading comments…</div>;
+   if (loading) return <Spinner />;
    if (error) return <div className={styles.error}>Error: {error}</div>;
 
    return (
@@ -68,7 +71,8 @@ export default function CommentList({ postId }) {
 
          {comments.length === 0 ? (
             <div className={styles.empty}>
-               No comments yet — be the first to comment!
+               <FaCommentDots size={40} style={{ marginBottom: '20px' }} />
+               <p>No comments yet — be the first to comment!</p>
             </div>
          ) : (
             <ul className={styles.list}>

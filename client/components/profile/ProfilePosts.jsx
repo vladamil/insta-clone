@@ -6,6 +6,7 @@ import { getValidToken } from '@/utils/getValidToken';
 import CreatePostModal from '../posts/CreatePostModal';
 import SinglePostModal from '../posts/SinglePostModal';
 import PostsPagination from '../posts/PostsPagination';
+import Spinner from '../common/Spinner';
 
 import styles from './ProfilePosts.module.css';
 
@@ -74,7 +75,7 @@ export default function ProfilePosts({
       triggerRefresh();
    };
 
-   if (loading) return <p>Loading...</p>;
+   if (loading) return <Spinner />;
    if (error) return <div>ERROR: {error}</div>;
    if (!posts) return null;
 

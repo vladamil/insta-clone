@@ -12,6 +12,7 @@ import UpdateEmail from '@/components/account/UpdateEmail';
 import UpdateDescription from '@/components/account/UpdateDescription';
 import DeleteAccount from '@/components/account/DeleteAccount';
 import UpdatePassword from '@/components/account/UpdatePassword';
+import Spinner from '@/components/common/Spinner';
 
 import styles from './AccountPage.module.css';
 
@@ -52,8 +53,8 @@ export default function AccountPage() {
       fetchUserData();
    }, [user, loading]);
 
-   if (loading && !user) return <div>LOADING...</div>;
-   if (loadData) return <div>LOADING...</div>;
+   if (loading && !user) return;
+   if (loadData) return <Spinner />;
    if (!loading && !user) return null;
    if (authError || error)
       return (
