@@ -3,7 +3,6 @@
 import { useState, useEffect } from 'react';
 import UserLink from '../user/UserLink';
 import { getValidToken } from '@/utils/getValidToken';
-import Spinner from '../common/Spinner';
 
 import styles from './Suggestions.module.css';
 
@@ -73,7 +72,6 @@ export default function Suggestions() {
 
    return (
       <aside className={styles.suggestions}>
-         {loading && <Spinner />} {/* loading state spinner */}
          <h3>Suggested for you</h3>
          <div className={styles.list}>
             {users.length === 0 ? (

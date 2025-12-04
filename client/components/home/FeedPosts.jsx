@@ -55,7 +55,12 @@ export default function FeedPosts({ id }) {
       }
    };
 
-   if (loading) return <Spinner />;
+   if (loading)
+      return (
+         <div style={{ height: '70vh' }}>
+            <Spinner />
+         </div>
+      );
    if (error) return <div>ERROR: {error}</div>;
    if (!posts) return null;
 

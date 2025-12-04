@@ -3,7 +3,6 @@ import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import UserListModal from '../common/UserListModal';
 import { getValidToken } from '@/utils/getValidToken';
-import Spinner from '../common/Spinner';
 
 import styles from './ProfileInfo.module.css';
 
@@ -49,7 +48,8 @@ export default function ProfileInfo({ user, authLoading, refresh }) {
       fetchUserData();
    }, [user, authLoading, refresh]);
 
-   if (loading && !profile) return <Spinner />;
+   if (loading && !profile) return;
+
    if (error && !loading) return <div>ERROR: {error}</div>;
    if (!loading && !profile) return null;
 

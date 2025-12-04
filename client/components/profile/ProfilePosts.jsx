@@ -75,7 +75,12 @@ export default function ProfilePosts({
       triggerRefresh();
    };
 
-   if (loading) return <Spinner />;
+   if (loading)
+      return (
+         <div style={{ height: '100vh' }}>
+            <Spinner />
+         </div>
+      );
    if (error) return <div>ERROR: {error}</div>;
    if (!posts) return null;
 

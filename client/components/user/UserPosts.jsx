@@ -6,6 +6,7 @@ import Image from 'next/image';
 import { getValidToken } from '@/utils/getValidToken';
 import PostsPagination from '../posts/PostsPagination';
 import SinglePostModal from '../posts/SinglePostModal';
+import Spinner from '../common/Spinner';
 
 import styles from '../profile/ProfilePosts.module.css';
 
@@ -54,7 +55,12 @@ export default function UserPosts({ id }) {
       }
    };
 
-   if (loading) return <p>Loading...</p>;
+   if (loading)
+      return (
+         <div style={{ height: '100vh' }}>
+            <Spinner />
+         </div>
+      );
    if (error) return <div>ERROR: {error}</div>;
    if (!posts) return null;
 
