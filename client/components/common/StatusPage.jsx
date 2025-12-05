@@ -1,13 +1,13 @@
 import Link from 'next/link';
 import styles from './StatusPage.module.css';
 
-export default function NotFound({ tittle, text }) {
+export default function NotFound({ title, text, icon }) {
    return (
       <div className={styles.wrapper}>
          <div className={styles.card}>
-            <div className={styles.icon}></div>
+            <div className={styles.icon}>{icon}</div>
 
-            <h1 className={styles.title}>{tittle}</h1>
+            <h1 className={styles.title}>{title}</h1>
             <p className={styles.message}>{text}</p>
 
             <Link href="/" className={styles.button}>
