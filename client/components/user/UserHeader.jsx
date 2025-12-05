@@ -2,9 +2,11 @@
 
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
+import { FaUserAltSlash } from 'react-icons/fa';
 import { getValidToken } from '@/utils/getValidToken';
 import UserFollowButton from './UserFollowButton';
 import UserListModal from '../common/UserListModal';
+import StatusPage from '../common/StatusPage';
 
 import styles from '../profile/ProfileInfo.module.css'; // SHARED STYLES WITH PROFILE
 
@@ -12,6 +14,7 @@ export default function UserHeader({ id }) {
    const [profile, setProfile] = useState(null);
    const [loading, setLoading] = useState(false);
    const [error, setError] = useState(null);
+   const [notFound, setNotFound] = useState(false);
    // for users list search
    const [type, setType] = useState('');
    const [openUserList, setOpenUserList] = useState(false);
@@ -30,6 +33,9 @@ export default function UserHeader({ id }) {
             );
             const data = await res.json();
 
+            if (!res.ok && res.status === 404) {
+               setNotFound(true);
+            }
             if (!res.ok) {
                throw new Error(data.error);
             }
@@ -46,7 +52,15 @@ export default function UserHeader({ id }) {
       fetchUserData();
    }, [id]);
 
-   if (loading) return <p>Loading DATA</p>;
+   if (loading) return;
+   if (notFound)
+      return (
+         <StatusPage
+            title={'User Not Found'}
+            text={'The user doesn’t exist or has been deleted.'}
+            icon={<FaUserAltSlash />}
+         />
+      );
    if (error) return <div>ERROR: {error}</div>;
    if (!loading && !profile) return null;
 
@@ -122,8 +136,7 @@ export default function UserHeader({ id }) {
                   `${process.env.NEXT_PUBLIC_API_URL}/api/users/${id}/${type}`,
                   {
                      headers: {
-                        Authorization: `Bearer ${ getValidToken()
-                        }`,
+                        Authorization: `Bearer ${getValidToken()}`,
                      },
                   }
                );

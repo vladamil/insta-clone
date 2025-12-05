@@ -11,7 +11,7 @@ export default function NotFound({ title, text, icon }) {
             <p className={styles.message}>{text}</p>
 
             <Link href="/" className={styles.button}>
-               Go Home
+               Back Home
             </Link>
          </div>
       </div>

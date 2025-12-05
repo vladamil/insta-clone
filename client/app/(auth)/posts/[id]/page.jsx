@@ -2,11 +2,13 @@
 
 import { useState, useEffect } from 'react';
 import { useParams } from 'next/navigation';
-import { getValidToken } from '@/utils/getValidToken';
+import { FaVideoSlash } from 'react-icons/fa';
 
+import { getValidToken } from '@/utils/getValidToken';
 import DesktopPostPage from '@/components/postPage/DesktopPostPage';
 import MobilePostPage from '@/components/postPage/MobilePostPage';
 import Spinner from '@/components/common/Spinner';
+import StatusPage from '@/components/common/StatusPage';
 
 export default function PostPage() {
    const postId = useParams().id;
@@ -14,6 +16,7 @@ export default function PostPage() {
    const [post, setPost] = useState(null);
    const [loading, setLoading] = useState(false);
    const [error, setError] = useState(null);
+   const [notFound, setNotFound] = useState(false);
 
    useEffect(() => {
       const fetchPostData = async () => {
@@ -28,6 +31,10 @@ export default function PostPage() {
                }
             );
             const data = await res.json();
+
+            if (!res.ok && res.status === 404) {
+               setNotFound(true);
+            }
 
             if (!res.ok) {
                throw new Error(data.error);
@@ -46,6 +53,14 @@ export default function PostPage() {
    }, [postId]);
 
    if (loading) return <Spinner />;
+   if (notFound)
+      return (
+         <StatusPage
+            title={'Post Not Found'}
+            text={'The post doesn’t exist or has been deleted.'}
+            icon={<FaVideoSlash />}
+         />
+      );
    if (error) return <div>ERROR: {error}</div>;
    if (!loading && !post) return null;
 
