@@ -3,10 +3,12 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
+import { FaExclamationCircle } from 'react-icons/fa';
 import { getValidToken } from '@/utils/getValidToken';
 import PostsPagination from '../posts/PostsPagination';
 import SinglePostModal from '../posts/SinglePostModal';
 import Spinner from '../common/Spinner';
+import StatusPage from '../common/StatusPage';
 
 import styles from '../profile/ProfilePosts.module.css';
 
@@ -34,6 +36,10 @@ export default function UserPosts({ id }) {
                }
             );
             const data = await res.json();
+            // 404 error is handled in user header component
+            if (!res.ok && !res.status === 404) {
+               throw new Error(data.error);
+            }
 
             setPosts(data.posts);
             setTotalPages(data.totalPages);
@@ -61,7 +67,14 @@ export default function UserPosts({ id }) {
             <Spinner />
          </div>
       );
-   if (error) return <div>ERROR: {error}</div>;
+   if (error)
+      return (
+         <StatusPage
+            title={'Something Went Wrong'}
+            text={`Could not fetch user posts (${error}). Please, try again.`}
+            icon={<FaExclamationCircle />}
+         />
+      );
    if (!posts) return null;
 
    // If no posts display message

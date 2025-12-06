@@ -21,3 +21,9 @@
    margin: 0;
    padding: 0;
 }
+
+.error {
+   padding: 20px;
+   text-align: center;
+   color: #cc0000;
+}

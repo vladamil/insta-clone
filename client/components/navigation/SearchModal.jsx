@@ -86,7 +86,7 @@ export default function SearchModal({ isOpen, onClose }) {
                {!loading && query && results.length === 0 && (
                   <p className={styles.info}>No users found</p>
                )}
-               {error && <p className={styles.info}>${error}</p>}
+               {error && <p className={styles.info}>{error}</p>}
                {!loading &&
                   results.map((user) => (
                      <UserLink

@@ -50,7 +50,8 @@ export default function ProfileInfo({ user, authLoading, refresh }) {
 
    if (loading && !profile) return;
 
-   if (error && !loading) return <div>ERROR: {error}</div>;
+   if (error && !loading)
+      return <div className={styles.error}>ERROR: ⛔ {error}</div>;
    if (!loading && !profile) return null;
 
    return (

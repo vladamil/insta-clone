@@ -70,6 +70,12 @@
    padding: 2rem 0;
 }
 
+.error {
+   text-align: center;
+   color: #cc0000;
+   padding: 20px;
+}
+
 /* DONT SHOW ON SMALLER SCREENS */
 @media screen and (max-width: 1200px) {
    .suggestions {

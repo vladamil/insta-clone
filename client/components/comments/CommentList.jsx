@@ -58,7 +58,7 @@ export default function CommentList({ postId }) {
    }, [fetchComments]);
 
    if (loading) return <Spinner />;
-   if (error) return <div className={styles.error}>Error: {error}</div>;
+   if (error) return <div className={styles.error}>Error: ⛔ {error}</div>;
 
    return (
       <div className={styles.commentsWrap}>

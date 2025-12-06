@@ -55,7 +55,7 @@ export default function Suggestions() {
             }
          );
 
-         if (!res.ok) throw new Error();
+         if (!res.ok) throw new Error('Failed to follow/unfollow user');
 
          // Optimistic update:
          setUsers((prev) =>
@@ -68,7 +68,13 @@ export default function Suggestions() {
       }
    };
 
-   if (error) return <div>{error}</div>;
+   if (loading) return;
+   if (error)
+      return (
+         <div className={styles.suggestions}>
+            <div className={styles.error}>Error: ⛔ {error}</div>
+         </div>
+      );
 
    return (
       <aside className={styles.suggestions}>

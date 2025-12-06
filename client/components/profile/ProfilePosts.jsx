@@ -1,12 +1,13 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { FaCamera } from 'react-icons/fa';
+import { FaCamera, FaExclamationCircle } from 'react-icons/fa';
 import Image from 'next/image';
 import { getValidToken } from '@/utils/getValidToken';
 import CreatePostModal from '../posts/CreatePostModal';
 import SinglePostModal from '../posts/SinglePostModal';
 import PostsPagination from '../posts/PostsPagination';
 import Spinner from '../common/Spinner';
+import StatusPage from '../common/StatusPage';
 
 import styles from './ProfilePosts.module.css';
 
@@ -86,7 +87,14 @@ export default function ProfilePosts({
             <Spinner />
          </div>
       );
-   if (error) return <div>ERROR: {error}</div>;
+   if (error)
+      return (
+         <StatusPage
+            title={'Something Went Wrong'}
+            text={`Could not fetch user posts (${error}). Please try again.`}
+            icon={<FaExclamationCircle />}
+         />
+      );
    if (!posts) return null;
 
    // If no posts display button and message

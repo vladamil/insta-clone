@@ -59,9 +59,11 @@ export default function UserHeader({ id }) {
             title={'User Not Found'}
             text={'The user doesn’t exist or has been deleted.'}
             icon={<FaUserAltSlash />}
+            button={true}
          />
       );
-   if (error) return <div>ERROR: {error}</div>;
+
+   if (error) return <div className={styles.error}>Error: ⛔ {error}</div>;
    if (!loading && !profile) return null;
 
    return (

@@ -28,6 +28,7 @@ export default function NavLayout({ children }) {
             title={'Something Went Wrong'}
             text={'Authentication error. Please try again.'}
             icon={<FaExclamationCircle />}
+            button={true}
          />
       );
    if (!user) return null;

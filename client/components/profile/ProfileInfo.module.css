@@ -67,6 +67,12 @@
    cursor: pointer;
 }
 
+.error {
+   height: 100px;
+   text-align: center;
+   color: #cc0000;
+}
+
 /* MOBILE STYLING */
 @media screen and (max-width: 768px) {
    .header {

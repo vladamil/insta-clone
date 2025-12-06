@@ -59,9 +59,18 @@ export default function PostPage() {
             title={'Post Not Found'}
             text={'The post doesn’t exist or has been deleted.'}
             icon={<FaVideoSlash />}
+            button={true}
          />
       );
-   if (error) return <div>ERROR: {error}</div>;
+   if (error)
+      return (
+         <StatusPage
+            title={'Something Went Wrong'}
+            text={`Could not fetch posts (${error}). Please, try again.`}
+            icon={<FaVideoSlash />}
+            button={true}
+         />
+      );
    if (!loading && !post) return null;
 
    return (
