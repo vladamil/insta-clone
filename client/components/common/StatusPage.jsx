@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import styles from './StatusPage.module.css';
 
-export default function NotFound({ title, text, icon }) {
+export default function StatusPage({ title, text, icon }) {
    return (
       <div className={styles.wrapper}>
          <div className={styles.card}>

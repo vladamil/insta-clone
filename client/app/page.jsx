@@ -4,6 +4,7 @@ import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
 import GuestHome from '@/components/home/GuestHome';
+import PageLoader from '@/components/common/PageLoader';
 
 export default function HomePage() {
    const { user, loading } = useAuth();
@@ -17,7 +18,7 @@ export default function HomePage() {
       }
    }, [loading, user, router]);
 
-   if (loading) return <p>Loading...</p>;
+   if (loading) return <PageLoader />;
    if (user) return null;
 
    return <GuestHome />;

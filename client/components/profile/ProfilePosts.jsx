@@ -41,6 +41,11 @@ export default function ProfilePosts({
                }
             );
             const data = await res.json();
+
+            if (!res.ok) {
+               throw new Error(data.error);
+            }
+
             setPosts(data.posts);
             setTotalPages(data.totalPages);
          } catch (err) {

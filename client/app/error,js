@@ -1,5 +1,0 @@
-import StatusError from '@/components/common/StatusError';
-
-export default function Error() {
-   return <StatusError />;
-}

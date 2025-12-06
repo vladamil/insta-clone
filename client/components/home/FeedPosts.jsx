@@ -3,10 +3,12 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
+import { FaExclamationCircle } from 'react-icons/fa';
 import { getValidToken } from '@/utils/getValidToken';
 import PostsPagination from '../posts/PostsPagination';
 import SinglePostModal from '../posts/SinglePostModal';
 import Spinner from '../common/Spinner';
+import StatusPage from '../common/StatusPage';
 
 import styles from '../profile/ProfilePosts.module.css';
 
@@ -35,6 +37,10 @@ export default function FeedPosts({ id }) {
             );
             const data = await res.json();
 
+            if (!res.ok) {
+               throw new Error(data.error);
+            }
+
             setPosts(data.posts);
             setTotalPages(data.totalPages);
          } catch (err) {
@@ -61,7 +67,14 @@ export default function FeedPosts({ id }) {
             <Spinner />
          </div>
       );
-   if (error) return <div>ERROR: {error}</div>;
+   if (error)
+      return (
+         <StatusPage
+            title={'Something Went Wrong'}
+            text={`An unexpected error occurred (${error}). Please try again.`}
+            icon={<FaExclamationCircle />}
+         />
+      );
    if (!posts) return null;
 
    // If no posts display message
