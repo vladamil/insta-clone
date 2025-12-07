@@ -4,10 +4,15 @@ const User = require('../models/User');
 const Follow = require('../models/Follow');
 const Post = require('../models/Post');
 const requireAuth = require('../middleware/requireAuth');
+const mongoose = require('mongoose');
 
-// Get user profile by username
+// Get user profile by id
 router.get('/:id', requireAuth, async (req, res) => {
    try {
+      if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
+         return res.status(404).json({ error: 'User not found' });
+      }
+
       const user = await User.findById(req.params.id).select('-passwordHash');
 
       if (!user) {
@@ -56,6 +61,10 @@ router.get('/:id/posts', requireAuth, async (req, res) => {
    const skip = (page - 1) * limit;
 
    try {
+      if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
+         return res.status(404).json({ error: 'User not found' });
+      }
+
       const user = await User.findById(req.params.id).select('-passwordHash');
 
       if (!user) {

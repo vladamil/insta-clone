@@ -35,8 +35,7 @@ export default function UserHeader({ id }) {
 
             if (!res.ok && res.status === 404) {
                setNotFound(true);
-            }
-            if (!res.ok) {
+            } else if (!res.ok) {
                throw new Error(data.error);
             }
 

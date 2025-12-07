@@ -36,8 +36,9 @@ export default function UserPosts({ id }) {
                }
             );
             const data = await res.json();
+
             // 404 error is handled in user header component
-            if (!res.ok && !res.status === 404) {
+            if (!res.ok && res.status !== 404) {
                throw new Error(data.error);
             }
 

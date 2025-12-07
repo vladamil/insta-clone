@@ -6,6 +6,7 @@ const Post = require('../models/Post');
 const Follow = require('../models/Follow');
 const Comment = require('../models/Comment');
 const requireAuth = require('../middleware/requireAuth');
+const mongoose = require('mongoose');
 
 const router = express.Router();
 
@@ -104,6 +105,10 @@ router.get('/feed', requireAuth, async (req, res) => {
 // Get a single post route
 router.get('/:id', requireAuth, async (req, res) => {
    try {
+      if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
+         return res.status(404).json({ error: 'Post not found' });
+      }
+
       const post = await Post.findById(req.params.id).populate(
          'author',
          'username profilePicUrl'
