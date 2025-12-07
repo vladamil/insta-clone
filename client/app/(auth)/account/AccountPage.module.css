@@ -7,11 +7,18 @@
    align-items: center;
 }
 
+.header {
+   margin-bottom: 30px;
+}
+
 .title {
    font-size: 1.8rem;
    font-weight: 600;
-   margin-bottom: 30px;
    color: #2a2a2a;
+}
+
+.logoutBtn {
+   display: none;
 }
 
 .sections {
@@ -71,8 +78,21 @@
       padding: 20px 10px;
    }
 
+   .header {
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0 10px;
+      margin-bottom: 16px;
+   }
+
    .title {
       font-size: 1.2rem;
-      margin-bottom: 16px;
+   }
+
+   .logoutBtn {
+      display: block;
+      color: rgb(39, 39, 39);
    }
 }

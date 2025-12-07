@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
 import { getValidToken } from '@/utils/getValidToken';
-import { FaCheck, FaExclamationCircle } from 'react-icons/fa';
+import { FaCheck, FaExclamationCircle, FaSignOutAlt } from 'react-icons/fa';
 
 import UpdateProfilePic from '@/components/account/UpdateProfilePic';
 import UpdateUsername from '@/components/account/UpdateUsername';
@@ -18,7 +18,7 @@ import Spinner from '@/components/common/Spinner';
 import styles from './AccountPage.module.css';
 
 export default function AccountPage() {
-   const { user, loading } = useAuth();
+   const { user, loading, logout } = useAuth();
    const [userData, setUserData] = useState(user);
    const [loadData, setLoadData] = useState(false);
    const [error, setError] = useState(null);
@@ -68,7 +68,16 @@ export default function AccountPage() {
 
    return (
       <div className={styles.accountContainer}>
-         <h1 className={styles.title}>Account Settings</h1>
+         <div className={styles.header}>
+            <h1 className={styles.title}>Account Settings</h1>
+            <FaSignOutAlt
+               className={styles.logoutBtn}
+               size={18}
+               onClick={logout}
+            />
+         </div>
+
+         {/* <h1 className={styles.title}>Account Settings</h1> */}
 
          <div className={styles.sections}>
             <UpdateProfilePic currentPic={userData?.profilePicUrl} />
