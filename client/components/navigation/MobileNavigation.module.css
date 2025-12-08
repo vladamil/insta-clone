@@ -14,7 +14,7 @@
       background-color: rgba(119, 117, 117, 0.5);
       backdrop-filter: saturate(180%) blur(10px);
       border-top: 1px solid #ddd;
-      z-index: 9999;
+      z-index: 999;
    }
 
    .mobileNavItem {

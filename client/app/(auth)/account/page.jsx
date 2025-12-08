@@ -77,8 +77,6 @@ export default function AccountPage() {
             />
          </div>
 
-         {/* <h1 className={styles.title}>Account Settings</h1> */}
-
          <div className={styles.sections}>
             <UpdateProfilePic currentPic={userData?.profilePicUrl} />
             <UpdateUsername currentUsername={userData?.username} />
