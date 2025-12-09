@@ -155,10 +155,10 @@ router.patch('/password', requireAuth, async (req, res) => {
          return res.status(400).json({ error: 'Old password is incorrect' });
       }
 
-      // Validate password lenght
-      if (password.length > 64) {
+      // Validate new password lenght
+      if (newPassword.length > 64) {
          return res.status(400).json({
-            error: 'Password is too long (max 64 characters)',
+            error: 'New password is too long (max 64 characters)',
          });
       }
 
