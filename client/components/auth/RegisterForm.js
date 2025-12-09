@@ -49,9 +49,23 @@ export default function RegisterForm({ fromHome, onToggle }) {
          return;
       }
 
+      // Validate username lenght
+      if (username.length < 3 || username.length > 20) {
+         setError('Username must be 3–20 characters long');
+         setLoading(false);
+         return;
+      }
+
       // Validate email address
       if (!emailRegex.test(email)) {
          setError('Not valid e-mail address');
+         setLoading(false);
+         return;
+      }
+
+      // Validate email lenght
+      if (email.trim().length > 50) {
+         setError('Email is too long (max 50 characters)');
          setLoading(false);
          return;
       }
@@ -61,6 +75,13 @@ export default function RegisterForm({ fromHome, onToggle }) {
          setError(
             'Password must have at least 8 characters (one uppercase, one lowercase, one number, and one special character)'
          );
+         setLoading(false);
+         return;
+      }
+
+      // Validate password lenght
+      if (password.trim().length > 64) {
+         setError('Password is too long (max 64 characters)');
          setLoading(false);
          return;
       }

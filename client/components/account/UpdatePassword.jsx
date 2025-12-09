@@ -18,6 +18,11 @@ export default function UpdatePassword() {
          return;
       }
 
+      if (newPassword.trim().length > 64) {
+         setMessage('New password is too long (max 64 characters)');
+         return;
+      }
+
       const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/;
       if (
          !passwordRegex.test(oldPassword) ||

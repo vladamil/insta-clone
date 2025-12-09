@@ -51,12 +51,16 @@ export default function CommentForm({
       e.preventDefault();
       if (!commentText.trim()) return;
 
+      if (commentText.trim().length > 300) {
+         setError('Comment is too long (max 300 characters)');
+         return;
+      }
+
       setLoading(true);
       setError(null);
 
       try {
          const token = getValidToken();
-         
 
          const res = await fetch(url, {
             method,
@@ -82,17 +86,13 @@ export default function CommentForm({
    // Automatically clear error after 5s (for display error)
    useEffect(() => {
       if (error) {
-         const timer = setTimeout(() => setError(null), 5000);
+         const timer = setTimeout(() => setError(null), 3000);
          return () => clearTimeout(timer);
       }
    }, [error]);
 
    if (error)
-      return (
-         <p className={styles.errorMsg}>
-            Something went wrong. Please try again later ({error})
-         </p>
-      );
+      return <p className={styles.errorMsg}>Something went wrong: {error}.</p>;
 
    return (
       <form

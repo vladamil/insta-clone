@@ -40,6 +40,11 @@ export default function CreatePostModal({ isOpen, onClose, onPostCreated }) {
 
    const handleSubmit = async () => {
       try {
+         if (caption.trim().length > 150) {
+            setError('Caption is too long (max 150 characters)');
+            return;
+         }
+
          setLoading(true);
          setError(null);
 

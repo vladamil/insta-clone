@@ -23,6 +23,11 @@ export default function UpdateEmail({ currentEmail }) {
          return;
       }
 
+      if (email.trim().length > 50) {
+         setMessage('Email is too long (max 50 characters)');
+         return;
+      }
+
       try {
          const token = getValidToken();
 

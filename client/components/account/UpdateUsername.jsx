@@ -20,6 +20,12 @@ export default function UpdateUsername({ currentUsername }) {
          setMessage('Username cannot contain spaces');
          return;
       }
+
+      if (username.length < 3 || username.length > 20) {
+         setMessage('Username must be 3–20 characters long');
+         return;
+      }
+
       try {
          const token = getValidToken();
 
