@@ -15,15 +15,36 @@ router.post('/register', async (req, res) => {
       return res.status(400).json({ error: 'All fields are required' });
    }
 
+   // Validate username lenght
+   if (username.length < 3 || username.length > 20) {
+      return res.status(400).json({
+         error: 'Username must be between 3 and 20 characters',
+      });
+   }
+
    // Validate username (no empty spaces)
    if (/\s/.test(username)) {
       return res.status(400).json({ error: 'Username cannot contain spaces' });
+   }
+
+   // Validate email lenght
+   if (email.length > 50) {
+      return res
+         .status(400)
+         .json({ error: 'Email is too long (max 50 characters)' });
    }
 
    // Validate email address
    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
    if (!emailRegex.test(email)) {
       return res.status(400).json({ error: 'Not a valid e-mail address' });
+   }
+
+   // Validate password lenght
+   if (password.length > 64) {
+      return res.status(400).json({
+         error: 'Password is too long (max 64 characters)',
+      });
    }
 
    // Validate password strenght

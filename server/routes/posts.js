@@ -29,6 +29,13 @@ router.post('/', requireAuth, upload.single('postImage'), async (req, res) => {
          return res.status(400).json({ error: 'Image is required' });
       }
 
+      // Validate caption lenght
+      if (caption.trim().length > 150) {
+         return res.status(400).json({
+            error: 'Caption is too long (max 150 characters)',
+         });
+      }
+
       //   Save Post to DB
       const post = new Post({
          author: req.user.id,
@@ -223,6 +230,13 @@ router.post('/:id/comment', requireAuth, async (req, res) => {
       const { text } = req.body;
       if (!text?.trim())
          return res.status(400).json({ error: 'Comment text required' });
+
+      // Validate comment lenght
+      if (text?.trim().length > 300) {
+         return res.status(400).json({
+            error: 'Comment is too long (max 300 characters)',
+         });
+      }
 
       const comment = new Comment({ post: post.id, author: req.user.id, text });
       await comment.save();

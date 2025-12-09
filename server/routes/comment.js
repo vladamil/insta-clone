@@ -24,6 +24,13 @@ router.post('/:id/reply', requireAuth, async (req, res) => {
       if (!text?.trim())
          return res.status(40).json({ error: 'Reply text required' });
 
+      // Validate reply lenght
+      if (text?.trim().length > 300) {
+         return res.status(400).json({
+            error: 'Comment is too long (max 300 characters)',
+         });
+      }
+
       const reply = new Comment({
          post: parentComment.post, // same post as parent
          author: req.user.id,
@@ -52,6 +59,13 @@ router.patch('/:id', requireAuth, async (req, res) => {
 
       if (!text?.trim()) {
          return res.status(400).json({ error: 'Comment text required' });
+      }
+
+      // Validate comment lenght
+      if (text?.trim().length > 300) {
+         return res.status(400).json({
+            error: 'Comment is too long (max 300 characters)',
+         });
       }
 
       const comment = await Comment.findById(req.params.id);

@@ -56,6 +56,13 @@ router.patch('/username', requireAuth, async (req, res) => {
          return res.status(400).json({ error: 'Username is required' });
       }
 
+      // Validate username lenght
+      if (username.length < 3 || username.length > 20) {
+         return res.status(400).json({
+            error: 'Username must be between 3 and 20 characters',
+         });
+      }
+
       // Validate username (no spaces)
       if (/\s/.test(username)) {
          return res
@@ -90,6 +97,13 @@ router.patch('/email', requireAuth, async (req, res) => {
 
       if (!email) {
          return res.status(400).json({ error: 'Email is required' });
+      }
+
+      // Validate email lenght
+      if (email.length > 50) {
+         return res
+            .status(400)
+            .json({ error: 'Email is too long (max 50 characters)' });
       }
 
       // Validate email address
@@ -139,6 +153,13 @@ router.patch('/password', requireAuth, async (req, res) => {
       const isMatch = await bcrypt.compare(oldPassword, user.passwordHash);
       if (!isMatch) {
          return res.status(400).json({ error: 'Old password is incorrect' });
+      }
+
+      // Validate password lenght
+      if (password.length > 64) {
+         return res.status(400).json({
+            error: 'Password is too long (max 64 characters)',
+         });
       }
 
       // Validate new password strenght
