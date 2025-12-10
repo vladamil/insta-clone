@@ -48,7 +48,7 @@ router.get('/discover', requireAuth, async (req, res) => {
       if (suggestionIds.length > 0) {
          // if there are suggestions
          suggestions = await User.find({ _id: { $in: suggestionIds } })
-            .select('username profilePicUrl')
+            .select('username realname profilePicUrl')
             .limit(5);
       } else {
          // if no suggestions, give 5 random unfollowed users
@@ -83,7 +83,7 @@ router.get('/search', async (req, res) => {
       // Search users by username (case-insensitive, partial match)
       const users = await User.find({
          username: { $regex: username, $options: 'i' },
-      }).select('username profilePicUrl description');
+      }).select('username realname profilePicUrl description');
 
       res.json(users);
    } catch (err) {

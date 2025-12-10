@@ -8,10 +8,11 @@ router.post('/register', async (req, res) => {
    // Sanitize data from req
    const email = req.body.email?.trim().toLowerCase();
    const username = req.body.username?.trim().toLowerCase();
+   const realname = req.body.realname?.trim().toLowerCase();
    const password = req.body.password?.trim();
 
    // Empty fields checks
-   if (!email || !username || !password) {
+   if (!email || !username || !realname || !password) {
       return res.status(400).json({ error: 'All fields are required' });
    }
 
@@ -25,6 +26,21 @@ router.post('/register', async (req, res) => {
    // Validate username (no empty spaces)
    if (/\s/.test(username)) {
       return res.status(400).json({ error: 'Username cannot contain spaces' });
+   }
+
+   // Validate real name
+   const realnameRegex = /^[\p{L}][\p{L}\s'-]{1,39}$/u;
+
+   if (realname.length < 2 || realname.length > 40) {
+      return res.status(400).json({
+         error: 'Real name must be between 2 and 40 characters',
+      });
+   }
+
+   if (!realnameRegex.test(realname)) {
+      return res.status(400).json({
+         error: 'Real name may contain letters, spaces and hyphens only (no numbers or symbols)',
+      });
    }
 
    // Validate email lenght
@@ -75,12 +91,12 @@ router.post('/register', async (req, res) => {
       const newUser = new User({
          email,
          username,
+         realname,
          passwordHash: hashedPassword,
       });
       await newUser.save();
       res.status(201).json({ message: 'User registered 🎉' });
    } catch (err) {
-      console.error(err);
       res.status(500).json({ error: 'Server error during registration' });
    }
 });
@@ -126,7 +142,6 @@ router.post('/login', async (req, res) => {
          user: userWithoutPassword,
       });
    } catch (error) {
-      console.error(error);
       res.status(500).json({ error: 'Server error during login' });
    }
 });

@@ -40,6 +40,7 @@ router.get('/:id', requireAuth, async (req, res) => {
          profilePicUrl: user.profilePicUrl || null,
          email: user.email,
          username: user.username,
+         realname: user.realname,
          description: user.description || '',
          isFollowing: !!isFollow,
          isSelf,
@@ -75,7 +76,7 @@ router.get('/:id/posts', requireAuth, async (req, res) => {
       const total = await Post.countDocuments({ author: user._id });
 
       const userPosts = await Post.find({ author: user._id })
-         .populate('author', 'username profilePicUrl')
+         .populate('author', 'username realname profilePicUrl')
          .sort({ createdAt: -1 })
          .skip(skip)
          .limit(limit);
@@ -191,7 +192,7 @@ router.get('/:id/followers', requireAuth, async (req, res) => {
 
       // Find all follow relationships where `following` = target user
       const followers = await Follow.find({ followingId: userId })
-         .populate('followerId', 'username fullName profilePicUrl')
+         .populate('followerId', 'username realname profilePicUrl')
          .lean();
 
       // Extract the follower user objects only
@@ -210,7 +211,7 @@ router.get('/:id/followings', requireAuth, async (req, res) => {
 
       // Find all follow relationships where `follower` = target user
       const following = await Follow.find({ followerId: userId })
-         .populate('followingId', 'username fullName profilePicUrl')
+         .populate('followingId', 'username realname profilePicUrl')
          .lean();
 
       // ✅ Extract the following user objects only

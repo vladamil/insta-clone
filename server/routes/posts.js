@@ -49,12 +49,11 @@ router.post('/', requireAuth, upload.single('postImage'), async (req, res) => {
       //   Populate post with basic user data
       const populatedPost = await Post.findById(post._id).populate(
          'author',
-         'username profilePicUrl'
+         'username realname profilePicUrl'
       );
 
       res.status(201).json(populatedPost);
    } catch (error) {
-      console.error(error);
 
       // Rollback Cloudinary upload if DB save failed
       if (req.file && req.file.filename) {
@@ -94,7 +93,7 @@ router.get('/feed', requireAuth, async (req, res) => {
          .sort({ createdAt: -1 })
          .skip(skip)
          .limit(limit)
-         .populate('author', 'username profilePicUrl');
+         .populate('author', 'username realname profilePicUrl');
 
       // Enrich posts with like status and likes count
       const posts = feedPosts.map((post) => ({
@@ -118,7 +117,7 @@ router.get('/:id', requireAuth, async (req, res) => {
 
       const post = await Post.findById(req.params.id).populate(
          'author',
-         'username profilePicUrl'
+         'username realname profilePicUrl'
       );
       if (!post) {
          return res.status(404).json({ error: 'Post not found' });
@@ -210,7 +209,7 @@ router.get('/:id/likes', requireAuth, async (req, res) => {
    try {
       const post = await Post.findById(req.params.id).populate(
          'likes',
-         'username profilePicUrl'
+         'username realname profilePicUrl'
       );
       if (!post) return res.status(404).json({ error: 'Post not found' });
 
