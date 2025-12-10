@@ -8,7 +8,7 @@ router.post('/register', async (req, res) => {
    // Sanitize data from req
    const email = req.body.email?.trim().toLowerCase();
    const username = req.body.username?.trim().toLowerCase();
-   const realname = req.body.realname?.trim().toLowerCase();
+   const realname = req.body.realname?.trim();
    const password = req.body.password?.trim();
 
    // Empty fields checks

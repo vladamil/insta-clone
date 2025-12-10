@@ -6,6 +6,7 @@ import styles from './AuthForm.module.css';
 
 const initialFormData = {
    username: '',
+   realname: '',
    email: '',
    password: '',
 };
@@ -18,9 +19,10 @@ export default function RegisterForm({ fromHome, onToggle }) {
    const [error, setError] = useState('');
    const [success, setSuccess] = useState('');
 
-   const { email, username, password } = formData;
+   const { email, username, realname, password } = formData;
    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/;
+   const realnameRegex = /^[\p{L}][\p{L}\s'-]{1,39}$/u;
 
    const handleChange = (e) => {
       setFormData((prev) => ({
@@ -36,7 +38,7 @@ export default function RegisterForm({ fromHome, onToggle }) {
       setSuccess('');
 
       // Empty fields checks
-      if (!email || !username || !password) {
+      if (!email || !username || !realname || !password) {
          setError('All fields are required');
          setLoading(false);
          return;
@@ -52,6 +54,22 @@ export default function RegisterForm({ fromHome, onToggle }) {
       // Validate username lenght
       if (username.length < 3 || username.length > 20) {
          setError('Username must be 3–20 characters long');
+         setLoading(false);
+         return;
+      }
+
+      // Validate real name lenght
+      if (realname.length < 2 || realname.length > 40) {
+         setError('Full name must be between 2 and 40 characters');
+         setLoading(false);
+         return;
+      }
+
+      // Validate real name text
+      if (!realnameRegex.test(realname)) {
+         setError(
+            'Real name may contain letters, spaces and hyphens only (no numbers or symbols)'
+         );
          setLoading(false);
          return;
       }
@@ -93,7 +111,7 @@ export default function RegisterForm({ fromHome, onToggle }) {
          return;
       }
 
-      const result = await register(username, email, password);
+      const result = await register(username, realname, email, password);
       if (result.success) {
          setSuccess(result.message);
          setFormData(initialFormData);
@@ -113,6 +131,14 @@ export default function RegisterForm({ fromHome, onToggle }) {
             name="username"
             placeholder="Username"
             value={formData.username}
+            onChange={handleChange}
+            required
+         />
+         <input
+            className={styles.input}
+            name="realname"
+            placeholder="Full name"
+            value={formData.realname}
             onChange={handleChange}
             required
          />
