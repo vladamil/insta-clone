@@ -94,5 +94,6 @@
    .logoutBtn {
       display: block;
       color: rgb(39, 39, 39);
+      cursor: pointer;
    }
 }

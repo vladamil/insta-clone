@@ -34,7 +34,7 @@ export default function UserLink({
          <div className={styles.info}>
             <span className={styles.username}>{user.username}</span>
             {showFullInfo && (
-               <span className={styles.fullName}>{'Jelena Kerkez' || ''}</span>
+               <span className={styles.fullName}>{user.realname}</span>
             )}
          </div>
       </Link>

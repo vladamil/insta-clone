@@ -44,7 +44,7 @@ export default function SearchModal({ isOpen, onClose }) {
             const res = await fetch(
                `${
                   process.env.NEXT_PUBLIC_API_URL
-               }/api/search?username=${encodeURIComponent(query)}`
+               }/api/search?q=${encodeURIComponent(query)}`
             );
             const data = await res.json();
             setResults(data);

@@ -9,6 +9,7 @@ export default function NotFound() {
             'The page you are looking for doesn’t exist or has been removed.'
          }
          icon={<FaSearchMinus />}
+         button={true}
       />
    );
 }

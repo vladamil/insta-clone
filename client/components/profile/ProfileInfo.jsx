@@ -78,9 +78,9 @@ export default function ProfileInfo({ user, authLoading, refresh }) {
                      <span>Settings</span>
                   </button>
                </div>
-               {!profile.fullName && (
-                  <p className={styles.fullname}>Jelena Kerkez</p>
-               )}
+
+               <p className={styles.fullname}>{profile.realname}</p>
+
                {profile.description && (
                   <p className={styles.bio}>{profile.description}</p>
                )}

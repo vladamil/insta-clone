@@ -86,9 +86,9 @@ export default function UserHeader({ id }) {
                      desktop={true}
                   />
                </div>
-               {!profile.fullName && (
-                  <p className={styles.fullname}>Jelena Kerkez</p>
-               )}
+
+               <p className={styles.fullname}>{profile.realname}</p>
+
                {profile.description && (
                   <p className={styles.bio}>{profile.description}</p>
                )}
