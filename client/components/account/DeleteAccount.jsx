@@ -2,12 +2,13 @@
 
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
-import { getValidToken } from '@/utils/getValidToken';
+import { useAuth } from '@/context/AuthContext';
 
 import styles from './AccountSection.module.css';
 
 export default function DeleteAccount() {
    const router = useRouter();
+   const { getValidToken, logout } = useAuth();
    const [message, setMessage] = useState('');
 
    const handleDelete = async () => {
@@ -36,7 +37,7 @@ export default function DeleteAccount() {
 
          localStorage.removeItem('token'); // Remove from local storage
          setMessage('✅ Account deleted. Redirecting...');
-         setTimeout(() => router.replace('/'), 1500); // Redirect after short delay for UX
+         setTimeout(() => logout(), 2000); // Redirect after short delay for UX
       } catch (err) {
          setMessage(`❌ ${err.message}`);
       }

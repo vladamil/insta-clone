@@ -1,8 +1,8 @@
 'use client';
 
-import { FaHeart, FaRegHeart } from 'react-icons/fa';
 import { useEffect, useState } from 'react';
-import { getValidToken } from '@/utils/getValidToken';
+import { FaHeart, FaRegHeart } from 'react-icons/fa';
+import { useAuth } from '@/context/AuthContext';
 import UserListModal from '../common/UserListModal';
 
 import styles from './PostLikeButton.module.css';
@@ -14,6 +14,8 @@ export default function PostLikeButton({ post }) {
    const [error, setError] = useState(null);
 
    const [openLikesList, setOpenLikesList] = useState(false);
+
+   const { getValidToken } = useAuth();
 
    // Fetching fresh post data for likes update
    useEffect(() => {

@@ -3,12 +3,14 @@
 import { useState, useEffect } from 'react';
 
 import styles from './AccountSection.module.css';
-import { getValidToken } from '@/utils/getValidToken';
+import { useAuth } from '@/context/AuthContext';
 
 export default function UpdatePassword() {
    const [oldPassword, setOldPassword] = useState('');
    const [newPassword, setNewPassword] = useState('');
    const [message, setMessage] = useState('');
+
+   const { getValidToken } = useAuth();
 
    const handleUpdate = async () => {
       // Validate passwords

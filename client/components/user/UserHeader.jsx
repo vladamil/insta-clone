@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { FaUserAltSlash } from 'react-icons/fa';
-import { getValidToken } from '@/utils/getValidToken';
+import { useAuth } from '@/context/AuthContext';
 import UserFollowButton from './UserFollowButton';
 import UserListModal from '../common/UserListModal';
 import StatusPage from '../common/StatusPage';
@@ -18,6 +18,8 @@ export default function UserHeader({ id }) {
    // for users list search
    const [type, setType] = useState('');
    const [openUserList, setOpenUserList] = useState(false);
+
+   const {getValidToken} = useAuth()
 
    useEffect(() => {
       const fetchUserData = async () => {

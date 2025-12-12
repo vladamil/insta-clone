@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { useParams } from 'next/navigation';
 import { FaVideoSlash } from 'react-icons/fa';
 
-import { getValidToken } from '@/utils/getValidToken';
+import { useAuth } from '@/context/AuthContext';
 import DesktopPostPage from '@/components/postPage/DesktopPostPage';
 import MobilePostPage from '@/components/postPage/MobilePostPage';
 import Spinner from '@/components/common/Spinner';
@@ -12,6 +12,7 @@ import StatusPage from '@/components/common/StatusPage';
 
 export default function PostPage() {
    const postId = useParams().id;
+   const { getValidToken } = useAuth();
 
    const [post, setPost] = useState(null);
    const [loading, setLoading] = useState(false);

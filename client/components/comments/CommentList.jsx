@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useRef, useCallback } from 'react';
 import { FaCommentDots } from 'react-icons/fa';
-import { getValidToken } from '@/utils/getValidToken';
+import { useAuth } from '@/context/AuthContext';
 import SingleComment from './SingleComment';
 import CommentForm from './CommentForm';
 import Spinner from '@/components/common/Spinner';
@@ -15,6 +15,7 @@ export default function CommentList({ postId }) {
    const [loading, setLoading] = useState(false);
    const [error, setError] = useState(null);
 
+   const { getValidToken } = useAuth();
    const cancelledRef = useRef(false); // Flag to prevent memory leak
 
    const fetchComments = useCallback(async () => {

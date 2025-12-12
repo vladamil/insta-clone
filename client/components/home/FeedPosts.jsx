@@ -1,10 +1,10 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useAuth } from '@/context/AuthContext';
 import Link from 'next/link';
 import Image from 'next/image';
 import { FaExclamationCircle } from 'react-icons/fa';
-import { getValidToken } from '@/utils/getValidToken';
 import PostsPagination from '../posts/PostsPagination';
 import SinglePostModal from '../posts/SinglePostModal';
 import Spinner from '../common/Spinner';
@@ -22,6 +22,8 @@ export default function FeedPosts({ id }) {
    // pagination states
    const [page, setPage] = useState(1);
    const [totalPages, setTotalPages] = useState(1);
+
+   const {getValidToken} = useAuth()
 
    useEffect(() => {
       async function fetchFeedPosts() {

@@ -1,6 +1,13 @@
 'use client';
 
-import { createContext, useContext, useState, useEffect } from 'react';
+import {
+   createContext,
+   useContext,
+   useState,
+   useEffect,
+   useCallback,
+} from 'react';
+import { jwtDecode } from 'jwt-decode';
 import { useRouter } from 'next/navigation';
 import { API_URL } from '@/lib/constants';
 
@@ -115,9 +122,41 @@ export function AuthProvider({ children }) {
       setAuthError(null);
    };
 
+   // Central token validator inside context
+   const getValidToken = () => {
+      const token = localStorage.getItem('token');
+      if (!token) {
+         logout();
+         return null;
+      }
+
+      try {
+         const decoded = jwtDecode(token);
+         const now = Date.now() / 1000;
+
+         if (decoded.exp < now) {
+            logout();
+            return null;
+         }
+
+         return token;
+      } catch {
+         logout();
+         return null;
+      }
+   };
+
    return (
       <AuthContext.Provider
-         value={{ user, loading, authError, register, login, logout }}
+         value={{
+            user,
+            loading,
+            authError,
+            register,
+            login,
+            logout,
+            getValidToken,
+         }}
       >
          {children}
       </AuthContext.Provider>

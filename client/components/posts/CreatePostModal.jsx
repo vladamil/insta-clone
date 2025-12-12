@@ -3,8 +3,8 @@
 import { useState, useEffect } from 'react';
 import ReactDOM from 'react-dom';
 import { FaTimes, FaCamera } from 'react-icons/fa';
+import { useAuth } from '@/context/AuthContext';
 import Image from 'next/image';
-import { getValidToken } from '@/utils/getValidToken';
 
 import styles from './CreatePostModal.module.css';
 
@@ -14,6 +14,8 @@ export default function CreatePostModal({ isOpen, onClose, onPostCreated }) {
    const [caption, setCaption] = useState('');
    const [loading, setLoading] = useState(false);
    const [error, setError] = useState(null);
+
+   const { getValidToken } = useAuth();
 
    // Close modal on ESC
    useEffect(() => {

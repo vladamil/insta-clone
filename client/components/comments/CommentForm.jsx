@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { getValidToken } from '@/utils/getValidToken';
+import { useAuth } from '@/context/AuthContext';
 
 import styles from './CommentForm.module.css';
 
@@ -16,6 +16,8 @@ export default function CommentForm({
    const [commentText, setCommentText] = useState(initialText || '');
    const [loading, setLoading] = useState(false);
    const [error, setError] = useState(null);
+
+   const { getValidToken } = useAuth();
 
    //    Depending on mode, button and placeholder text
    const placeholders = {

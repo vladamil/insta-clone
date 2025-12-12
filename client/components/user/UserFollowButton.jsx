@@ -1,10 +1,11 @@
 import { useRouter } from 'next/navigation';
-import { getValidToken } from '@/utils/getValidToken';
+import { useAuth } from '@/context/AuthContext';
 
 import styles from './UserFollowButton.module.css';
 
 export default function UserFollowButton({ profile, setProfile, desktop }) {
    const router = useRouter();
+   const {getValidToken}= useAuth()
 
    const handleFollow = async () => {
       try {

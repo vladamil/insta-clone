@@ -1,7 +1,6 @@
 'use client';
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/context/AuthContext';
-import { getValidToken } from '@/utils/getValidToken';
 import Image from 'next/image';
 import Link from 'next/link';
 import CommentForm from './CommentForm';
@@ -18,7 +17,7 @@ export default function SingleComment({
    const [isDeleting, setIsDeleting] = useState(false);
    const [deleteError, setDeleteError] = useState(null);
 
-   const { user } = useAuth();
+   const { user, getValidToken } = useAuth();
    const isAuthor = user._id === comment.author._id;
    const link = `/users/${comment.author.username}-${comment.author._id}`;
 

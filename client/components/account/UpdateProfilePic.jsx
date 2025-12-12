@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { getValidToken } from '@/utils/getValidToken';
+import { useAuth } from '@/context/AuthContext';
 
 import styles from './AccountSection.module.css';
 
@@ -10,6 +10,8 @@ export default function UpdateProfilePic({ currentPic }) {
    const [previewUrl, setPreviewUrl] = useState(currentPic);
    const [message, setMessage] = useState('');
    const [loading, setLoading] = useState(false);
+
+   const { getValidToken } = useAuth();
 
    const handleFileChange = (e) => {
       const selected = e.target.files[0];

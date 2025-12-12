@@ -1,13 +1,15 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { getValidToken } from '@/utils/getValidToken';
+import { useAuth } from '@/context/AuthContext';
 
 import styles from './AccountSection.module.css';
 
 export default function UpdateEmail({ currentEmail }) {
    const [email, setEmail] = useState(currentEmail || '');
    const [message, setMessage] = useState('');
+
+   const { getValidToken } = useAuth();
 
    const handleUpdate = async () => {
       // Validate email address

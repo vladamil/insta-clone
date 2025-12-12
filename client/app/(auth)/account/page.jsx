@@ -3,7 +3,6 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
-import { getValidToken } from '@/utils/getValidToken';
 import { FaCheck, FaExclamationCircle, FaSignOutAlt } from 'react-icons/fa';
 
 import UpdateProfilePic from '@/components/account/UpdateProfilePic';
@@ -18,7 +17,7 @@ import Spinner from '@/components/common/Spinner';
 import styles from './AccountPage.module.css';
 
 export default function AccountPage() {
-   const { user, loading, logout } = useAuth();
+   const { user, loading, logout, getValidToken } = useAuth();
    const [userData, setUserData] = useState(user);
    const [loadData, setLoadData] = useState(false);
    const [error, setError] = useState(null);

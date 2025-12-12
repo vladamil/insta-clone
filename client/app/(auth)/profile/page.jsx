@@ -8,7 +8,7 @@ import styles from './ProfilePage.module.css';
 
 export default function ProfilePage() {
    const [refresh, setRefresh] = useState(0);
-   const { user, logout, loading: authLoading } = useAuth();
+   const { user, logout, loading: authLoading, getValidToken } = useAuth();
 
    const triggerRefresh = () => {
       setRefresh((prev) => prev + 0.01);
@@ -21,12 +21,14 @@ export default function ProfilePage() {
             authLoading={authLoading}
             logout={logout}
             refresh={refresh}
+            getValidToken={getValidToken}
          />
          <ProfilePosts
             user={user}
             authLoading={authLoading}
             triggerRefresh={triggerRefresh}
             refresh={refresh}
+            getValidToken={getValidToken}
          />
       </div>
    );

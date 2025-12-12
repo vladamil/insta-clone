@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { FaExclamationCircle } from 'react-icons/fa';
-import { getValidToken } from '@/utils/getValidToken';
+import { useAuth } from '@/context/AuthContext';
 import PostsPagination from '../posts/PostsPagination';
 import SinglePostModal from '../posts/SinglePostModal';
 import Spinner from '../common/Spinner';
@@ -22,6 +22,8 @@ export default function UserPosts({ id }) {
    // pagination states
    const [page, setPage] = useState(1);
    const [totalPages, setTotalPages] = useState(1);
+
+   const { getValidToken } = useAuth();
 
    useEffect(() => {
       async function fetchPosts() {

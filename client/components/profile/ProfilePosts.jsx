@@ -2,7 +2,6 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { FaCamera, FaExclamationCircle } from 'react-icons/fa';
 import Image from 'next/image';
-import { getValidToken } from '@/utils/getValidToken';
 import CreatePostModal from '../posts/CreatePostModal';
 import SinglePostModal from '../posts/SinglePostModal';
 import PostsPagination from '../posts/PostsPagination';
@@ -16,6 +15,7 @@ export default function ProfilePosts({
    authLoading,
    refresh,
    triggerRefresh,
+   getValidToken,
 }) {
    const [posts, setPosts] = useState(null);
    const [loading, setLoading] = useState(false);

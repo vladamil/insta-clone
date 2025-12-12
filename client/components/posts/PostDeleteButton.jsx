@@ -1,12 +1,14 @@
 'use client';
 
 import { useState } from 'react';
-import { getValidToken } from '@/utils/getValidToken';
+import { useAuth } from '@/context/AuthContext';
 import styles from './PostDeleteButton.module.css';
 
 export default function PostDeleteButton({ postId, onDelete }) {
    const [loading, setLoading] = useState(false);
    const [error, setError] = useState(null);
+
+   const { getValidToken } = useAuth();
 
    const handleDelete = async () => {
       if (!confirm('Are you sure you want to delete this post?')) return;

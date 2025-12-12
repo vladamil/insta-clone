@@ -1,8 +1,8 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useAuth } from '@/context/AuthContext';
 import UserLink from '../user/UserLink';
-import { getValidToken } from '@/utils/getValidToken';
 
 import styles from './Suggestions.module.css';
 
@@ -10,6 +10,8 @@ export default function Suggestions() {
    const [users, setUsers] = useState([]);
    const [loading, setLoading] = useState(false);
    const [error, setError] = useState(null);
+
+   const { getValidToken } = useAuth();
 
    useEffect(() => {
       const token = getValidToken();

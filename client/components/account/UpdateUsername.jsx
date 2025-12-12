@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { getValidToken } from '@/utils/getValidToken';
+import { useAuth } from '@/context/AuthContext';
 
 import styles from './AccountSection.module.css';
 
@@ -9,6 +9,8 @@ export default function UpdateUsername({ currentUsername }) {
    const [username, setUsername] = useState(currentUsername || '');
    const [loading, setLoading] = useState(false);
    const [message, setMessage] = useState('');
+
+   const { getValidToken } = useAuth();
 
    const handleUpdate = async () => {
       if (!username.trim()) {

@@ -2,11 +2,15 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import UserListModal from '../common/UserListModal';
-import { getValidToken } from '@/utils/getValidToken';
 
 import styles from './ProfileInfo.module.css';
 
-export default function ProfileInfo({ user, authLoading, refresh }) {
+export default function ProfileInfo({
+   user,
+   authLoading,
+   refresh,
+   getValidToken,
+}) {
    const [profile, setProfile] = useState(null);
    const [loading, setLoading] = useState(false);
    const [error, setError] = useState(null);
