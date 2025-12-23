@@ -72,6 +72,20 @@
    background: transparent;
 }
 
+.sidebar {
+   width: 100%;
+   max-width: 320px;
+   position: sticky;
+   height: fit-content;
+}
+
+/* DONT SHOW ON SMALLER SCREENS */
+@media screen and (max-width: 1200px) {
+   .sidebar {
+      display: none;
+   }
+}
+
 /* MOBILE STYLING */
 @media screen and (max-width: 768px) {
    .banner {

@@ -3,11 +3,7 @@
    border-radius: 1rem;
    padding: 1.2rem;
    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-   width: 100%;
-   max-width: 320px;
-   position: sticky;
-   top: 80px;
-   height: fit-content;
+   height: 100%;
 }
 
 .suggestions h3 {
@@ -20,7 +16,6 @@
 .list {
    display: flex;
    flex-direction: column;
-   max-height: 400px;
    overflow-y: auto;
 }
 
@@ -76,9 +71,10 @@
    padding: 20px;
 }
 
-/* DONT SHOW ON SMALLER SCREENS */
 @media screen and (max-width: 1200px) {
-   .suggestions {
-      display: none;
+   .suggestions h3 {
+      font-size: 0.9rem;
+      margin-bottom: 0;
+      text-align: center;
    }
 }

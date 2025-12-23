@@ -79,7 +79,7 @@ export default function Suggestions() {
       );
 
    return (
-      <aside className={styles.suggestions}>
+      <div className={styles.suggestions}>
          <h3>Suggested for you</h3>
          <div className={styles.list}>
             {users.length === 0 ? (
@@ -101,6 +101,6 @@ export default function Suggestions() {
                ))
             )}
          </div>
-      </aside>
+      </div>
    );
 }

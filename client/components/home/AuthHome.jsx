@@ -39,7 +39,9 @@ export default function AuthHome({ user }) {
             </main>
 
             {/* SUGGESTIONS SIDEBAR */}
-            <Suggestions />
+            <aside className={styles.sidebar}>
+               <Suggestions />
+            </aside>
          </div>
       </>
    );
