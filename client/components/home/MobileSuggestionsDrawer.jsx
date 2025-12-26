@@ -2,11 +2,19 @@
 
 import { useState } from 'react';
 import { FaUserPlus, FaTimes } from 'react-icons/fa';
+import { useSwipeable } from 'react-swipeable';
 import Suggestions from './Suggestions';
 import styles from './MobileSuggestionsDrawer.module.css';
 
 export default function MobileSuggestionsDrawer() {
    const [open, setOpen] = useState(false);
+
+   const swipeHandlers = useSwipeable({
+      onSwipedRight: () => setOpen(false),
+      preventScrollOnSwipe: true,
+      trackMouse: false,
+      trackTouch: true,
+   });
 
    return (
       <>
@@ -21,7 +29,10 @@ export default function MobileSuggestionsDrawer() {
          )}
 
          {/* Drawer */}
-         <aside className={`${styles.drawer} ${open ? styles.open : ''}`}>
+         <aside
+            className={`${styles.drawer} ${open ? styles.open : ''}`}
+            {...swipeHandlers}
+         >
             <header className={styles.header}>
                <h3>Suggestions</h3>
                <button onClick={() => setOpen(false)}>
