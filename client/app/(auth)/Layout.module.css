@@ -7,9 +7,9 @@
    position: fixed;
    top: 0;
    left: 0;
-   width: 250px; /* adjust to your liking */
+   width: 250px;
    height: 100vh;
-   overflow-y: auto; /* optional, if sidebar itself has a lot of content */
+   overflow-y: auto;
    border-right: 1px solid #ddd;
 }
 
@@ -27,5 +27,12 @@
 
    .main {
       margin-left: 0;
+   }
+}
+
+@media (max-width: 960px) {
+   .main {
+      /* same as mobile nav height */
+      margin-bottom: 50px;
    }
 }

@@ -24,10 +24,6 @@ body {
 }
 
 @media (max-width: 960px) {
-   body {
-      /* same as mobile nav height */
-      margin-bottom: 50px;
-   }
    .desktopModalWrapper {
       display: none;
    }
