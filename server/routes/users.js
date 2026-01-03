@@ -76,10 +76,18 @@ router.get('/:id/posts', requireAuth, async (req, res) => {
       const total = await Post.countDocuments({ author: user._id });
 
       const userPosts = await Post.find({ author: user._id })
-         .populate('author', 'username realname profilePicUrl')
          .sort({ createdAt: -1 })
          .skip(skip)
-         .limit(limit);
+         .limit(limit + 1) // gets one more post over limit to see if hasMore
+         .populate('author', 'username realname profilePicUrl');
+
+      // Check if there is more
+      const hasMore = userPosts.length > limit;
+
+      // Remove that one extra post
+      if (hasMore) {
+         userPosts.pop();
+      }
 
       // Enrich posts with like status and likes count
       const posts = userPosts.map((post) => ({
@@ -92,6 +100,7 @@ router.get('/:id/posts', requireAuth, async (req, res) => {
          posts,
          total,
          totalPages: Math.ceil(total / limit),
+         hasMore,
       });
    } catch (err) {
       res.status(500).json({ error: 'Failed to fetch posts' });

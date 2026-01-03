@@ -54,7 +54,6 @@ router.post('/', requireAuth, upload.single('postImage'), async (req, res) => {
 
       res.status(201).json(populatedPost);
    } catch (error) {
-
       // Rollback Cloudinary upload if DB save failed
       if (req.file && req.file.filename) {
          try {
@@ -92,8 +91,16 @@ router.get('/feed', requireAuth, async (req, res) => {
       const feedPosts = await Post.find({ author: { $in: followingIds } })
          .sort({ createdAt: -1 })
          .skip(skip)
-         .limit(limit)
+         .limit(limit + 1) // gets one more post over limit to see if hasMore
          .populate('author', 'username realname profilePicUrl');
+
+      // Check if there is more
+      const hasMore = feedPosts.length > limit;
+
+      // Remove that one extra post
+      if (hasMore) {
+         feedPosts.pop();
+      }
 
       // Enrich posts with like status and likes count
       const posts = feedPosts.map((post) => ({
@@ -102,7 +109,11 @@ router.get('/feed', requireAuth, async (req, res) => {
          likesCount: post.likes.length,
       }));
 
-      res.status(200).json({ posts, totalPages: Math.ceil(total / limit) });
+      res.status(200).json({
+         posts,
+         totalPages: Math.ceil(total / limit),
+         hasMore,
+      });
    } catch (error) {
       res.status(500).json({ error: 'Failed to fetch feed' });
    }
