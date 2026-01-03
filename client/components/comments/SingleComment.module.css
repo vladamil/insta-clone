@@ -39,15 +39,18 @@
 }
 
 .text {
-   margin: 4px 0 2px;
-   font-size: 0.95rem;
-   line-height: 1.4;
    color: #4b4b4b;
+   font-size: 0.9rem;
+   line-height: 1.4;
+   padding: 6px 8px;
+   margin-bottom: 4px;
+   background: #f6f7f9;
+   border-radius: 12px;
 }
 
 .actions {
    display: flex;
-   gap: 18px;
+   gap: 24px;
 }
 
 .actionBtn {

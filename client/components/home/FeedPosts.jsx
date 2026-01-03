@@ -12,7 +12,7 @@ import StatusPage from '../common/StatusPage';
 
 import styles from '../profile/ProfilePosts.module.css';
 
-export default function FeedPosts({ id }) {
+export default function FeedPosts() {
    const [posts, setPosts] = useState([]);
    const [loading, setLoading] = useState(true);
    const [error, setError] = useState(null);
@@ -23,7 +23,7 @@ export default function FeedPosts({ id }) {
    const [page, setPage] = useState(1);
    const [totalPages, setTotalPages] = useState(1);
 
-   const {getValidToken} = useAuth()
+   const { getValidToken } = useAuth();
 
    useEffect(() => {
       async function fetchFeedPosts() {
