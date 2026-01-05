@@ -1,11 +1,10 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useAuth } from '@/context/AuthContext';
 import Link from 'next/link';
 import Image from 'next/image';
 import { FaExclamationCircle } from 'react-icons/fa';
-import PostsPagination from '../posts/PostsPagination';
 import SinglePostModal from '../posts/SinglePostModal';
 import Spinner from '../common/Spinner';
 import StatusPage from '../common/StatusPage';
@@ -17,19 +16,20 @@ export default function FeedPosts() {
    const [loading, setLoading] = useState(true);
    const [error, setError] = useState(null);
    const [postIndex, setPostIndex] = useState(null);
-   // const [refresh, setRefresh] = useState(0);
 
    // pagination states
    const [page, setPage] = useState(1);
-   const [totalPages, setTotalPages] = useState(1);
+   // const [totalPages, setTotalPages] = useState(1);
    const [hasMore, setHasMore] = useState(true);
 
    const { getValidToken } = useAuth();
+   const loadMoreRef = useRef(null);
 
    useEffect(() => {
       async function fetchFeedPosts() {
          try {
             setLoading(true);
+
             const token = getValidToken();
 
             const res = await fetch(
@@ -44,11 +44,10 @@ export default function FeedPosts() {
                throw new Error(data.error);
             }
 
-            // setPosts(data.posts);
             setPosts((prev) =>
                page === 1 ? data.posts : [...prev, ...data.posts]
             );
-            setTotalPages(data.totalPages);
+
             setHasMore(data.hasMore);
          } catch (err) {
             setError(err.message);
@@ -59,6 +58,32 @@ export default function FeedPosts() {
       fetchFeedPosts();
    }, [page]);
 
+   // useEffect for Intersection Observer
+   useEffect(() => {
+      if (!loadMoreRef.current) return;
+
+      const observer = new IntersectionObserver(
+         (entries) => {
+            const firstEntry = entries[0];
+
+            if (firstEntry.isIntersecting && hasMore && !loading) {
+               setPage((prev) => prev + 1);
+            }
+         },
+         {
+            root: null, // viewport
+            rootMargin: '50px', // preload earlier
+            threshold: 0,
+         }
+      );
+
+      observer.observe(loadMoreRef.current);
+
+      return () => {
+         observer.disconnect();
+      };
+   }, [hasMore, loading]);
+
    // Handle post link for both modal and new page
    const handlePostLink = (e, index) => {
       // Only left click, not middle-click, not ctrl-click, not cmd-click, not right-click
@@ -68,12 +93,14 @@ export default function FeedPosts() {
       }
    };
 
-   if (loading)
+   // Global loading only when first loading posts
+   if (loading && page === 1)
       return (
          <div style={{ height: '70vh' }}>
             <Spinner />
          </div>
       );
+
    if (error)
       return (
          <StatusPage
@@ -82,6 +109,7 @@ export default function FeedPosts() {
             icon={<FaExclamationCircle />}
          />
       );
+
    if (!posts) return null;
 
    // If no posts display message
@@ -120,14 +148,8 @@ export default function FeedPosts() {
             ))}
          </div>
 
-         {/* PAGINATION BUTTONS */}
-         {totalPages > 1 && (
-            <PostsPagination
-               page={page}
-               setPage={setPage}
-               totalPages={totalPages}
-            />
-         )}
+         {/* Sentinel for IntesectionObserver*/}
+         {hasMore && <div ref={loadMoreRef} style={{ height: '10px' }} />}
 
          {/* Modal for VIEWING post */}
          {postIndex !== null && (
