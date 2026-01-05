@@ -17,11 +17,12 @@ export default function FeedPosts() {
    const [loading, setLoading] = useState(true);
    const [error, setError] = useState(null);
    const [postIndex, setPostIndex] = useState(null);
-   const [refresh, setRefresh] = useState(0);
+   // const [refresh, setRefresh] = useState(0);
 
    // pagination states
    const [page, setPage] = useState(1);
    const [totalPages, setTotalPages] = useState(1);
+   const [hasMore, setHasMore] = useState(true);
 
    const { getValidToken } = useAuth();
 
@@ -43,8 +44,12 @@ export default function FeedPosts() {
                throw new Error(data.error);
             }
 
-            setPosts(data.posts);
+            // setPosts(data.posts);
+            setPosts((prev) =>
+               page === 1 ? data.posts : [...prev, ...data.posts]
+            );
             setTotalPages(data.totalPages);
+            setHasMore(data.hasMore);
          } catch (err) {
             setError(err.message);
          } finally {
@@ -52,7 +57,7 @@ export default function FeedPosts() {
          }
       }
       fetchFeedPosts();
-   }, [page, refresh]);
+   }, [page]);
 
    // Handle post link for both modal and new page
    const handlePostLink = (e, index) => {
@@ -129,9 +134,9 @@ export default function FeedPosts() {
             <SinglePostModal
                index={postIndex}
                posts={posts}
+               hasMore={hasMore}
                onClose={() => {
                   setPostIndex(null);
-                  setRefresh((prev) => prev + 0.01);
                }}
             />
          )}
