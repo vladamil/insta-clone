@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import ReactDOM from 'react-dom';
 import { FaTimes } from 'react-icons/fa';
 import UserLink from '../user/UserLink';
+import { useLockBodyScroll } from '@/hooks/useLockBodyScroll';
 
 import styles from './UserListModal.module.css';
 
@@ -13,6 +14,8 @@ export default function UserListModal({ isOpen, onClose, title, fetchUsers }) {
    const [loading, setLoading] = useState(false);
    const [error, setError] = useState(null);
    const [searchTerm, setSearchTerm] = useState('');
+
+   useLockBodyScroll(isOpen);
 
    // Fetch when modal opens
    useEffect(() => {

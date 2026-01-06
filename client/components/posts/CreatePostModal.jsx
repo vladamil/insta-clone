@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import ReactDOM from 'react-dom';
 import { FaTimes, FaCamera } from 'react-icons/fa';
 import { useAuth } from '@/context/AuthContext';
+import { useLockBodyScroll } from '@/hooks/useLockBodyScroll';
 import Image from 'next/image';
 
 import styles from './CreatePostModal.module.css';
@@ -16,6 +17,8 @@ export default function CreatePostModal({ isOpen, onClose, onPostCreated }) {
    const [error, setError] = useState(null);
 
    const { getValidToken } = useAuth();
+
+   useLockBodyScroll(isOpen);
 
    // Close modal on ESC
    useEffect(() => {

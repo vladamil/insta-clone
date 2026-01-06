@@ -4,6 +4,7 @@ import ReactDOM from 'react-dom';
 import styles from './SearchModal.module.css';
 import { FaSearch, FaTimes } from 'react-icons/fa';
 import UserLink from '../user/UserLink';
+import { useLockBodyScroll } from '@/hooks/useLockBodyScroll';
 
 export default function SearchModal({ isOpen, onClose }) {
    const [query, setQuery] = useState('');
@@ -16,6 +17,7 @@ export default function SearchModal({ isOpen, onClose }) {
       setQuery('');
    };
 
+   useLockBodyScroll(isOpen);
    // Close modal on ESC
    useEffect(() => {
       const handleEsc = (e) => {
