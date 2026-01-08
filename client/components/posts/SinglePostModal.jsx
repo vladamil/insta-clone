@@ -7,13 +7,13 @@ import { useLockBodyScroll } from '@/hooks/useLockBodyScroll';
 
 const SinglePostModal = ({ index, posts, onClose, onDelete }) => {
    const [postIndex, setPostIndex] = useState(index);
+   useLockBodyScroll(true);
 
    const post = posts[postIndex];
    if (!post) return;
 
    const hasPrev = postIndex > 0;
    const hasNext = postIndex < posts.length - 1;
-   useLockBodyScroll(true);
 
    // Using Arrow keys and Esc key to navigate posts
    useEffect(() => {

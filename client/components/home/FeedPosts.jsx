@@ -23,6 +23,8 @@ export default function FeedPosts() {
 
    const { getValidToken } = useAuth();
    const loadMoreRef = useRef(null);
+   // REF for preventing scroll too fast on mobile and cause multiple/double fetches at once
+   const loadingFlagRef = useRef(false);
 
    useEffect(() => {
       async function fetchFeedPosts() {
@@ -51,6 +53,7 @@ export default function FeedPosts() {
          } catch (err) {
             setError(err.message);
          } finally {
+            loadingFlagRef.current = false;
             setLoading(false);
          }
       }
@@ -65,7 +68,12 @@ export default function FeedPosts() {
          (entries) => {
             const firstEntry = entries[0];
 
-            if (firstEntry.isIntersecting && hasMore && !loading) {
+            if (
+               firstEntry.isIntersecting &&
+               hasMore &&
+               !loadingFlagRef.current
+            ) {
+               loadingFlagRef.current = true;
                setPage((prev) => prev + 1);
             }
          },
@@ -81,7 +89,7 @@ export default function FeedPosts() {
       return () => {
          observer.disconnect();
       };
-   }, [hasMore, loading]);
+   }, [hasMore, posts.length]);
 
    // Handle post link for both modal and new page
    const handlePostLink = (e, index) => {
