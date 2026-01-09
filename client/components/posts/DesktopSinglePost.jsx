@@ -13,6 +13,7 @@ export default function DesktopSinglePost({
    handlePrev,
    hasNext,
    hasPrev,
+   hasMore,
 }) {
    return (
       <div className={styles.overlay}>
@@ -58,7 +59,7 @@ export default function DesktopSinglePost({
                ◀
             </button>
          )}
-         {hasNext && (
+         {(hasNext || hasMore) && (
             <button
                className={`${styles.navBtn} ${styles.nextBtn}`}
                onClick={handleNext}

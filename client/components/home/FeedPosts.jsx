@@ -91,6 +91,14 @@ export default function FeedPosts() {
       };
    }, [hasMore, posts.length]);
 
+   // Function for Single Post Modal to fetch new posts
+   const nextPostsBatch = () => {
+      if (loadingFlagRef.current || !hasMore) return;
+
+      loadingFlagRef.current = true;
+      setPage((prev) => prev + 1);
+   };
+
    // Handle post link for both modal and new page
    const handlePostLink = (e, index) => {
       // Only left click, not middle-click, not ctrl-click, not cmd-click, not right-click
@@ -164,6 +172,7 @@ export default function FeedPosts() {
                index={postIndex}
                posts={posts}
                hasMore={hasMore}
+               onDemandFetch={nextPostsBatch}
                onClose={() => {
                   setPostIndex(null);
                }}

@@ -1,12 +1,21 @@
 'use client';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import ReactDOM from 'react-dom';
 import MobileSinglePost from './MobileSinglePost';
 import DesktopSinglePost from './DesktopSinglePost';
 import { useLockBodyScroll } from '@/hooks/useLockBodyScroll';
 
-const SinglePostModal = ({ index, posts, onClose, onDelete }) => {
+const SinglePostModal = ({
+   index,
+   posts,
+   onClose,
+   onDelete,
+   hasMore,
+   onDemandFetch,
+}) => {
    const [postIndex, setPostIndex] = useState(index);
+   // REF flag to show exactly when we should fetch new posts
+   const fetchPostsRef = useRef(false);
    useLockBodyScroll(true);
 
    const post = posts[postIndex];
@@ -14,18 +23,37 @@ const SinglePostModal = ({ index, posts, onClose, onDelete }) => {
 
    const hasPrev = postIndex > 0;
    const hasNext = postIndex < posts.length - 1;
+   const atEnd = postIndex === posts.length - 1;
+
+   const handlePrev = () => {
+      if (hasPrev) setPostIndex((prev) => prev - 1);
+   };
+
+   const handleNext = async () => {
+      if (hasNext) setPostIndex((prev) => prev + 1);
+      else if (atEnd && hasMore) {
+         fetchPostsRef.current = true;
+         onDemandFetch();
+      }
+   };
+
+   // Setting postIndex +1 AFTER new page loads (posts.length changes)
+   useEffect(() => {
+      if (!fetchPostsRef.current) return;
+
+      if (fetchPostsRef.current) {
+         fetchPostsRef.current = false;
+         setPostIndex((prev) => prev + 1);
+      }
+   }, [posts.length]);
 
    // Using Arrow keys and Esc key to navigate posts
    useEffect(() => {
       const handleKeyDown = (e) => {
          if (e.key === 'ArrowLeft') {
-            if (hasPrev) {
-               setPostIndex((prev) => prev - 1);
-            }
+            handlePrev();
          } else if (e.key === 'ArrowRight') {
-            if (hasNext) {
-               setPostIndex((prev) => prev + 1);
-            }
+            handleNext();
          } else if (e.key === 'Escape') {
             onClose();
          }
@@ -38,15 +66,10 @@ const SinglePostModal = ({ index, posts, onClose, onDelete }) => {
       return () => {
          window.removeEventListener('keydown', handleKeyDown);
       };
-   }, [hasPrev, hasNext, onClose]);
+   }, [handlePrev, handleNext, onClose]);
 
-   const handlePrev = () => {
-      if (hasPrev) setPostIndex((prev) => prev - 1);
-   };
-
-   const handleNext = () => {
-      if (hasNext) setPostIndex((prev) => prev + 1);
-   };
+   console.log(postIndex);
+   console.log('Lenght', posts.length - 1);
 
    const modalContent = (
       <>
@@ -58,6 +81,7 @@ const SinglePostModal = ({ index, posts, onClose, onDelete }) => {
                handleNext={handleNext}
                hasPrev={hasPrev}
                hasNext={hasNext}
+               hasMore={hasMore}
                onDelete={onDelete}
             />
          </div>
