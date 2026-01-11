@@ -1,11 +1,10 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
+import { useGetInfinitePosts } from '@/hooks/useGetInfinitePosts';
 import Link from 'next/link';
 import Image from 'next/image';
 import { FaExclamationCircle } from 'react-icons/fa';
-import { useAuth } from '@/context/AuthContext';
-import PostsPagination from '../posts/PostsPagination';
 import SinglePostModal from '../posts/SinglePostModal';
 import Spinner from '../common/Spinner';
 import StatusPage from '../common/StatusPage';
@@ -13,47 +12,13 @@ import StatusPage from '../common/StatusPage';
 import styles from '../profile/ProfilePosts.module.css';
 
 export default function UserPosts({ id }) {
-   const [posts, setPosts] = useState(null);
-   const [loading, setLoading] = useState(false);
-   const [error, setError] = useState(null);
    const [postIndex, setPostIndex] = useState(null);
-   const [refresh, setRefresh] = useState(0);
 
-   // pagination states
-   const [page, setPage] = useState(1);
-   const [totalPages, setTotalPages] = useState(1);
-
-   const { getValidToken } = useAuth();
-
-   useEffect(() => {
-      async function fetchPosts() {
-         try {
-            const token = getValidToken();
-            setLoading(true);
-
-            const res = await fetch(
-               `${process.env.NEXT_PUBLIC_API_URL}/api/users/${id}/posts?page=${page}&limit=12`,
-               {
-                  headers: { Authorization: `Bearer ${token}` },
-               }
-            );
-            const data = await res.json();
-
-            // 404 error is handled in user header component
-            if (!res.ok && res.status !== 404) {
-               throw new Error(data.error);
-            }
-
-            setPosts(data.posts);
-            setTotalPages(data.totalPages);
-         } catch (err) {
-            setError(err.message);
-         } finally {
-            setLoading(false);
-         }
-      }
-      fetchPosts();
-   }, [id, page, refresh]);
+   const { posts, loading, page, error, hasMore, loadMoreRef, nextPostsBatch } =
+      useGetInfinitePosts({
+         buildUrl: (page) =>
+            `${process.env.NEXT_PUBLIC_API_URL}/api/users/${id}/posts?page=${page}&limit=12`,
+      });
 
    // Handle post link for both modal and new page
    const handlePostLink = (e, index) => {
@@ -64,7 +29,7 @@ export default function UserPosts({ id }) {
       }
    };
 
-   if (loading)
+   if (loading && page === 1)
       return (
          <div style={{ height: '100vh' }}>
             <Spinner />
@@ -116,23 +81,18 @@ export default function UserPosts({ id }) {
             ))}
          </div>
 
-         {/* PAGINATION BUTTONS */}
-         {totalPages > 1 && (
-            <PostsPagination
-               page={page}
-               setPage={setPage}
-               totalPages={totalPages}
-            />
-         )}
+         {/* Sentinel for IntesectionObserver*/}
+         {hasMore && <div ref={loadMoreRef} style={{ height: '10px' }} />}
 
          {/* Modal for VIEWING post */}
          {postIndex !== null && (
             <SinglePostModal
                index={postIndex}
                posts={posts}
+               hasMore={hasMore}
+               onDemandFetch={nextPostsBatch}
                onClose={() => {
                   setPostIndex(null);
-                  setRefresh((prev) => prev + 0.01);
                }}
             />
          )}

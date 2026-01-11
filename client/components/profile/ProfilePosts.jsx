@@ -1,63 +1,32 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
+import { useGetInfinitePosts } from '@/hooks/useGetInfinitePosts';
 import Link from 'next/link';
 import { FaCamera, FaExclamationCircle } from 'react-icons/fa';
 import Image from 'next/image';
 import CreatePostModal from '../posts/CreatePostModal';
 import SinglePostModal from '../posts/SinglePostModal';
-import PostsPagination from '../posts/PostsPagination';
 import Spinner from '../common/Spinner';
 import StatusPage from '../common/StatusPage';
 
 import styles from './ProfilePosts.module.css';
 
-export default function ProfilePosts({
-   user,
-   authLoading,
-   refresh,
-   triggerRefresh,
-   getValidToken,
-}) {
-   const [posts, setPosts] = useState(null);
-   const [loading, setLoading] = useState(false);
-   const [error, setError] = useState(null);
+export default function ProfilePosts({ user, triggerRefresh }) {
    const [showCreatePostModal, setShowCreatePostModal] = useState(false);
    const [postIndex, setPostIndex] = useState(null);
-   // pagination states
-   const [page, setPage] = useState(1);
-   const [totalPages, setTotalPages] = useState(1);
 
-   useEffect(() => {
-      if (authLoading) return;
-
-      const token = getValidToken();
-      if (!token) return;
-
-      async function fetchPosts() {
-         try {
-            setLoading(true);
-            const res = await fetch(
-               `${process.env.NEXT_PUBLIC_API_URL}/api/users/${user?._id}/posts?page=${page}&limit=11`,
-               {
-                  headers: { Authorization: `Bearer ${token}` },
-               }
-            );
-            const data = await res.json();
-
-            if (!res.ok) {
-               throw new Error(data.error);
-            }
-
-            setPosts(data.posts);
-            setTotalPages(data.totalPages);
-         } catch (err) {
-            setError(err.message);
-         } finally {
-            setLoading(false);
-         }
-      }
-
-      fetchPosts();
-   }, [user, authLoading, refresh, page]);
+   const {
+      posts,
+      loading,
+      page,
+      error,
+      hasMore,
+      loadMoreRef,
+      nextPostsBatch,
+      refreshPosts,
+   } = useGetInfinitePosts({
+      buildUrl: (page) =>
+         `${process.env.NEXT_PUBLIC_API_URL}/api/users/${user?._id}/posts?page=${page}&limit=11`,
+   });
 
    // Handle post link for both modal and new page
    const handlePostLink = (e, index) => {
@@ -70,18 +39,18 @@ export default function ProfilePosts({
 
    // Update posts UI based on creating post
    const handlePostCreated = (newPost) => {
-      setPosts((prev) => [newPost, ...prev]); // instantly show it in UI
       triggerRefresh();
+      refreshPosts();
    };
 
    // Update posts UI based on deleting post
    const handlePostDeleted = (deletedId) => {
-      setPosts((prev) => prev.filter((p) => p._id !== deletedId));
       setPostIndex(null);
       triggerRefresh();
+      refreshPosts();
    };
 
-   if (loading)
+   if (loading && page === 1)
       return (
          <div style={{ height: '100vh' }}>
             <Spinner />
@@ -155,14 +124,8 @@ export default function ProfilePosts({
             ))}
          </div>
 
-         {/* PAGINATION BUTTONS */}
-         {totalPages > 1 && (
-            <PostsPagination
-               page={page}
-               setPage={setPage}
-               totalPages={totalPages}
-            />
-         )}
+         {/* Sentinel for IntesectionObserver*/}
+         {hasMore && <div ref={loadMoreRef} style={{ height: '10px' }} />}
 
          {/* Modal for ADDING new post */}
          <CreatePostModal
@@ -170,11 +133,14 @@ export default function ProfilePosts({
             onClose={() => setShowCreatePostModal(false)}
             onPostCreated={handlePostCreated}
          />
+
          {/* Modal for VIEWING and DELETING post */}
          {postIndex !== null && (
             <SinglePostModal
                index={postIndex}
                posts={posts}
+               hasMore={hasMore}
+               onDemandFetch={nextPostsBatch}
                onDelete={handlePostDeleted}
                onClose={() => {
                   setPostIndex(null);

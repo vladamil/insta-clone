@@ -9,6 +9,7 @@ export function useGetInfinitePosts({ buildUrl }) {
    // pagination states
    const [page, setPage] = useState(1);
    const [hasMore, setHasMore] = useState(true);
+   const [refresh, setRefresh] = useState(0);
 
    const { getValidToken } = useAuth();
 
@@ -30,7 +31,7 @@ export function useGetInfinitePosts({ buildUrl }) {
             });
             const data = await res.json();
 
-            if (!res.ok && res.status !== 404) {
+            if (!res.ok) {
                throw new Error(data.error);
             }
 
@@ -47,7 +48,7 @@ export function useGetInfinitePosts({ buildUrl }) {
          }
       }
       fetchPosts();
-   }, [page]);
+   }, [page, refresh]);
 
    // useEffect for Intersection Observer
    useEffect(() => {
@@ -80,12 +81,20 @@ export function useGetInfinitePosts({ buildUrl }) {
       };
    }, [hasMore, posts.length]);
 
-   // Function for Single Post Modal to fetch new posts
+   // Function for Single Post Modal to fetch new 'batch' of posts
    function nextPostsBatch() {
       if (loadingFlagRef.current || !hasMore) return;
 
       loadingFlagRef.current = true;
       setPage((prev) => prev + 1);
+   }
+
+   // Refresh Posts states for add and delete post purposes
+   function refreshPosts() {
+      setPosts([]);
+      setPage(1);
+      setHasMore(true);
+      setRefresh((prev) => prev + 1);
    }
 
    return {
@@ -96,5 +105,6 @@ export function useGetInfinitePosts({ buildUrl }) {
       hasMore,
       loadMoreRef,
       nextPostsBatch,
+      refreshPosts,
    };
 }
