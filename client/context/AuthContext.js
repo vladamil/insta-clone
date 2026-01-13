@@ -1,12 +1,6 @@
 'use client';
 
-import {
-   createContext,
-   useContext,
-   useState,
-   useEffect,
-   useCallback,
-} from 'react';
+import { createContext, useContext, useState, useEffect } from 'react';
 import { jwtDecode } from 'jwt-decode';
 import { useRouter } from 'next/navigation';
 import { API_URL } from '@/lib/constants';
@@ -47,7 +41,7 @@ export function AuthProvider({ children }) {
             }
          } catch (err) {
             localStorage.removeItem('token');
-            setAuthError('Failed to authenticate. Try again.');
+            setAuthError('Service temporarily unavailable. Please try again.');
             setUser(null);
          } finally {
             setLoading(false);
