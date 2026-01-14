@@ -6,55 +6,11 @@
    background: #fff;
    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
 }
-/* Gradient or image banner */
+
 .banner {
    width: 100%;
    height: 60px;
    background: linear-gradient(135deg, #0070f3, #00c6ff);
-}
-
-.userInfo {
-   display: flex;
-   flex-direction: column;
-   align-items: center;
-   padding-bottom: 1.5rem;
-   text-align: center;
-   margin-top: -50px; /* lifts avatar above banner */
-}
-
-.avatarWrapper {
-   position: relative;
-   border-radius: 50%;
-   border: 4px solid #fff;
-   background-color: #fff;
-   overflow: hidden;
-   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
-   width: 90px;
-   height: 90px;
-}
-
-.avatar {
-   border-radius: 50%;
-   object-fit: cover;
-}
-
-.text {
-   margin-top: 0.8rem;
-}
-
-.text h1 {
-   font-size: 1.2rem;
-   font-weight: 600;
-}
-
-.text span {
-   color: #0070f3;
-}
-
-.text p {
-   color: #666;
-   font-size: 0.9rem;
-   margin-top: 0.3rem;
 }
 
 /* CONTENT */
@@ -90,30 +46,5 @@
 @media screen and (max-width: 768px) {
    .banner {
       height: 40px;
-   }
-
-   .userInfo {
-      padding-bottom: 0.5rem;
-      margin-top: -30px; /* lifts avatar above banner */
-   }
-
-   .avatarWrapper {
-      width: 60px;
-      height: 60px;
-      border: 3px solid #fff;
-   }
-
-   .text {
-      margin-top: 0.3rem;
-   }
-
-   .text h1 {
-      font-size: 1.1rem;
-      font-weight: 600;
-   }
-
-   .text p {
-      font-size: 0.8rem;
-      margin-top: 0.2rem;
    }
 }
