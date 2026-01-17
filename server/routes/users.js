@@ -3,6 +3,7 @@ const router = express.Router();
 const User = require('../models/User');
 const Follow = require('../models/Follow');
 const Post = require('../models/Post');
+const Comment = require('../models/Comment');
 const requireAuth = require('../middleware/requireAuth');
 const mongoose = require('mongoose');
 
@@ -72,9 +73,6 @@ router.get('/:id/posts', requireAuth, async (req, res) => {
          return res.status(404).json({ error: 'User not found' });
       }
 
-      // total of user posts
-      const total = await Post.countDocuments({ author: user._id });
-
       const userPosts = await Post.find({ author: user._id })
          .sort({ createdAt: -1 })
          .skip(skip)
@@ -96,10 +94,25 @@ router.get('/:id/posts', requireAuth, async (req, res) => {
          likesCount: post.likes.length,
       }));
 
+      // Enrich posts with comments count from DB
+      const postIds = posts.map((p) => p._id);
+
+      const counts = await Comment.aggregate([
+         { $match: { post: { $in: postIds } } },
+         { $group: { _id: '$post', count: { $sum: 1 } } },
+      ]);
+
+      const countsMap = Object.fromEntries(
+         counts.map((c) => [c._id.toString(), c.count])
+      );
+
+      const enrichedPosts = posts.map((post) => ({
+         ...post,
+         commentsCount: countsMap[post._id.toString()] || 0,
+      }));
+
       res.status(200).json({
-         posts,
-         total,
-         totalPages: Math.ceil(total / limit),
+         posts: enrichedPosts,
          hasMore,
       });
    } catch (err) {

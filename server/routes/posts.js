@@ -82,11 +82,6 @@ router.get('/feed', requireAuth, async (req, res) => {
       // Always include the logged-in user's own posts too
       followingIds.push(req.user.id);
 
-      // Total of all feed posts
-      const total = await Post.countDocuments({
-         author: { $in: followingIds },
-      });
-
       // Posts of followed users PER PAGE
       const feedPosts = await Post.find({ author: { $in: followingIds } })
          .sort({ createdAt: -1 })
@@ -109,9 +104,25 @@ router.get('/feed', requireAuth, async (req, res) => {
          likesCount: post.likes.length,
       }));
 
+      // Enrich posts with comments count from DB
+      const postIds = posts.map((p) => p._id);
+
+      const counts = await Comment.aggregate([
+         { $match: { post: { $in: postIds } } },
+         { $group: { _id: '$post', count: { $sum: 1 } } },
+      ]);
+
+      const countsMap = Object.fromEntries(
+         counts.map((c) => [c._id.toString(), c.count])
+      );
+
+      const enrichedPosts = posts.map((post) => ({
+         ...post,
+         commentsCount: countsMap[post._id.toString()] || 0,
+      }));
+
       res.status(200).json({
-         posts,
-         totalPages: Math.ceil(total / limit),
+         posts: enrichedPosts,
          hasMore,
       });
    } catch (error) {
@@ -251,8 +262,6 @@ router.post('/:id/comment', requireAuth, async (req, res) => {
       const comment = new Comment({ post: post.id, author: req.user.id, text });
       await comment.save();
 
-      // increment commentsCount
-      await Post.findByIdAndUpdate(post._id, { $inc: { commentsCount: 1 } });
 
       res.status(201).json(comment);
    } catch (error) {
