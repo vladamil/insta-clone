@@ -5,7 +5,8 @@ body {
 }
 
 body {
-   font-family: Arial, Helvetica, sans-serif;
+   font-family: var(--font-inter), sans-serif;
+   color: #111827;
    -webkit-font-smoothing: antialiased;
    -moz-osx-font-smoothing: grayscale;
 }
