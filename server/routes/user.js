@@ -3,8 +3,10 @@ const User = require('../models/User');
 const Follow = require('../models/Follow');
 const requireAuth = require('../middleware/requireAuth');
 const mongoose = require('mongoose');
+const { Resend } = require('resend');
 
 const router = express.Router();
+const resend = new Resend(process.env.RESEND_API_KEY);
 
 router.get('/me', requireAuth, async (req, res) => {
    try {
@@ -25,7 +27,7 @@ router.get('/discover', requireAuth, async (req, res) => {
 
       // User's followings
       const following = await Follow.find({ followerId: userId }).select(
-         'followingId'
+         'followingId',
       );
       const followingIds = following.map((f) => f.followingId.toString());
 
@@ -40,7 +42,7 @@ router.get('/discover', requireAuth, async (req, res) => {
       const excludedIds = [userId, ...followingIds];
 
       suggestionIds = [...new Set(suggestionIds)].filter(
-         (id) => !excludedIds.includes(id)
+         (id) => !excludedIds.includes(id),
       );
 
       let suggestions = [];
@@ -57,7 +59,7 @@ router.get('/discover', requireAuth, async (req, res) => {
                $match: {
                   _id: {
                      $nin: excludedIds.map(
-                        (id) => new mongoose.Types.ObjectId(id)
+                        (id) => new mongoose.Types.ObjectId(id),
                      ),
                   },
                },
@@ -93,6 +95,25 @@ router.get('/search', async (req, res) => {
       res.json(users);
    } catch (err) {
       res.status(500).json({ error: 'Failed to search users' });
+   }
+});
+
+router.post('/test-email', async (req, res) => {
+   try {
+      const response = await resend.emails.send({
+         from: process.env.EMAIL_FROM,
+         to: 'batjusha@gmail.com', // 👈 put your real email
+         subject: '🔥 Resend test successful',
+         html: `
+        <h1>It works! 🚀</h1>
+        <p>Your Resend + Express setup is alive.</p>
+      `,
+      });
+
+      res.status(200).json({ success: true, response });
+   } catch (error) {
+      console.error('Email error:', error);
+      res.status(500).json({ success: false, error });
    }
 });
 
