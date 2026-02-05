@@ -1,8 +1,10 @@
 const express = require('express');
 const bcrypt = require('bcryptjs');
+const crypto = require('crypto');
 const jwt = require('jsonwebtoken');
 const router = express.Router();
 const User = require('../models/User');
+const { sendVerificationEmail } = require('../utils/sendEmail');
 
 router.post('/register', async (req, res) => {
    // Sanitize data from req
@@ -88,14 +90,31 @@ router.post('/register', async (req, res) => {
       const salt = await bcrypt.genSalt(10);
       const hashedPassword = await bcrypt.hash(password, salt);
 
+      // Generate verification token
+      const emailVerificationToken = crypto.randomBytes(32).toString('hex');
+
+      const emailVerificationExpires = Date.now() + 24 * 60 * 60 * 1000; // 24h
+
       const newUser = new User({
          email,
          username,
          realname,
          passwordHash: hashedPassword,
+         emailVerificationToken,
+         emailVerificationExpires,
       });
       await newUser.save();
-      res.status(201).json({ message: 'User registered 🎉' });
+
+      // Send verification email
+      await sendVerificationEmail({
+         to: email,
+         token: emailVerificationToken,
+      });
+
+      res.status(201).json({
+         message:
+            'Registration successful. Please check your email to verify your account.',
+      });
    } catch (err) {
       res.status(500).json({ error: 'Server error during registration' });
    }
@@ -130,7 +149,7 @@ router.post('/login', async (req, res) => {
       const token = jwt.sign(
          { id: user._id, username: user.username },
          process.env.JWT_SECRET,
-         { expiresIn: '7d' }
+         { expiresIn: '7d' },
       );
 
       const { passwordHash, ...userWithoutPassword } = user.toObject();

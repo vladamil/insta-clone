@@ -20,10 +20,6 @@ const userSchema = new mongoose.Schema(
          type: String,
          required: true,
       },
-      isConfirmed: {
-         type: Boolean,
-         default: false,
-      },
       profilePicUrl: {
          type: String,
          default: '',
@@ -36,8 +32,19 @@ const userSchema = new mongoose.Schema(
          type: String,
          default: '',
       },
+      isVerified: {
+         type: Boolean,
+         default: false,
+      },
+      emailVerificationToken: {
+         type: String,
+      },
+
+      emailVerificationExpires: {
+         type: Date,
+      },
    },
-   { timestamps: true }
+   { timestamps: true },
 );
 
 module.exports = mongoose.model('User', userSchema);
