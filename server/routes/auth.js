@@ -6,6 +6,7 @@ const router = express.Router();
 const User = require('../models/User');
 const { sendVerificationEmail } = require('../utils/sendEmail');
 
+// REGISTER ROUTE
 router.post('/register', async (req, res) => {
    // Sanitize data from req
    const email = req.body.email?.trim().toLowerCase();
@@ -120,6 +121,7 @@ router.post('/register', async (req, res) => {
    }
 });
 
+// LOGIN ROUTE
 router.post('/login', async (req, res) => {
    // Sanitize data from req
    const username = req.body.username?.trim().toLowerCase();
@@ -145,6 +147,13 @@ router.post('/login', async (req, res) => {
          return res.status(400).json({ error: 'Invalid username or password' });
       }
 
+      // Check if user verified email
+      if (!user.isVerified) {
+         return res.status(403).json({
+            error: 'Please verify your email before logging in',
+         });
+      }
+
       // Generate JWT
       const token = jwt.sign(
          { id: user._id, username: user.username },
@@ -162,6 +171,41 @@ router.post('/login', async (req, res) => {
       });
    } catch (error) {
       res.status(500).json({ error: 'Server error during login' });
+   }
+});
+
+// VERIFY EMAIL ROUTE
+router.get('/verify-email', async (req, res) => {
+   const { token } = req.query;
+
+   if (!token) {
+      return res.status(400).json({ error: 'Missing verification token' });
+   }
+
+   try {
+      const user = await User.findOne({
+         emailVerificationToken: token,
+         emailVerificationExpires: { $gt: Date.now() },
+      });
+
+      if (!user) {
+         return res.status(400).json({
+            error: 'Invalid or expired verification token',
+         });
+      }
+
+      // ✅ Verify user
+      user.isVerified = true;
+      user.emailVerificationToken = undefined;
+      user.emailVerificationExpires = undefined;
+
+      await user.save();
+
+      res.status(200).json({
+         message: 'Email verified successfully. You can now log in.',
+      });
+   } catch (error) {
+      res.status(500).json({ error: 'Email verification failed' });
    }
 });
 

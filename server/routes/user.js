@@ -3,10 +3,8 @@ const User = require('../models/User');
 const Follow = require('../models/Follow');
 const requireAuth = require('../middleware/requireAuth');
 const mongoose = require('mongoose');
-const { Resend } = require('resend');
 
 const router = express.Router();
-const resend = new Resend(process.env.RESEND_API_KEY);
 
 router.get('/me', requireAuth, async (req, res) => {
    try {
@@ -95,25 +93,6 @@ router.get('/search', async (req, res) => {
       res.json(users);
    } catch (err) {
       res.status(500).json({ error: 'Failed to search users' });
-   }
-});
-
-router.post('/test-email', async (req, res) => {
-   try {
-      const response = await resend.emails.send({
-         from: process.env.EMAIL_FROM,
-         to: 'batjusha@gmail.com', // 👈 put your real email
-         subject: '🔥 Resend test successful',
-         html: `
-        <h1>It works! 🚀</h1>
-        <p>Your Resend + Express setup is alive.</p>
-      `,
-      });
-
-      res.status(200).json({ success: true, response });
-   } catch (error) {
-      console.error('Email error:', error);
-      res.status(500).json({ success: false, error });
    }
 });
 
