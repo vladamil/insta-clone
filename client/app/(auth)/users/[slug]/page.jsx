@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { useParams } from 'next/navigation';
+import Link from 'next/link';
 import { FaUserAltSlash } from 'react-icons/fa';
 import UserHeader from '@/components/user/UserHeader';
 import UserPosts from '@/components/user/UserPosts';
@@ -25,7 +26,7 @@ export default function ProfilePage() {
             title={'User Not Found'}
             text={'The user doesn’t exist or has been deleted.'}
             icon={<FaUserAltSlash />}
-            button={true}
+            action={<Link href="/home">Back Home</Link>}
          />
       );
 

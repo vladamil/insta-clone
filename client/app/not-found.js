@@ -1,4 +1,5 @@
 import StatusNotFound from '@/components/common/StatusPage';
+import Link from 'next/link';
 import { FaSearchMinus } from 'react-icons/fa';
 
 export default function NotFound() {
@@ -9,7 +10,7 @@ export default function NotFound() {
             'The page you are looking for doesn’t exist or has been removed.'
          }
          icon={<FaSearchMinus />}
-         button={true}
+         action={<Link href="/home">Back Home</Link>}
       />
    );
 }

@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useParams } from 'next/navigation';
+import Link from 'next/link';
 import { FaVideoSlash } from 'react-icons/fa';
 
 import { useAuth } from '@/context/AuthContext';
@@ -29,7 +30,7 @@ export default function PostPage() {
                `${process.env.NEXT_PUBLIC_API_URL}/api/posts/${postId}`,
                {
                   headers: { Authorization: `Bearer ${token}` },
-               }
+               },
             );
             const data = await res.json();
 
@@ -60,7 +61,7 @@ export default function PostPage() {
             title={'Post Not Found'}
             text={'The post doesn’t exist or has been deleted.'}
             icon={<FaVideoSlash />}
-            button={true}
+            action={<Link href="/home">Back Home</Link>}
          />
       );
    if (error)
@@ -69,7 +70,7 @@ export default function PostPage() {
             title={'Something Went Wrong'}
             text={`Could not fetch posts (${error}). Please, try again.`}
             icon={<FaVideoSlash />}
-            button={true}
+            action={<Link href="/home">Back Home</Link>}
          />
       );
    if (!loading && !post) return null;

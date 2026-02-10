@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
+import Link from 'next/link';
 import { FaEnvelopeOpenText } from 'react-icons/fa';
 import StatusPage from '@/components/common/StatusPage';
 import Spinner from '@/components/common/Spinner';
@@ -54,6 +55,7 @@ export default function VerifyEmailPage() {
             title={'Email is not verified'}
             text={error}
             icon={<FaEnvelopeOpenText />}
+            action={<Link href="/login">Back to login</Link>}
          />
       );
    }
@@ -64,7 +66,7 @@ export default function VerifyEmailPage() {
             title={'Email verified'}
             text={'Your account is now active. You can log in.'}
             icon={<FaEnvelopeOpenText />}
-            button={true}
+            action={<Link href="/login">Go to login</Link>}
          />
       );
    }

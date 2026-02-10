@@ -2,6 +2,7 @@
 
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import { FaExclamationCircle } from 'react-icons/fa';
 import { useAuth } from '@/context/AuthContext';
 import Navigation from '@/components/navigation/Navigation';
@@ -28,7 +29,7 @@ export default function NavLayout({ children }) {
             title={'Something Went Wrong'}
             text={'Authentication error. Please try again.'}
             icon={<FaExclamationCircle />}
-            button={true}
+            action={<Link href="/home">Back Home</Link>}
          />
       );
    if (!user) return null;

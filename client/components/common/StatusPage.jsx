@@ -1,7 +1,6 @@
-import Link from 'next/link';
 import styles from './StatusPage.module.css';
 
-export default function StatusPage({ title, text, icon, button = false }) {
+export default function StatusPage({ title, text, icon, action = false }) {
    return (
       <div className={styles.wrapper}>
          <div className={styles.card}>
@@ -10,11 +9,7 @@ export default function StatusPage({ title, text, icon, button = false }) {
             <h1 className={styles.title}>{title}</h1>
             <p className={styles.message}>{text}</p>
 
-            {button && (
-               <Link href="/" className={styles.button}>
-                  Back Home
-               </Link>
-            )}
+            {action && <div className={styles.button}>{action}</div>}
          </div>
       </div>
    );
