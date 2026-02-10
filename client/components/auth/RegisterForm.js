@@ -1,5 +1,6 @@
 'use client';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useAuth } from '@/context/AuthContext';
 import styles from './AuthForm.module.css';
@@ -19,10 +20,19 @@ export default function RegisterForm({ fromHome, onToggle }) {
    const [error, setError] = useState('');
    const [success, setSuccess] = useState('');
 
+   const router = useRouter();
+
    const { email, username, realname, password } = formData;
    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/;
    const realnameRegex = /^[\p{L}][\p{L}\s'-]{1,39}$/u;
+
+   // Redirect to Check Email page if success is true
+   useEffect(() => {
+      if (success) {
+         router.replace('/check-email');
+      }
+   }, [success, router]);
 
    const handleChange = (e) => {
       setFormData((prev) => ({
@@ -68,7 +78,7 @@ export default function RegisterForm({ fromHome, onToggle }) {
       // Validate real name text
       if (!realnameRegex.test(realname)) {
          setError(
-            'Real name may contain letters, spaces and hyphens only (no numbers or symbols)'
+            'Real name may contain letters, spaces and hyphens only (no numbers or symbols)',
          );
          setLoading(false);
          return;
@@ -91,7 +101,7 @@ export default function RegisterForm({ fromHome, onToggle }) {
       // Validate password strenght
       if (!passwordRegex.test(password)) {
          setError(
-            'Password must have at least 8 characters (one uppercase, one lowercase, one number, and one special character)'
+            'Password must have at least 8 characters (one uppercase, one lowercase, one number, and one special character)',
          );
          setLoading(false);
          return;
@@ -182,27 +192,6 @@ export default function RegisterForm({ fromHome, onToggle }) {
          {!success && (
             <p className={styles.switch}>
                Already have an account? You can{' '}
-               {!fromHome && (
-                  <Link style={{ textDecoration: 'underline' }} href="/login">
-                     Login
-                  </Link>
-               )}
-               {/* if from HOME PAGE just toggle view */}
-               {fromHome && (
-                  <span
-                     style={{ textDecoration: 'underline', cursor: 'pointer' }}
-                     onClick={onToggle}
-                  >
-                     Login
-                  </span>
-               )}
-            </p>
-         )}
-
-         {/* AFTER REGISTRATION MESSAGE */}
-         {success && (
-            <p className={styles.switch}>
-               Registration successful! You can now{' '}
                {!fromHome && (
                   <Link style={{ textDecoration: 'underline' }} href="/login">
                      Login
