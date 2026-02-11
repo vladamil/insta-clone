@@ -11,6 +11,7 @@ export function AuthProvider({ children }) {
    const [user, setUser] = useState(null);
    const [loading, setLoading] = useState(true);
    const [authError, setAuthError] = useState(null);
+   const [showResend, setShowResend] = useState(false);
 
    const router = useRouter();
 
@@ -82,6 +83,7 @@ export function AuthProvider({ children }) {
 
    // Login user function
    const login = async (username, password) => {
+      setShowResend(false);
       try {
          const res = await fetch(`${API_URL}/api/login`, {
             method: 'POST',
@@ -94,6 +96,7 @@ export function AuthProvider({ children }) {
          const data = await res.json();
 
          if (!res.ok) {
+            if (data.code === 'EMAIL_NOT_VERIFIED') setShowResend(true);
             throw new Error(data.error || 'Login failed');
          }
 
@@ -103,6 +106,7 @@ export function AuthProvider({ children }) {
          // set user from backend response directly and redirect
          setUser(data.user);
          setAuthError(null);
+         setShowResend(false);
          router.replace('/profile');
       } catch (err) {
          setAuthError(err.message);
@@ -146,6 +150,7 @@ export function AuthProvider({ children }) {
             user,
             loading,
             authError,
+            showResend,
             register,
             login,
             logout,

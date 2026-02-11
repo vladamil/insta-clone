@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useAuth } from '@/context/AuthContext';
 import styles from './AuthForm.module.css';
@@ -10,7 +11,8 @@ export default function LoginForm({ fromHome, onToggle }) {
    });
    const [loading, setLoading] = useState(false);
 
-   const { login, authError } = useAuth();
+   const router = useRouter();
+   const { login, authError, showResend } = useAuth();
 
    const handleChange = (e) => {
       setFormData((prev) => ({
@@ -28,11 +30,52 @@ export default function LoginForm({ fromHome, onToggle }) {
       setLoading(false);
    };
 
+   const handleResend = async () => {
+      try {
+         const res = await fetch(
+            `${process.env.NEXT_PUBLIC_API_URL}/api/resend-verification`,
+            {
+               method: 'POST',
+               headers: {
+                  'Content-Type': 'application/json',
+               },
+               body: JSON.stringify({ username: formData.username }),
+            },
+         );
+
+         const data = await res.json();
+
+         if (!res.ok) {
+            throw new Error(data.error || 'Login failed');
+         }
+
+         router.replace('/check-email');
+      } catch (err) {
+         console.error(err.message);
+      }
+   };
+
    return (
       <form className={styles.form} onSubmit={handleSubmit}>
          <h2 className={styles.title}>Login</h2>
 
          {authError && <p className={styles.error}>{authError}</p>}
+         {showResend && (
+            <div className={styles.resend}>
+               <p className={styles.resendText}>
+                  Please check your email for the confirmation link.
+               </p>
+               <p className={styles.resendText}>
+                  Didn't receive it?
+                  <button
+                     className={styles.resendButton}
+                     onClick={handleResend}
+                  >
+                     Resend Verification Email
+                  </button>
+               </p>
+            </div>
+         )}
 
          <input
             className={styles.input}

@@ -44,11 +44,38 @@
 .button:hover:not(:disabled) {
    background-color: #2d82d9;
 }
+.resend {
+   margin: 16px 0;
+}
+
+.resendButton {
+   background: none;
+   border: none;
+   color: #2563eb;
+   text-decoration: underline;
+   cursor: pointer;
+   font-size: 0.9rem;
+   font-family: inherit;
+   margin-left: 8px;
+}
+
+.resendButton:disabled {
+   opacity: 0.6;
+   cursor: not-allowed;
+}
+
+.resendText {
+   font-size: 0.9rem;
+   color: rgb(44, 44, 44);
+   margin-bottom: 4px;
+   text-align: center;
+}
 
 .error {
    color: #ff4d4f;
    font-size: 0.9rem;
    margin-bottom: 1rem;
+   text-align: center;
 }
 
 .switch {

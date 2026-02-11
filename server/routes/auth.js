@@ -5,6 +5,7 @@ const jwt = require('jsonwebtoken');
 const router = express.Router();
 const User = require('../models/User');
 const { sendVerificationEmail } = require('../utils/sendEmail');
+const { error } = require('console');
 
 // REGISTER ROUTE
 router.post('/register', async (req, res) => {
@@ -151,6 +152,7 @@ router.post('/login', async (req, res) => {
       if (!user.isVerified) {
          return res.status(403).json({
             error: 'Please verify your email before logging in',
+            code: 'EMAIL_NOT_VERIFIED',
          });
       }
 
@@ -194,7 +196,7 @@ router.get('/verify-email', async (req, res) => {
          });
       }
 
-      // ✅ Verify user
+      // Verify user
       user.isVerified = true;
       user.emailVerificationToken = undefined;
       user.emailVerificationExpires = undefined;
@@ -207,6 +209,38 @@ router.get('/verify-email', async (req, res) => {
    } catch (error) {
       res.status(500).json({ error: 'Email verification failed' });
    }
+});
+
+// RESEND VERIFY EMAIL ROUTE
+router.post('/resend-verification', async (req, res) => {
+   const { username } = req.body;
+
+   const user = await User.findOne({ username });
+
+   if (!user) {
+      return res.status(400).json({
+         error: 'Account does not exist.',
+      });
+   }
+
+   if (user.isVerified) {
+      return res.status(400).json({
+         error: 'Account already verified.',
+      });
+   }
+
+   // generate NEW token
+   const token = crypto.randomBytes(32).toString('hex');
+
+   user.emailVerificationToken = token;
+   user.emailVerificationExpires = Date.now() + 1000 * 60 * 60; // 1h
+   await user.save();
+
+   await sendVerificationEmail({ to: user.email, token });
+
+   res.status(200).json({
+      message: 'Verification email sent',
+   });
 });
 
 module.exports = router;
