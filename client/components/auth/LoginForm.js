@@ -10,11 +10,12 @@ export default function LoginForm({ fromHome, onToggle }) {
       password: '',
    });
    const [loading, setLoading] = useState(false);
-   const [resendError, setResendError] = useState(null);
    const [resendLoading, setResendLoading] = useState(false);
+   const [showResend, setShowResend] = useState(false);
+   const [error, setError] = useState(null);
 
    const router = useRouter();
-   const { login, authError, showResend } = useAuth();
+   const { login } = useAuth();
 
    const handleChange = (e) => {
       setFormData((prev) => ({
@@ -26,15 +27,27 @@ export default function LoginForm({ fromHome, onToggle }) {
    const handleSubmit = async (e) => {
       e.preventDefault();
       setLoading(true);
+      setShowResend(false);
 
-      await login(formData.username, formData.password);
+      const result = await login(formData.username, formData.password);
+
+      if (!result.success) {
+         setError(result.message);
+
+         if (result.code === 'EMAIL_NOT_VERIFIED') {
+            setShowResend(true);
+         }
+         setLoading(false);
+         return;
+      }
 
       setLoading(false);
+      router.replace('/profile');
    };
 
    const handleResend = async () => {
       setResendLoading(true);
-      setResendError(null);
+      setError(null);
 
       try {
          const res = await fetch(
@@ -56,7 +69,7 @@ export default function LoginForm({ fromHome, onToggle }) {
 
          router.replace('/check-email');
       } catch (err) {
-         setResendError(err.message);
+         setError(err.message);
       } finally {
          setResendLoading(false);
       }
@@ -66,8 +79,8 @@ export default function LoginForm({ fromHome, onToggle }) {
       <form className={styles.form} onSubmit={handleSubmit}>
          <h2 className={styles.title}>Login</h2>
 
-         {authError && <p className={styles.error}>{authError}</p>}
-         {resendError && <p className={styles.error}>{resendError}</p>}
+         {error && <p className={styles.error}>{error}</p>}
+
          {showResend && (
             <div className={styles.resend}>
                <p className={styles.resendText}>

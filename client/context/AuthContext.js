@@ -2,7 +2,6 @@
 
 import { createContext, useContext, useState, useEffect } from 'react';
 import { jwtDecode } from 'jwt-decode';
-import { useRouter } from 'next/navigation';
 import { API_URL } from '@/lib/constants';
 
 const AuthContext = createContext();
@@ -11,9 +10,6 @@ export function AuthProvider({ children }) {
    const [user, setUser] = useState(null);
    const [loading, setLoading] = useState(true);
    const [authError, setAuthError] = useState(null);
-   const [showResend, setShowResend] = useState(false);
-
-   const router = useRouter();
 
    // Check token and fetch current user data
    useEffect(() => {
@@ -83,33 +79,34 @@ export function AuthProvider({ children }) {
 
    // Login user function
    const login = async (username, password) => {
-      setShowResend(false);
       try {
          const res = await fetch(`${API_URL}/api/login`, {
             method: 'POST',
-            headers: {
-               'Content-Type': 'application/json',
-            },
+            headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ username, password }),
          });
 
          const data = await res.json();
 
          if (!res.ok) {
-            if (data.code === 'EMAIL_NOT_VERIFIED') setShowResend(true);
-            throw new Error(data.error || 'Login failed');
+            return {
+               success: false,
+               message: data.error || 'Login failed',
+               code: data.code || null,
+            };
          }
 
-         // save token
          localStorage.setItem('token', data.token);
-
-         // set user from backend response directly and redirect
          setUser(data.user);
-         setAuthError(null);
-         setShowResend(false);
-         router.replace('/profile');
+
+         return {
+            success: true,
+         };
       } catch (err) {
-         setAuthError(err.message);
+         return {
+            success: false,
+            message: err.message || 'Something went wrong. Please try again.',
+         };
       }
    };
 
@@ -150,7 +147,6 @@ export function AuthProvider({ children }) {
             user,
             loading,
             authError,
-            showResend,
             register,
             login,
             logout,
@@ -162,7 +158,7 @@ export function AuthProvider({ children }) {
    );
 }
 
-// custom hook for easy use
+// Custom hook for easy use
 export function useAuth() {
    return useContext(AuthContext);
 }
