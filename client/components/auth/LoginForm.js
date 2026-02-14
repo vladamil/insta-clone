@@ -89,6 +89,7 @@ export default function LoginForm({ fromHome, onToggle }) {
                <p className={styles.resendText}>
                   Didn't receive it?
                   <button
+                     type="button"
                      className={styles.resendButton}
                      disabled={resendLoading}
                      onClick={handleResend}
@@ -140,6 +141,15 @@ export default function LoginForm({ fromHome, onToggle }) {
                </span>
             )}
          </p>
+         <div className={styles.forgotWrapper}>
+            <button
+               type="button"
+               onClick={() => router.push('/forgot-password')}
+               className={styles.forgotLink}
+            >
+               Forgot your password?
+            </button>
+         </div>
       </form>
    );
 }
