@@ -43,6 +43,11 @@ const userSchema = new mongoose.Schema(
       emailVerificationExpires: {
          type: Date,
       },
+      emailVerificationAttempts: [
+         {
+            type: Date,
+         },
+      ],
    },
    { timestamps: true },
 );

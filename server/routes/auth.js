@@ -5,7 +5,10 @@ const jwt = require('jsonwebtoken');
 const router = express.Router();
 const User = require('../models/User');
 const { sendVerificationEmail } = require('../utils/sendEmail');
-const { error } = require('console');
+
+// Resend email constrains
+const ONE_HOUR = 1000 * 60 * 60;
+const MAX_ATTEMPTS = 2;
 
 // REGISTER ROUTE
 router.post('/register', async (req, res) => {
@@ -229,11 +232,24 @@ router.post('/resend-verification', async (req, res) => {
       });
    }
 
+   // Remove old attempts (older than 1 hour)
+   user.emailVerificationAttempts = user.emailVerificationAttempts.filter(
+      (date) => Date.now() - new Date(date).getTime() < ONE_HOUR,
+   );
+
+   // Check how many attempts remain
+   if (user.emailVerificationAttempts.length >= MAX_ATTEMPTS) {
+      return res.status(429).json({
+         error: 'Too many verification attempts. Please try again in about an hour.',
+      });
+   }
+
    // generate NEW token
    const token = crypto.randomBytes(32).toString('hex');
 
    user.emailVerificationToken = token;
    user.emailVerificationExpires = Date.now() + 1000 * 60 * 60; // 1h
+   user.emailVerificationAttempts.push(new Date());
    await user.save();
 
    await sendVerificationEmail({ to: user.email, token });

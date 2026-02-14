@@ -10,6 +10,8 @@ export default function LoginForm({ fromHome, onToggle }) {
       password: '',
    });
    const [loading, setLoading] = useState(false);
+   const [resendError, setResendError] = useState(null);
+   const [resendLoading, setResendLoading] = useState(false);
 
    const router = useRouter();
    const { login, authError, showResend } = useAuth();
@@ -31,6 +33,9 @@ export default function LoginForm({ fromHome, onToggle }) {
    };
 
    const handleResend = async () => {
+      setResendLoading(true);
+      setResendError(null);
+
       try {
          const res = await fetch(
             `${process.env.NEXT_PUBLIC_API_URL}/api/resend-verification`,
@@ -51,7 +56,9 @@ export default function LoginForm({ fromHome, onToggle }) {
 
          router.replace('/check-email');
       } catch (err) {
-         console.error(err.message);
+         setResendError(err.message);
+      } finally {
+         setResendLoading(false);
       }
    };
 
@@ -60,6 +67,7 @@ export default function LoginForm({ fromHome, onToggle }) {
          <h2 className={styles.title}>Login</h2>
 
          {authError && <p className={styles.error}>{authError}</p>}
+         {resendError && <p className={styles.error}>{resendError}</p>}
          {showResend && (
             <div className={styles.resend}>
                <p className={styles.resendText}>
@@ -69,6 +77,7 @@ export default function LoginForm({ fromHome, onToggle }) {
                   Didn't receive it?
                   <button
                      className={styles.resendButton}
+                     disabled={resendLoading}
                      onClick={handleResend}
                   >
                      Resend Verification Email
