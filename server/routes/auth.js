@@ -259,4 +259,44 @@ router.post('/resend-verification', async (req, res) => {
    });
 });
 
+// FORGOT PASSWORD ROUTE
+router.post('/forgot-password', async (req, res) => {
+   const { emailOrUsername } = req.body;
+
+   const user = await User.findOne({
+      $or: [{ email: emailOrUsername }, { username: emailOrUsername }],
+   });
+
+   if (!user) {
+      return res.status(200).json({
+         message: 'If the account exists, a reset email has been sent.',
+      });
+   }
+
+   // Remove old attempts
+   user.passwordResetAttempts = user.passwordResetAttempts.filter(
+      (date) => Date.now() - new Date(date).getTime() < ONE_HOUR,
+   );
+
+   if (user.passwordResetAttempts.length >= MAX_ATTEMPTS) {
+      return res.status(429).json({
+         error: 'Too many reset attempts. Please try again in about an hour.',
+      });
+   }
+
+   const token = crypto.randomBytes(32).toString('hex');
+
+   user.passwordResetToken = token;
+   user.passwordResetExpires = Date.now() + 1000 * 60 * 60; // 1h
+   user.passwordResetAttempts.push(new Date());
+
+   await user.save();
+
+   await sendPasswordResetEmail(user.email, token);
+
+   res.status(200).json({
+      message: 'If the account exists, a reset email has been sent.',
+   });
+});
+
 module.exports = router;
