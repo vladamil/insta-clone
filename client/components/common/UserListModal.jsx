@@ -40,7 +40,7 @@ export default function UserListModal({ isOpen, onClose, title, fetchUsers }) {
       const filteredData = users.filter(
          (user) =>
             user.username.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            user.realname?.toLowerCase().includes(searchTerm.toLowerCase())
+            user.realname?.toLowerCase().includes(searchTerm.toLowerCase()),
       );
       setFiltered(filteredData);
    }, [searchTerm, users]);

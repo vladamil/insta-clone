@@ -4,7 +4,10 @@ const crypto = require('crypto');
 const jwt = require('jsonwebtoken');
 const router = express.Router();
 const User = require('../models/User');
-const { sendVerificationEmail } = require('../utils/sendEmail');
+const {
+   sendVerificationEmail,
+   sendPasswordResetEmail,
+} = require('../utils/sendEmail');
 
 // Resend email constrains
 const ONE_HOUR = 1000 * 60 * 60;
@@ -218,85 +221,103 @@ router.get('/verify-email', async (req, res) => {
 router.post('/resend-verification', async (req, res) => {
    const { username } = req.body;
 
-   const user = await User.findOne({ username });
+   try {
+      const user = await User.findOne({ username });
 
-   if (!user) {
-      return res.status(400).json({
-         error: 'Account does not exist.',
+      if (!user) {
+         return res.status(400).json({
+            error: 'Account does not exist.',
+         });
+      }
+
+      if (user.isVerified) {
+         return res.status(400).json({
+            error: 'Account already verified.',
+         });
+      }
+
+      // Remove old attempts (older than 1 hour)
+      user.emailVerificationAttempts = user.emailVerificationAttempts.filter(
+         (date) => Date.now() - new Date(date).getTime() < ONE_HOUR,
+      );
+
+      // Check how many attempts remain
+      if (user.emailVerificationAttempts.length >= MAX_ATTEMPTS) {
+         return res.status(429).json({
+            error: 'Too many verification attempts. Please try again in about an hour.',
+         });
+      }
+
+      // generate NEW token
+      const token = crypto.randomBytes(32).toString('hex');
+
+      user.emailVerificationToken = token;
+      user.emailVerificationExpires = Date.now() + 1000 * 60 * 60; // 1h
+      user.emailVerificationAttempts.push(new Date());
+      await user.save();
+
+      await sendVerificationEmail({ to: user.email, token });
+
+      res.status(200).json({
+         message: 'Verification email sent',
       });
+   } catch (error) {
+      res.status(500).json({ error: 'Email verification failed' });
    }
-
-   if (user.isVerified) {
-      return res.status(400).json({
-         error: 'Account already verified.',
-      });
-   }
-
-   // Remove old attempts (older than 1 hour)
-   user.emailVerificationAttempts = user.emailVerificationAttempts.filter(
-      (date) => Date.now() - new Date(date).getTime() < ONE_HOUR,
-   );
-
-   // Check how many attempts remain
-   if (user.emailVerificationAttempts.length >= MAX_ATTEMPTS) {
-      return res.status(429).json({
-         error: 'Too many verification attempts. Please try again in about an hour.',
-      });
-   }
-
-   // generate NEW token
-   const token = crypto.randomBytes(32).toString('hex');
-
-   user.emailVerificationToken = token;
-   user.emailVerificationExpires = Date.now() + 1000 * 60 * 60; // 1h
-   user.emailVerificationAttempts.push(new Date());
-   await user.save();
-
-   await sendVerificationEmail({ to: user.email, token });
-
-   res.status(200).json({
-      message: 'Verification email sent',
-   });
 });
 
 // FORGOT PASSWORD ROUTE
 router.post('/forgot-password', async (req, res) => {
    const { emailOrUsername } = req.body;
+   if (!emailOrUsername) {
+      return res
+         .status(400)
+         .json({ error: 'Please enter your email or username' });
+   }
 
-   const user = await User.findOne({
-      $or: [{ email: emailOrUsername }, { username: emailOrUsername }],
-   });
+   try {
+      const user = await User.findOne({
+         $or: [{ email: emailOrUsername }, { username: emailOrUsername }],
+      });
 
-   if (!user) {
-      return res.status(200).json({
+      if (!user) {
+         return res.status(200).json({
+            message: 'If the account exists, a reset email has been sent.',
+         });
+      }
+
+      // Remove old attempts
+      user.passwordResetAttempts = user.passwordResetAttempts.filter(
+         (date) => Date.now() - new Date(date).getTime() < ONE_HOUR,
+      );
+
+      if (user.passwordResetAttempts.length >= MAX_ATTEMPTS) {
+         return res.status(429).json({
+            error: 'Too many reset attempts. Please try again in about an hour.',
+         });
+      }
+
+      const rawToken = crypto.randomBytes(32).toString('hex');
+
+      const hashedToken = crypto
+         .createHash('sha256')
+         .update(rawToken)
+         .digest('hex');
+
+      user.passwordResetToken = hashedToken;
+      user.passwordResetExpires = Date.now() + 1000 * 60 * 60; // 1h
+      user.passwordResetAttempts.push(new Date());
+
+      await user.save();
+
+      await sendPasswordResetEmail({ to: user.email, token: rawToken });
+
+      res.status(200).json({
          message: 'If the account exists, a reset email has been sent.',
       });
+   } catch (error) {
+      res.status(500).json({ error: 'Server error during password reset' });
    }
-
-   // Remove old attempts
-   user.passwordResetAttempts = user.passwordResetAttempts.filter(
-      (date) => Date.now() - new Date(date).getTime() < ONE_HOUR,
-   );
-
-   if (user.passwordResetAttempts.length >= MAX_ATTEMPTS) {
-      return res.status(429).json({
-         error: 'Too many reset attempts. Please try again in about an hour.',
-      });
-   }
-
-   const token = crypto.randomBytes(32).toString('hex');
-
-   user.passwordResetToken = token;
-   user.passwordResetExpires = Date.now() + 1000 * 60 * 60; // 1h
-   user.passwordResetAttempts.push(new Date());
-
-   await user.save();
-
-   await sendPasswordResetEmail(user.email, token);
-
-   res.status(200).json({
-      message: 'If the account exists, a reset email has been sent.',
-   });
 });
 
 module.exports = router;

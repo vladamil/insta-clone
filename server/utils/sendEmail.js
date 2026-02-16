@@ -16,8 +16,27 @@ const sendVerificationEmail = async ({ to, token }) => {
         Verify Email
       </a>
       <p>This link expires in 24 hours.</p>
+      <p>If you did not request this, you can ignore this email.</p>
     `,
    });
 };
 
-module.exports = { sendVerificationEmail };
+const sendPasswordResetEmail = async ({ to, token }) => {
+   const resetUrl = `${process.env.CLIENT_URL}/reset-password?token=${token}`;
+
+   await resend.emails.send({
+      from: 'InstaClone <noreply@vladimir-milinic.com>',
+      to,
+      subject: 'Reset Your Password',
+      html: `
+         <h2>Password Reset Request</h2>
+         <p>You requested to reset your password.</p>
+         <p>Click the link below to set a new password:</p>
+         <a href="${resetUrl}" target="_blank">${resetUrl}</a>
+         <p>This link expires in 1 hour.</p>
+         <p>If you did not request this, you can ignore this email.</p>
+      `,
+   });
+};
+
+module.exports = { sendVerificationEmail, sendPasswordResetEmail };
