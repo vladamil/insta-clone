@@ -320,4 +320,42 @@ router.post('/forgot-password', async (req, res) => {
    }
 });
 
+// VALIDATE PASSWORD RESET TOKEN
+router.post('/validate-reset-token', async (req, res) => {
+   const { token } = req.body;
+
+   if (!token) {
+      return res.status(400).json({
+         error: 'Token is required',
+      });
+   }
+
+   try {
+      // Hash incoming raw token
+      const hashedToken = crypto
+         .createHash('sha256')
+         .update(token)
+         .digest('hex');
+
+      const user = await User.findOne({
+         passwordResetToken: hashedToken,
+         passwordResetExpires: { $gt: Date.now() },
+      });
+
+      if (!user) {
+         return res.status(400).json({
+            error: 'Invalid or expired reset token',
+         });
+      }
+
+      res.status(200).json({
+         message: 'Token is valid',
+      });
+   } catch (error) {
+      res.status(500).json({
+         error: 'Server error while validating token',
+      });
+   }
+});
+
 module.exports = router;

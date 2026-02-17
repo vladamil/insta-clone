@@ -34,7 +34,7 @@ export default function ForgotPasswordPage() {
          }
 
          // Always redirect to generic info page
-         router.replace('/email/reset-sent');
+         router.replace('/reset-sent');
       } catch (err) {
          setError(err.message);
       } finally {
