@@ -64,18 +64,10 @@ export default function ResetPasswordPage() {
          return;
       }
 
-      if (
-         !passwordRegex.test(password) ||
-         !passwordRegex.test(confirmPassword)
-      ) {
+      if (!passwordRegex.test(password)) {
          setSubmitError(
             'Password must have at least 8 characters (one uppercase, one lowercase, one number, and one special character)',
          );
-         return;
-      }
-
-      if (password !== confirmPassword) {
-         setSubmitError('Passwords do not match.');
          return;
       }
 
@@ -84,9 +76,14 @@ export default function ResetPasswordPage() {
          return;
       }
 
+      if (password !== confirmPassword) {
+         setSubmitError('Passwords do not match.');
+         return;
+      }
+
       try {
          const res = await fetch(
-            `${process.env.NEXT_PUBLIC_API_URL}/reset-password`,
+            `${process.env.NEXT_PUBLIC_API_URL}/api/reset-password`,
             {
                method: 'POST',
                headers: { 'Content-Type': 'application/json' },

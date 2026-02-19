@@ -11,7 +11,7 @@ const {
 
 // Resend email constrains
 const ONE_HOUR = 1000 * 60 * 60;
-const MAX_ATTEMPTS = 2;
+const MAX_ATTEMPTS = 3;
 
 // REGISTER ROUTE
 router.post('/register', async (req, res) => {
@@ -354,6 +354,70 @@ router.post('/validate-reset-token', async (req, res) => {
    } catch (error) {
       res.status(500).json({
          error: 'Server error while validating token',
+      });
+   }
+});
+
+// RESET PASSWORD ROUTE
+router.post('/reset-password', async (req, res) => {
+   const { token, password } = req.body;
+
+   if (!token || !password) {
+      return res.status(400).json({
+         error: 'Token and password are required',
+      });
+   }
+
+   // Validate password lenght
+   if (password.length > 64) {
+      return res.status(400).json({
+         error: 'Password is too long (max 64 characters)',
+      });
+   }
+
+   // Validate password strenght
+   const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/;
+   if (!passwordRegex.test(password)) {
+      return res.status(400).json({
+         error: 'Password must have at least 8 characters (one uppercase, one lowercase, one number, and one special character)',
+      });
+   }
+
+   try {
+      // Hash incoming token to find user by it
+      const hashedToken = crypto
+         .createHash('sha256')
+         .update(token)
+         .digest('hex');
+
+      const user = await User.findOne({
+         passwordResetToken: hashedToken,
+         passwordResetExpires: { $gt: Date.now() },
+      });
+
+      if (!user) {
+         return res.status(400).json({
+            error: 'Invalid or expired reset token',
+         });
+      }
+
+      // Hashing new password
+      const salt = await bcrypt.genSalt(10);
+      const hashedPassword = await bcrypt.hash(password, salt);
+
+      user.passwordHash = hashedPassword;
+
+      // Clear reset token
+      user.passwordResetToken = undefined;
+
+      await user.save();
+
+      return res.status(200).json({
+         message: 'Password successfully reset',
+      });
+   } catch (error) {
+      return res.status(500).json({
+         error: 'Server error while resetting password',
       });
    }
 });
