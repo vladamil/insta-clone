@@ -21,6 +21,12 @@ export default function MobileSinglePost({
       trackMouse: false,
    });
 
+   const date = new Date(post.createdAt).toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+   });
+
    return (
       <div className={styles.overlay}>
          <div className={styles.modal} {...swipeHandlers}>
@@ -45,8 +51,11 @@ export default function MobileSinglePost({
             {/* Caption */}
             {post.caption && <p className={styles.caption}>{post.caption}</p>}
 
-            {/* Likes */}
-            <PostLikeButton post={post} />
+            {/* Likes and Date */}
+            <div className={styles.likeWrapper}>
+               <PostLikeButton post={post} />
+               <p className={styles.date}>{date}</p>
+            </div>
 
             {/* Comments */}
             <div className={styles.commentsSection}>

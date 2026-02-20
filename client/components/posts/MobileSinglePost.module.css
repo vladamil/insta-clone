@@ -54,6 +54,17 @@
    text-align: center;
 }
 
+.likeWrapper {
+   display: flex;
+   align-items: center;
+   justify-content: space-between;
+   margin: 0 16px;
+}
+.date {
+   font-size: 0.75rem;
+   color: rgb(156, 156, 156);
+}
+
 .commentsSection {
    flex: 1;
    overflow-y: auto;

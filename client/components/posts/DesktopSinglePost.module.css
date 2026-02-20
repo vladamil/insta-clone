@@ -61,6 +61,16 @@
    color: #333;
 }
 
+.likeWrapper {
+   display: flex;
+   align-items: center;
+   justify-content: space-between;
+}
+.date {
+   font-size: 0.75rem;
+   color: rgb(156, 156, 156);
+}
+
 /* Navigation buttons (Prev / Next) */
 .navBtn {
    position: absolute;

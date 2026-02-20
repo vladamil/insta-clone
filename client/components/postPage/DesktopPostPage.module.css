@@ -50,6 +50,17 @@
    color: #333;
 }
 
+.likeWrapper {
+   display: flex;
+   align-items: center;
+   justify-content: space-between;
+}
+
+.date {
+   font-size: 0.75rem;
+   color: rgb(156, 156, 156);
+}
+
 @media screen and (max-width: 1200px) {
    .container {
       width: 97%;

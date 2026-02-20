@@ -15,6 +15,11 @@ export default function DesktopSinglePost({
    hasPrev,
    hasMore,
 }) {
+   const date = new Date(post.createdAt).toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+   });
    return (
       <div className={styles.overlay}>
          <div className={styles.modal}>
@@ -39,7 +44,10 @@ export default function DesktopSinglePost({
                   <p className={styles.caption}>{post.caption}</p>
                )}
 
-               <PostLikeButton post={post} />
+               <div className={styles.likeWrapper}>
+                  <PostLikeButton post={post} />
+                  <p className={styles.date}>{date}</p>
+               </div>
 
                <CommentList postId={post._id} />
 
