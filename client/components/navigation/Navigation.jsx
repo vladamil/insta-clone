@@ -31,7 +31,9 @@ export default function Navigation({ logout }) {
    return (
       <>
          <nav className={styles.nav}>
-            <h2 className={styles.logo}>InstaClone</h2>
+            <div className={styles.logo}>
+               <img src="/logo.png" width={170} alt="Logo" draggable="false" />
+            </div>
 
             <ul className={styles.navList}>
                {navLinks.map(({ href, label, icon }) => (

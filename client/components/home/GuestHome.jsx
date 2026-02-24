@@ -16,7 +16,7 @@ export default function HomePage() {
          <div
             className={`${styles.left} ${!showHomeBanner ? styles.hidden : ''}`}
          >
-            <h1 className={styles.title}>Instaclone</h1>
+            <h1 className={styles.title}>InstaClone</h1>
 
             <div className={styles.fan}>
                <Image

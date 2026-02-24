@@ -7,11 +7,9 @@
 }
 
 .logo {
-   font-size: 1.4rem;
-   font-weight: 700;
-   margin-bottom: 2rem;
-   padding: 0 1rem;
-   color: #222;
+   margin-bottom: 1rem;
+   text-align: center;
+   margin: '0 auto';
 }
 
 .navList {
@@ -34,7 +32,9 @@
    padding: 0.6rem 0.9rem;
    border-radius: 0.5rem;
    cursor: pointer;
-   transition: background-color 0.2s ease, color 0.2s ease;
+   transition:
+      background-color 0.2s ease,
+      color 0.2s ease;
 }
 
 .link:hover {
