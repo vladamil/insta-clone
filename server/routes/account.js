@@ -44,7 +44,7 @@ router.patch(
       } catch (err) {
          res.status(500).json({ error: 'Image upload failed' });
       }
-   }
+   },
 );
 
 // Update username
@@ -80,13 +80,50 @@ router.patch('/username', requireAuth, async (req, res) => {
       const user = await User.findByIdAndUpdate(
          req.user.id,
          { username },
-         { new: true }
+         { new: true },
       ).select('-passwordHash');
 
       res.json(user);
    } catch (err) {
-      console.error(err);
       res.status(500).json({ error: 'Failed to update username' });
+   }
+});
+
+// Update realname
+router.patch('/realname', requireAuth, async (req, res) => {
+   try {
+      const realname = req.body.realname?.trim();
+
+      if (!realname) {
+         return res.status(400).json({ error: 'Name is required' });
+      }
+
+      // Validate real name lenght
+      if (realname.length < 2 || realname.length > 40) {
+         return res.status(400).json({
+            error: 'Full name must be between 2 and 40 characters',
+         });
+      }
+
+      // Validate real name regex
+      const realnameRegex = /^[\p{L}][\p{L}\s'-]{1,39}$/u;
+
+      if (!realnameRegex.test(realname)) {
+         return res.status(400).json({
+            error: 'Real name may contain letters, spaces and hyphens only (no numbers or symbols)',
+         });
+      }
+
+      // Update in DB
+      const user = await User.findByIdAndUpdate(
+         req.user.id,
+         { realname },
+         { new: true },
+      ).select('-passwordHash');
+
+      res.json(user);
+   } catch (err) {
+      res.status(500).json({ error: 'Failed to update your name' });
    }
 });
 
@@ -122,12 +159,11 @@ router.patch('/email', requireAuth, async (req, res) => {
       const user = await User.findByIdAndUpdate(
          req.user.id,
          { email },
-         { new: true }
+         { new: true },
       ).select('-passwordHash');
 
       res.json(user);
    } catch (err) {
-      console.error(err);
       res.status(500).json({ error: 'Failed to update email' });
    }
 });
@@ -177,7 +213,6 @@ router.patch('/password', requireAuth, async (req, res) => {
       await user.save();
       res.json({ message: 'Password updated successfully' });
    } catch (error) {
-      console.error(err);
       res.status(500).json({ error: 'Password update failed' });
    }
 });
@@ -194,12 +229,11 @@ router.patch('/description', requireAuth, async (req, res) => {
       const user = await User.findByIdAndUpdate(
          req.user.id,
          { description },
-         { new: true }
+         { new: true },
       ).select('-passwordHash');
 
       res.json(user);
    } catch (err) {
-      console.error(err);
       res.status(500).json({ error: 'Failed to update description' });
    }
 });

@@ -7,6 +7,7 @@ import { FaCheck, FaExclamationCircle, FaSignOutAlt } from 'react-icons/fa';
 
 import UpdateProfilePic from '@/components/account/UpdateProfilePic';
 import UpdateUsername from '@/components/account/UpdateUsername';
+import UpdateRealname from '@/components/account/UpdateRealName';
 import UpdateEmail from '@/components/account/UpdateEmail';
 import UpdateDescription from '@/components/account/UpdateDescription';
 import DeleteAccount from '@/components/account/DeleteAccount';
@@ -37,7 +38,7 @@ export default function AccountPage() {
                   headers: {
                      Authorization: `Bearer ${token}`,
                   },
-               }
+               },
             );
 
             const data = await res.json();
@@ -79,6 +80,7 @@ export default function AccountPage() {
          <div className={styles.sections}>
             <UpdateProfilePic currentPic={userData?.profilePicUrl} />
             <UpdateUsername currentUsername={userData?.username} />
+            <UpdateRealname currentRealname={userData?.realname} />
             <UpdateEmail currentEmail={userData?.email} />
             <UpdatePassword />
             <UpdateDescription currentDescription={userData?.description} />
