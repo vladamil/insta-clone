@@ -198,6 +198,43 @@ router.patch('/email', requireAuth, async (req, res) => {
    }
 });
 
+// Verify update email
+router.get('/verify-email-change', async (req, res) => {
+   try {
+      const { token } = req.query;
+
+      if (!token) {
+         return res.status(400).json({ error: 'Invalid token' });
+      }
+
+      const hashedToken = crypto
+         .createHash('sha256')
+         .update(token)
+         .digest('hex');
+
+      const user = await User.findOne({
+         emailVerificationToken: hashedToken,
+         emailVerificationExpires: { $gt: new Date() },
+      });
+
+      if (!user) {
+         return res.status(400).json({ error: 'Token is invalid or expired' });
+      }
+
+      // Finalize email change
+      user.email = user.pendingEmail;
+      user.pendingEmail = undefined;
+      user.emailVerificationToken = undefined;
+      user.emailVerificationExpires = undefined;
+
+      await user.save();
+
+      res.json({ message: 'Email updated successfully' });
+   } catch (err) {
+      res.status(500).json({ error: 'Failed to verify email change' });
+   }
+});
+
 // Update password
 router.patch('/password', requireAuth, async (req, res) => {
    const { oldPassword, newPassword } = req.body;
