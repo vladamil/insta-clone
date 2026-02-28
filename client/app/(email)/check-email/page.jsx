@@ -1,5 +1,6 @@
 'use client';
 
+import Link from 'next/link';
 import { FaEnvelopeOpenText } from 'react-icons/fa';
 import StatusPage from '@/components/common/StatusPage';
 
@@ -9,6 +10,7 @@ export default function CheckEmailPage() {
          icon={<FaEnvelopeOpenText />}
          title="Check your email"
          text="We’ve sent a verification link to your email address. Click the link to activate your account."
+         action={<Link href="/home">Continue</Link>}
       />
    );
 }

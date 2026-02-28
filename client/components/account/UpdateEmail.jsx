@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
 
 import styles from './AccountSection.module.css';
@@ -10,6 +11,7 @@ export default function UpdateEmail({ currentEmail }) {
    const [message, setMessage] = useState('');
 
    const { getValidToken } = useAuth();
+   const router = useRouter();
 
    const handleUpdate = async () => {
       // Validate email address
@@ -42,12 +44,13 @@ export default function UpdateEmail({ currentEmail }) {
                   Authorization: `Bearer ${token}`,
                },
                body: JSON.stringify({ email }),
-            }
+            },
          );
 
          const data = await res.json();
          if (!res.ok) throw new Error(data.error);
-         setMessage('Email updated successfully!');
+         setMessage('Verification link sent to your new email.');
+         router.push('/check-email-change');
       } catch (err) {
          setMessage(`${err.message}`);
       }
