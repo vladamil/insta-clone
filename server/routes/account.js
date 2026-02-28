@@ -8,6 +8,8 @@ const Post = require('../models/Post');
 const Comment = require('../models/Comment');
 const Follow = require('../models/Follow');
 const requireAuth = require('../middleware/requireAuth');
+const { sendChangeEmail } = require('../utils/sendEmail');
+const crypto = require('crypto');
 
 const router = express.Router();
 
@@ -127,44 +129,72 @@ router.patch('/realname', requireAuth, async (req, res) => {
    }
 });
 
-// Update email address
+// Update email request
 router.patch('/email', requireAuth, async (req, res) => {
    try {
-      const email = req.body.email?.trim().toLowerCase();
+      const newEmail = req.body.email?.trim().toLowerCase();
 
-      if (!email) {
+      if (!newEmail) {
          return res.status(400).json({ error: 'Email is required' });
       }
 
-      // Validate email lenght
-      if (email.length > 50) {
+      if (newEmail.length > 50) {
          return res
             .status(400)
             .json({ error: 'Email is too long (max 50 characters)' });
       }
 
-      // Validate email address
       const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-      if (!emailRegex.test(email)) {
+      if (!emailRegex.test(newEmail)) {
          return res.status(400).json({ error: 'Not a valid e-mail address' });
       }
 
-      // Check uniqueness
-      const existingEmail = await User.findOne({ email });
+      const user = await User.findById(req.user.id);
+
+      // Prevent changing to same email
+      if (user.email === newEmail) {
+         return res.status(400).json({ error: 'This is already your email' });
+      }
+
+      // Check uniqueness (check both email and pendingEmail that is not expired yet)
+      const existingEmail = await User.findOne({
+         $or: [
+            { email: newEmail },
+            {
+               pendingEmail: newEmail,
+               emailVerificationExpires: { $gt: new Date() },
+            },
+         ],
+      });
+
       if (existingEmail) {
          return res.status(400).json({ error: 'Email is already in use' });
       }
 
-      // Update in DB
-      const user = await User.findByIdAndUpdate(
-         req.user.id,
-         { email },
-         { new: true },
-      ).select('-passwordHash');
+      // Generate verification token
+      const token = crypto.randomBytes(32).toString('hex');
 
-      res.json(user);
+      // Hash token to store in DB
+      const hashedToken = crypto
+         .createHash('sha256')
+         .update(token)
+         .digest('hex');
+
+      user.pendingEmail = newEmail;
+      user.emailVerificationToken = hashedToken;
+      user.emailVerificationExpires = Date.now() + 1000 * 60 * 60; // 1 hour
+
+      await user.save();
+
+      // Send verification email to newEmail
+      await sendChangeEmail({ to: newEmail, token });
+
+      res.json({
+         message:
+            'Verification link sent to new email. Please confirm to complete change.',
+      });
    } catch (err) {
-      res.status(500).json({ error: 'Failed to update email' });
+      res.status(500).json({ error: 'Failed to initiate email change' });
    }
 });
 

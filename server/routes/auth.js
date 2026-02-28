@@ -101,7 +101,7 @@ router.post('/register', async (req, res) => {
       // Generate verification token
       const emailVerificationToken = crypto.randomBytes(32).toString('hex');
 
-      const emailVerificationExpires = Date.now() + 24 * 60 * 60 * 1000; // 24h
+      const emailVerificationExpires = Date.now() + 60 * 60 * 1000; // 1h
 
       const newUser = new User({
          email,
