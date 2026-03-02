@@ -83,7 +83,15 @@ router.post('/register', async (req, res) => {
 
    try {
       // Validate unique email
-      const existingEmail = await User.findOne({ email });
+      const existingEmail = await User.findOne({
+         $or: [
+            { email },
+            {
+               pendingEmail: email,
+               emailVerificationExpires: { $gt: new Date() },
+            },
+         ],
+      });
       if (existingEmail)
          return res.status(400).json({ error: 'Account already exists' });
 
