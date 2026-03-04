@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useAuth } from '@/context/AuthContext';
+import PasswordEyeButton from '../common/PasswordEyeButton';
 import styles from './AuthForm.module.css';
 
 export default function LoginForm({ fromHome, onToggle }) {
@@ -13,6 +14,7 @@ export default function LoginForm({ fromHome, onToggle }) {
    const [resendLoading, setResendLoading] = useState(false);
    const [showResend, setShowResend] = useState(false);
    const [error, setError] = useState(null);
+   const [showPassword, setShowPassword] = useState(false);
 
    const router = useRouter();
    const { login } = useAuth();
@@ -110,15 +112,22 @@ export default function LoginForm({ fromHome, onToggle }) {
             required
          />
 
-         <input
-            className={styles.input}
-            type="password"
-            name="password"
-            placeholder="Password"
-            value={formData.password}
-            onChange={handleChange}
-            required
-         />
+         <div style={{ position: 'relative' }}>
+            <input
+               className={styles.input}
+               type={showPassword ? 'text' : 'password'}
+               name="password"
+               placeholder="Password"
+               value={formData.password}
+               onChange={handleChange}
+               required
+            />
+            <PasswordEyeButton
+               showPassword={showPassword}
+               setShowPassword={setShowPassword}
+               style={{ transform: 'translateY(-1rem)' }}
+            />
+         </div>
 
          <button className={styles.button} type="submit" disabled={loading}>
             {loading ? 'Logging in...' : 'Login'}

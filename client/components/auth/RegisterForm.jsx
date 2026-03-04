@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useAuth } from '@/context/AuthContext';
+import PasswordEyeButton from '../common/PasswordEyeButton';
 import styles from './AuthForm.module.css';
 
 const initialFormData = {
@@ -19,6 +20,9 @@ export default function RegisterForm({ fromHome, onToggle }) {
    const [loading, setLoading] = useState(false);
    const [error, setError] = useState('');
    const [success, setSuccess] = useState('');
+   // Password visibility toggle states
+   const [showPassword, setShowPassword] = useState(false);
+   const [showRepeatPassword, setShowRepeatPassword] = useState(false);
 
    const router = useRouter();
 
@@ -163,25 +167,39 @@ export default function RegisterForm({ fromHome, onToggle }) {
             required
          />
 
-         <input
-            className={styles.input}
-            name="password"
-            type="password"
-            placeholder="Password"
-            value={formData.password}
-            onChange={handleChange}
-            required
-         />
+         <div style={{ position: 'relative' }}>
+            <input
+               className={styles.input}
+               type={showPassword ? 'text' : 'password'}
+               name="password"
+               placeholder="Password"
+               value={formData.password}
+               onChange={handleChange}
+               required
+            />
+            <PasswordEyeButton
+               showPassword={showPassword}
+               setShowPassword={setShowPassword}
+               style={{ transform: 'translateY(-1rem)' }}
+            />
+         </div>
 
-         <input
-            className={styles.input}
-            name="repeatPassword"
-            type="password"
-            placeholder="Repeat Password"
-            value={repeatPassword}
-            onChange={(e) => setRepeatPassword(e.target.value)}
-            required
-         />
+         <div style={{ position: 'relative' }}>
+            <input
+               className={styles.input}
+               type={showRepeatPassword ? 'text' : 'password'}
+               name="repeatPassword"
+               placeholder="Repeat Password"
+               value={repeatPassword}
+               onChange={(e) => setRepeatPassword(e.target.value)}
+               required
+            />
+            <PasswordEyeButton
+               showPassword={showRepeatPassword}
+               setShowPassword={setShowRepeatPassword}
+               style={{ transform: 'translateY(-1rem)' }}
+            />
+         </div>
          <br />
 
          <button className={styles.button} type="submit" disabled={loading}>
