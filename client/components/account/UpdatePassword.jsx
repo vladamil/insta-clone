@@ -3,12 +3,17 @@
 import { useState, useEffect } from 'react';
 
 import styles from './AccountSection.module.css';
+import PasswordEyeButton from '../common/PasswordEyeButton';
 import { useAuth } from '@/context/AuthContext';
 
 export default function UpdatePassword() {
    const [oldPassword, setOldPassword] = useState('');
    const [newPassword, setNewPassword] = useState('');
    const [message, setMessage] = useState('');
+
+   // Password display toggle states
+   const [showPassword, setShowPassword] = useState(false);
+   const [showNewPassword, setShowNewPassword] = useState(false);
 
    const { getValidToken } = useAuth();
 
@@ -31,7 +36,7 @@ export default function UpdatePassword() {
          !passwordRegex.test(newPassword)
       ) {
          setMessage(
-            'Password must have at least 8 characters (one uppercase, one lowercase, one number, and one special character)'
+            'Password must have at least 8 characters (one uppercase, one lowercase, one number, and one special character)',
          );
          return;
       }
@@ -48,7 +53,7 @@ export default function UpdatePassword() {
                   Authorization: `Bearer ${token}`,
                },
                body: JSON.stringify({ oldPassword, newPassword }),
-            }
+            },
          );
 
          const data = await res.json();
@@ -79,24 +84,36 @@ export default function UpdatePassword() {
             <label className={styles.label} htmlFor="old">
                Old Password:
             </label>
-            <input
-               className={styles.input}
-               value={oldPassword}
-               type="password"
-               name="old"
-               onChange={(e) => setOldPassword(e.target.value)}
-            />
+            <div style={{ position: 'relative' }}>
+               <input
+                  className={styles.input}
+                  value={oldPassword}
+                  type={showPassword ? 'text' : 'password'}
+                  name="old"
+                  onChange={(e) => setOldPassword(e.target.value)}
+               />
+               <PasswordEyeButton
+                  showPassword={showPassword}
+                  setShowPassword={setShowPassword}
+               />
+            </div>
 
             <label className={styles.label} htmlFor="new">
                New Password:
             </label>
-            <input
-               className={styles.input}
-               value={newPassword}
-               type="password"
-               name="new"
-               onChange={(e) => setNewPassword(e.target.value)}
-            />
+            <div style={{ position: 'relative' }}>
+               <input
+                  className={styles.input}
+                  value={newPassword}
+                  type={showNewPassword ? 'text' : 'password'}
+                  name="new"
+                  onChange={(e) => setNewPassword(e.target.value)}
+               />
+               <PasswordEyeButton
+                  showPassword={showNewPassword}
+                  setShowPassword={setShowNewPassword}
+               />
+            </div>
             <button className={styles.btn} onClick={handleUpdate}>
                Update Password
             </button>

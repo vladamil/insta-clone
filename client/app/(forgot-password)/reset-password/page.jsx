@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import Spinner from '@/components/common/Spinner';
+import PasswordEyeButton from '@/components/common/PasswordEyeButton';
 import styles from '../forgot-password/ForgotPasswordPage.module.css';
 
 export default function ResetPasswordPage() {
@@ -19,6 +20,10 @@ export default function ResetPasswordPage() {
    const [password, setPassword] = useState('');
    const [confirmPassword, setConfirmPassword] = useState('');
    const [submitError, setSubmitError] = useState('');
+
+   // Passwords visibility toggle states
+   const [showPassword, setShowPassword] = useState(false);
+   const [showRepeatPassword, setShowRepeatPassword] = useState(false);
 
    // Validate token on mount
    useEffect(() => {
@@ -136,23 +141,37 @@ export default function ResetPasswordPage() {
                </p>
 
                <form className={styles.form} onSubmit={handleSubmit}>
-                  <input
-                     className={styles.input}
-                     type="password"
-                     placeholder="New password"
-                     value={password}
-                     onChange={(e) => setPassword(e.target.value)}
-                     required
-                  />
+                  <div style={{ position: 'relative' }}>
+                     <input
+                        className={styles.input}
+                        type={showPassword ? 'text' : 'password'}
+                        placeholder="New password"
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        required
+                     />
+                     <PasswordEyeButton
+                        showPassword={showPassword}
+                        setShowPassword={setShowPassword}
+                        style={{ transform: 'translateY(-1rem)' }}
+                     />
+                  </div>
 
-                  <input
-                     className={styles.input}
-                     type="password"
-                     placeholder="Confirm password"
-                     value={confirmPassword}
-                     onChange={(e) => setConfirmPassword(e.target.value)}
-                     required
-                  />
+                  <div style={{ position: 'relative' }}>
+                     <input
+                        className={styles.input}
+                        type={showRepeatPassword ? 'text' : 'password'}
+                        placeholder="Confirm password"
+                        value={confirmPassword}
+                        onChange={(e) => setConfirmPassword(e.target.value)}
+                        required
+                     />
+                     <PasswordEyeButton
+                        showPassword={showRepeatPassword}
+                        setShowPassword={setShowRepeatPassword}
+                        style={{ transform: 'translateY(-1rem)' }}
+                     />
+                  </div>
 
                   <button className={styles.button} type="submit">
                      Reset Password
