@@ -71,7 +71,9 @@ export default function ProfilePosts({ user, triggerRefresh }) {
       return (
          <>
             <div className={styles.noPosts}>
-               <div className={styles.noPostsIcon}>📷</div>
+               <div className={styles.noPostsIcon}>
+                  <FaCamera />
+               </div>
                <h3>No posts yet</h3>
                <p>Share your first photo or memory!</p>
                <button

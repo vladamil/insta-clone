@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { useGetInfinitePosts } from '@/hooks/useGetInfinitePosts';
 import Link from 'next/link';
 import Image from 'next/image';
-import { FaExclamationCircle } from 'react-icons/fa';
+import { FaExclamationCircle, FaCamera } from 'react-icons/fa';
 import SinglePostModal from '../posts/SinglePostModal';
 import Spinner from '../common/Spinner';
 import StatusPage from '../common/StatusPage';
@@ -49,7 +49,9 @@ export default function UserPosts({ id }) {
    if (posts.length === 0 && !loading) {
       return (
          <div className={styles.noPosts}>
-            <div className={styles.noPostsIcon}>📷</div>
+            <div className={styles.noPostsIcon}>
+               <FaCamera />
+            </div>
             <h3>No posts yet</h3>
          </div>
       );
