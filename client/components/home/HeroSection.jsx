@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/context/AuthContext';
 import Image from 'next/image';
+import Greetings from './Greetings';
 
 import styles from './HeroSection.module.css';
 
@@ -23,7 +24,7 @@ export default function Hero() {
                `${process.env.NEXT_PUBLIC_API_URL}/api/users/${user._id}`,
                {
                   headers: { Authorization: `Bearer ${token}` },
-               }
+               },
             );
             const data = await res.json();
 
@@ -58,13 +59,7 @@ export default function Hero() {
                height={90}
             />
          </div>
-
-         <div className={styles.text}>
-            <h1>
-               Welcome, <span>{profile.username || 'Guest'}</span>!
-            </h1>
-            <p>What’s inspiring you today?</p>
-         </div>
+         <Greetings profile={profile} />
       </div>
    );
 }
