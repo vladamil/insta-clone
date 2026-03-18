@@ -2,6 +2,8 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
+import { FaArrowLeft } from 'react-icons/fa';
 import styles from './ForgotPasswordPage.module.css';
 
 export default function ForgotPasswordPage() {
@@ -45,6 +47,12 @@ export default function ForgotPasswordPage() {
    return (
       <div className={styles.wrapper}>
          <div className={styles.card}>
+            <Link
+               href={'/'}
+               className={styles.backBtn}
+            >
+               <FaArrowLeft size={20} />
+            </Link>
             <h1 className={styles.title}>Forgot your password?</h1>
             <p className={styles.description}>
                Enter your email address or username and we’ll send you a link to
