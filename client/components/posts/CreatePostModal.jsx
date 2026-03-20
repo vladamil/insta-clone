@@ -68,7 +68,7 @@ export default function CreatePostModal({ isOpen, onClose, onPostCreated }) {
                   Authorization: `Bearer ${token}`,
                },
                body: formData,
-            }
+            },
          );
 
          const data = await res.json();
@@ -93,7 +93,14 @@ export default function CreatePostModal({ isOpen, onClose, onPostCreated }) {
    };
 
    const modalContent = (
-      <div className={styles.overlay}>
+      <div
+         className={styles.overlay}
+         onClick={(e) => {
+            if (e.target === e.currentTarget) {
+               onClose();
+            }
+         }}
+      >
          <div className={styles.modal}>
             <button className={styles.closeBtn} onClick={onClose}>
                <FaTimes />

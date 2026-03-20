@@ -137,11 +137,12 @@
 }
 
 @media screen and (max-width: 767px) {
-   .overlay {
+   /* .overlay {
       display: block;
-   }
+   } */
 
    .modal {
-      margin: auto;
+      max-height: 90vh;
+      max-width: 85vw;
    }
 }

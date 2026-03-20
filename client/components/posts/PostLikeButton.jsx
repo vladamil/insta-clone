@@ -29,7 +29,7 @@ export default function PostLikeButton({ post }) {
                   headers: {
                      Authorization: `Bearer ${token}`,
                   },
-               }
+               },
             );
             const data = await res.json();
             setIsLiked(data.isLiked);
@@ -59,7 +59,7 @@ export default function PostLikeButton({ post }) {
             {
                method: 'POST',
                headers: { Authorization: `Bearer ${token}` },
-            }
+            },
          );
 
          if (!res.ok) throw new Error('Failed to toggle like');
@@ -77,7 +77,7 @@ export default function PostLikeButton({ post }) {
    if (loading || isLiked === null)
       return (
          <div className={styles.actions}>
-            <FaHeart className={styles.likedIcon} />
+            <FaRegHeart className={styles.unlikedIcon} />
          </div>
       );
    if (error) return <p>{error}</p>;
@@ -115,7 +115,7 @@ export default function PostLikeButton({ post }) {
                      headers: {
                         Authorization: `Bearer ${getValidToken()}`,
                      },
-                  }
+                  },
                )
             }
          />

@@ -46,7 +46,7 @@ export default function SearchModal({ isOpen, onClose }) {
             const res = await fetch(
                `${
                   process.env.NEXT_PUBLIC_API_URL
-               }/api/search?q=${encodeURIComponent(query)}`
+               }/api/search?q=${encodeURIComponent(query)}`,
             );
             const data = await res.json();
             setResults(data);
@@ -63,7 +63,14 @@ export default function SearchModal({ isOpen, onClose }) {
    if (!isOpen) return null;
 
    const modalContent = (
-      <div className={styles.overlay}>
+      <div
+         className={styles.overlay}
+         onClick={(e) => {
+            if (e.target === e.currentTarget) {
+               handleCloseSearch();
+            }
+         }}
+      >
          <div className={styles.modal}>
             {/* HEADER */}
             <div className={styles.header}>
