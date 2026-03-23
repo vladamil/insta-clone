@@ -25,6 +25,8 @@ export default function HomePage() {
                   className={`${styles.img} ${styles.center}`}
                   fill
                   sizes="(max-width: 768px) 50vw, 400px"
+                  unoptimized
+                  priority
                />
                <Image
                   src="/images/img1.jpg"
@@ -32,6 +34,8 @@ export default function HomePage() {
                   className={`${styles.img} ${styles.left1}`}
                   fill
                   sizes="(max-width: 768px) 50vw, 400px"
+                  unoptimized
+                  priority
                />
                <Image
                   src="/images/img2.jpg"
@@ -39,6 +43,8 @@ export default function HomePage() {
                   className={`${styles.img} ${styles.right1}`}
                   fill
                   sizes="(max-width: 768px) 50vw, 400px"
+                  unoptimized
+                  priority
                />
                <Image
                   src="/images/img3.jpg"
@@ -46,6 +52,8 @@ export default function HomePage() {
                   className={`${styles.img} ${styles.left2}`}
                   fill
                   sizes="(max-width: 768px) 50vw, 400px"
+                  unoptimized
+                  priority
                />
                <Image
                   src="/images/img4.jpg"
@@ -53,6 +61,8 @@ export default function HomePage() {
                   className={`${styles.img} ${styles.right2}`}
                   fill
                   sizes="(max-width: 768px) 50vw, 400px"
+                  unoptimized
+                  priority
                />
             </div>
 

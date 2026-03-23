@@ -20,6 +20,7 @@ export default function DesktopPostPage({ post }) {
                alt={post.caption || 'Post image'}
                fill
                className={styles.image}
+               sizes="1200px"
             />
          </div>
          <div className={styles.details}>

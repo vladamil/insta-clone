@@ -29,6 +29,7 @@ export default function DesktopSinglePost({
                   alt={post.caption || 'Post image'}
                   fill
                   className={styles.image}
+                  sizes="1200px"
                />
             </div>
 

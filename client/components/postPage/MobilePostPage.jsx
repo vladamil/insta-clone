@@ -26,6 +26,7 @@ export default function MobilePostPage({ post }) {
                alt={post.caption || 'Post image'}
                fill
                className={styles.image}
+               sizes="(max-width: 768px) 80vw, 1200px"
             />
          </div>
 

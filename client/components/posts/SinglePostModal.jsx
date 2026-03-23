@@ -68,9 +68,6 @@ const SinglePostModal = ({
       };
    }, [handlePrev, handleNext, onClose]);
 
-   console.log(postIndex);
-   console.log('Lenght', posts.length - 1);
-
    const modalContent = (
       <>
          <div className="desktopModalWrapper">
