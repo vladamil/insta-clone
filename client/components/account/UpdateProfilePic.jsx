@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import Image from 'next/image';
 import { useAuth } from '@/context/AuthContext';
 
 import styles from './AccountSection.module.css';
@@ -45,7 +46,7 @@ export default function UpdateProfilePic({ currentPic }) {
                   Authorization: `Bearer ${token}`,
                },
                body: formData,
-            }
+            },
          );
 
          const data = await res.json();
@@ -76,11 +77,12 @@ export default function UpdateProfilePic({ currentPic }) {
          <h2>Profile Picture</h2>
          <div className={styles.formContainer}>
             <div className={styles.imageWrapper}>
-               <img
+               <Image
                   className={styles.profileImg}
                   src={previewUrl || '/default-avatar.png'}
                   alt="Profile Picture"
-                  width="200"
+                  width={200}
+                  height={200}
                />
             </div>
 

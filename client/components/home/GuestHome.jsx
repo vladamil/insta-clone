@@ -20,7 +20,7 @@ export default function HomePage() {
 
             <div className={styles.fan}>
                <Image
-                  src="/images/img0.jpg"
+                  src="/images/img0.webp"
                   alt="Main"
                   className={`${styles.img} ${styles.center}`}
                   fill
@@ -29,7 +29,7 @@ export default function HomePage() {
                   priority
                />
                <Image
-                  src="/images/img1.jpg"
+                  src="/images/img1.webp"
                   alt="Left 1"
                   className={`${styles.img} ${styles.left1}`}
                   fill
@@ -38,7 +38,7 @@ export default function HomePage() {
                   priority
                />
                <Image
-                  src="/images/img2.jpg"
+                  src="/images/img2.webp"
                   alt="Right 1"
                   className={`${styles.img} ${styles.right1}`}
                   fill
@@ -47,7 +47,7 @@ export default function HomePage() {
                   priority
                />
                <Image
-                  src="/images/img3.jpg"
+                  src="/images/img3.webp"
                   alt="Left 2"
                   className={`${styles.img} ${styles.left2}`}
                   fill
@@ -56,7 +56,7 @@ export default function HomePage() {
                   priority
                />
                <Image
-                  src="/images/img4.jpg"
+                  src="/images/img4.webp"
                   alt="Right 2"
                   className={`${styles.img} ${styles.right2}`}
                   fill
