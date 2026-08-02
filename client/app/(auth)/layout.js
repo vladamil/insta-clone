@@ -2,7 +2,6 @@
 
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import Link from 'next/link';
 import { FaExclamationCircle } from 'react-icons/fa';
 import { useAuth } from '@/context/AuthContext';
 import Navigation from '@/components/navigation/Navigation';
@@ -26,10 +25,14 @@ export default function NavLayout({ children }) {
    if (authError)
       return (
          <StatusPage
-            title={'Something Went Wrong'}
-            text={'Authentication error. Please try again.'}
+            title={'Failed to Connect'}
+            text={'The server may still be starting. Please try again.'}
             icon={<FaExclamationCircle />}
-            action={<Link href="/home">Back Home</Link>}
+            action={
+               <button onClick={() => window.location.reload()}>
+                  Try Again
+               </button>
+            }
          />
       );
    if (!user) return null;
