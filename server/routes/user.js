@@ -1,8 +1,8 @@
-const express = require('express');
-const User = require('../models/User');
-const Follow = require('../models/Follow');
-const requireAuth = require('../middleware/requireAuth');
-const mongoose = require('mongoose');
+import express from 'express';
+import User from '../models/User.js';
+import Follow from '../models/Follow.js';
+import requireAuth from '../middleware/requireAuth.js';
+import mongoose from 'mongoose';
 
 const router = express.Router();
 
@@ -96,4 +96,4 @@ router.get('/search', async (req, res) => {
    }
 });
 
-module.exports = router;
+export default router;

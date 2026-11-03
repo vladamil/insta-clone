@@ -1,11 +1,12 @@
-const express = require('express');
+import express from 'express';
+import User from '../models/User.js';
+import Follow from '../models/Follow.js';
+import Post from '../models/Post.js';
+import Comment from '../models/Comment.js';
+import requireAuth from '../middleware/requireAuth.js';
+import mongoose from 'mongoose';
+
 const router = express.Router();
-const User = require('../models/User');
-const Follow = require('../models/Follow');
-const Post = require('../models/Post');
-const Comment = require('../models/Comment');
-const requireAuth = require('../middleware/requireAuth');
-const mongoose = require('mongoose');
 
 // Get user profile by id
 router.get('/:id', requireAuth, async (req, res) => {
@@ -247,4 +248,4 @@ router.get('/:id/followings', requireAuth, async (req, res) => {
    }
 });
 
-module.exports = router;
+export default router;

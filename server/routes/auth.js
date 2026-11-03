@@ -1,13 +1,14 @@
-const express = require('express');
-const bcrypt = require('bcryptjs');
-const crypto = require('crypto');
-const jwt = require('jsonwebtoken');
-const router = express.Router();
-const User = require('../models/User');
-const {
+import express from 'express';
+import bcrypt from 'bcryptjs';
+import crypto from 'node:crypto';
+import jwt from 'jsonwebtoken';
+import User from '../models/User.js';
+import {
    sendVerificationEmail,
    sendPasswordResetEmail,
-} = require('../utils/sendEmail');
+} from '../utils/sendEmail.js';
+
+const router = express.Router();
 
 // Resend email constrains
 const ONE_HOUR = 1000 * 60 * 60;
@@ -430,4 +431,4 @@ router.post('/reset-password', async (req, res) => {
    }
 });
 
-module.exports = router;
+export default router;

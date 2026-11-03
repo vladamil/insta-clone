@@ -1,6 +1,6 @@
-const express = require('express');
-const Comment = require('../models/Comment');
-const requireAuth = require('../middleware/requireAuth');
+import express from 'express';
+import Comment from '../models/Comment.js';
+import requireAuth from '../middleware/requireAuth.js';
 
 const router = express.Router();
 
@@ -112,4 +112,4 @@ router.delete('/:id', requireAuth, async (req, res) => {
    }
 });
 
-module.exports = router;
+export default router;

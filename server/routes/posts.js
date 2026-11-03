@@ -1,12 +1,12 @@
-const express = require('express');
-const cloudinary = require('../config/cloudinary');
-const multer = require('multer');
-const { CloudinaryStorage } = require('multer-storage-cloudinary');
-const Post = require('../models/Post');
-const Follow = require('../models/Follow');
-const Comment = require('../models/Comment');
-const requireAuth = require('../middleware/requireAuth');
-const mongoose = require('mongoose');
+import express from 'express';
+import cloudinary from '../config/cloudinary.js';
+import multer from 'multer';
+import { CloudinaryStorage } from 'multer-storage-cloudinary';
+import Post from '../models/Post.js';
+import Follow from '../models/Follow.js';
+import Comment from '../models/Comment.js';
+import requireAuth from '../middleware/requireAuth.js';
+import mongoose from 'mongoose';
 
 const router = express.Router();
 
@@ -313,4 +313,4 @@ router.get('/:id/comments', requireAuth, async (req, res) => {
    }
 });
 
-module.exports = router;
+export default router;

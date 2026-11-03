@@ -1,15 +1,15 @@
-const express = require('express');
-const cloudinary = require('../config/cloudinary');
-const multer = require('multer');
-const { CloudinaryStorage } = require('multer-storage-cloudinary');
-const bcrypt = require('bcryptjs');
-const User = require('../models/User');
-const Post = require('../models/Post');
-const Comment = require('../models/Comment');
-const Follow = require('../models/Follow');
-const requireAuth = require('../middleware/requireAuth');
-const { sendChangeEmail } = require('../utils/sendEmail');
-const crypto = require('crypto');
+import express from 'express';
+import cloudinary from '../config/cloudinary.js';
+import multer from 'multer';
+import { CloudinaryStorage } from 'multer-storage-cloudinary';
+import bcrypt from 'bcryptjs';
+import User from '../models/User.js';
+import Post from '../models/Post.js';
+import Comment from '../models/Comment.js';
+import Follow from '../models/Follow.js';
+import requireAuth from '../middleware/requireAuth.js';
+import { sendChangeEmail } from '../utils/sendEmail.js';
+import crypto from 'node:crypto';
 
 const router = express.Router();
 
@@ -350,4 +350,4 @@ router.delete('/', requireAuth, async (req, res) => {
    }
 });
 
-module.exports = router;
+export default router;

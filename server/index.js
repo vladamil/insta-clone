@@ -1,13 +1,14 @@
-const express = require('express');
-const cors = require('cors');
-const mongoose = require('mongoose');
-require('dotenv').config();
-const authRoutes = require('./routes/auth');
-const userRoutes = require('./routes/user');
-const accountRoutes = require('./routes/account');
-const usersRoutes = require('./routes/users');
-const postsRoutes = require('./routes/posts');
-const commentRoutes = require('./routes/comment');
+// Must be the first import: loads .env before any other module reads process.env
+import 'dotenv/config';
+import express from 'express';
+import cors from 'cors';
+import mongoose from 'mongoose';
+import authRoutes from './routes/auth.js';
+import userRoutes from './routes/user.js';
+import accountRoutes from './routes/account.js';
+import usersRoutes from './routes/users.js';
+import postsRoutes from './routes/posts.js';
+import commentRoutes from './routes/comment.js';
 
 const app = express();
 // Only OUR domain can make requests
