@@ -26,7 +26,7 @@ const postSchema = new mongoose.Schema(
          },
       ],
    },
-   { timestamps: true }
+   { timestamps: true },
 );
 
 // Helpful index to sort posts by creation date quickly

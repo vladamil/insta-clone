@@ -36,7 +36,7 @@ export function useGetInfinitePosts({ buildUrl }) {
             }
 
             setPosts((prev) =>
-               page === 1 ? data.posts : [...prev, ...data.posts]
+               page === 1 ? data.posts : [...prev, ...data.posts],
             );
 
             setHasMore(data.hasMore);
@@ -71,7 +71,7 @@ export function useGetInfinitePosts({ buildUrl }) {
             root: null, // viewport
             rootMargin: '50px', // preload earlier
             threshold: 0,
-         }
+         },
       );
 
       observer.observe(loadMoreRef.current);

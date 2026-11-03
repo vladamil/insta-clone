@@ -14,7 +14,7 @@ export default function DeleteAccount() {
    const handleDelete = async () => {
       if (
          !confirm(
-            'Are you sure you want to delete your account? This action cannot be undone.'
+            'Are you sure you want to delete your account? This action cannot be undone.',
          )
       )
          return;
@@ -29,7 +29,7 @@ export default function DeleteAccount() {
                headers: {
                   Authorization: `Bearer ${token}`,
                },
-            }
+            },
          );
 
          const data = await res.json();

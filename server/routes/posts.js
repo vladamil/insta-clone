@@ -49,7 +49,7 @@ router.post('/', requireAuth, upload.single('postImage'), async (req, res) => {
       //   Populate post with basic user data
       const populatedPost = await Post.findById(post._id).populate(
          'author',
-         'username realname profilePicUrl'
+         'username realname profilePicUrl',
       );
 
       res.status(201).json(populatedPost);
@@ -113,7 +113,7 @@ router.get('/feed', requireAuth, async (req, res) => {
       ]);
 
       const countsMap = Object.fromEntries(
-         counts.map((c) => [c._id.toString(), c.count])
+         counts.map((c) => [c._id.toString(), c.count]),
       );
 
       const enrichedPosts = posts.map((post) => ({
@@ -139,7 +139,7 @@ router.get('/:id', requireAuth, async (req, res) => {
 
       const post = await Post.findById(req.params.id).populate(
          'author',
-         'username realname profilePicUrl'
+         'username realname profilePicUrl',
       );
       if (!post) {
          return res.status(404).json({ error: 'Post not found' });
@@ -216,7 +216,7 @@ router.post('/:id/unlike', requireAuth, async (req, res) => {
       if (!post) return res.status(404).json({ error: 'Post not found' });
 
       post.likes = post.likes.filter(
-         (userID) => userID.toString() !== req.user.id
+         (userID) => userID.toString() !== req.user.id,
       );
       await post.save();
 
@@ -231,7 +231,7 @@ router.get('/:id/likes', requireAuth, async (req, res) => {
    try {
       const post = await Post.findById(req.params.id).populate(
          'likes',
-         'username realname profilePicUrl'
+         'username realname profilePicUrl',
       );
       if (!post) return res.status(404).json({ error: 'Post not found' });
 
@@ -261,7 +261,6 @@ router.post('/:id/comment', requireAuth, async (req, res) => {
 
       const comment = new Comment({ post: post.id, author: req.user.id, text });
       await comment.save();
-
 
       res.status(201).json(comment);
    } catch (error) {

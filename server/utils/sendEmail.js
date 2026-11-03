@@ -59,8 +59,4 @@ const sendPasswordResetEmail = async ({ to, token }) => {
    });
 };
 
-export {
-   sendVerificationEmail,
-   sendChangeEmail,
-   sendPasswordResetEmail,
-};
+export { sendVerificationEmail, sendChangeEmail, sendPasswordResetEmail };

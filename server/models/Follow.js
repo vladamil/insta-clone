@@ -15,7 +15,7 @@ const followSchema = new mongoose.Schema(
          index: true,
       },
    },
-   { timestamps: true }
+   { timestamps: true },
 );
 
 // Prevent duplicate follow relationships

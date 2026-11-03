@@ -5,7 +5,7 @@ import styles from './UserFollowButton.module.css';
 
 export default function UserFollowButton({ profile, setProfile, desktop }) {
    const router = useRouter();
-   const {getValidToken}= useAuth()
+   const { getValidToken } = useAuth();
 
    const handleFollow = async () => {
       try {
@@ -19,7 +19,7 @@ export default function UserFollowButton({ profile, setProfile, desktop }) {
                headers: {
                   Authorization: `Bearer ${token}`,
                },
-            }
+            },
          );
 
          const data = await res.json();

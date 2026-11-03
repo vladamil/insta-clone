@@ -41,7 +41,7 @@ export default function UpdateUsername({ currentUsername }) {
                   Authorization: `Bearer ${token}`,
                },
                body: JSON.stringify({ username }),
-            }
+            },
          );
 
          const data = await res.json();

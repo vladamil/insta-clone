@@ -30,7 +30,7 @@ export default function UpdateDescription({ currentDescription }) {
                   Authorization: `Bearer ${token}`,
                },
                body: JSON.stringify({ description }),
-            }
+            },
          );
 
          const data = await res.json();

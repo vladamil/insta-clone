@@ -9,7 +9,7 @@ router.post('/:id/reply', requireAuth, async (req, res) => {
    try {
       const parentComment = await Comment.findById(req.params.id).populate(
          'author',
-         'username'
+         'username',
       );
       if (!parentComment)
          return res.status(404).json({ error: 'Comment not found' });

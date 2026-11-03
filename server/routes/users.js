@@ -104,7 +104,7 @@ router.get('/:id/posts', requireAuth, async (req, res) => {
       ]);
 
       const countsMap = Object.fromEntries(
-         counts.map((c) => [c._id.toString(), c.count])
+         counts.map((c) => [c._id.toString(), c.count]),
       );
 
       const enrichedPosts = posts.map((post) => ({
@@ -239,7 +239,7 @@ router.get('/:id/followings', requireAuth, async (req, res) => {
 
       // ✅ Extract the following user objects only
       const followingUsers = following.map(
-         (following) => following.followingId
+         (following) => following.followingId,
       );
 
       res.json(followingUsers);

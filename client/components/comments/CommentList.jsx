@@ -30,7 +30,7 @@ export default function CommentList({ postId }) {
             `${process.env.NEXT_PUBLIC_API_URL}/api/posts/${postId}/comments`,
             {
                headers: token ? { Authorization: `Bearer ${token}` } : {},
-            }
+            },
          );
 
          const data = await res.json();

@@ -32,7 +32,7 @@ export default function ProfileInfo({
                `${process.env.NEXT_PUBLIC_API_URL}/api/users/${user?._id}`,
                {
                   headers: { Authorization: `Bearer ${token}` },
-               }
+               },
             );
             const data = await res.json();
 
@@ -130,7 +130,7 @@ export default function ProfileInfo({
                      headers: {
                         Authorization: `Bearer ${getValidToken()}`,
                      },
-                  }
+                  },
                );
             }}
          />

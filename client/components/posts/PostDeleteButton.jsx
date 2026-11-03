@@ -26,7 +26,7 @@ export default function PostDeleteButton({ postId, onDelete }) {
                headers: {
                   Authorization: `Bearer ${token}`,
                },
-            }
+            },
          );
 
          if (!res.ok) throw new Error('Failed to delete post!');

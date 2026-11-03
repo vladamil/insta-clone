@@ -25,7 +25,7 @@ export default function Suggestions() {
                   headers: {
                      Authorization: `Bearer ${token}`,
                   },
-               }
+               },
             );
 
             if (!res.ok)
@@ -54,7 +54,7 @@ export default function Suggestions() {
                headers: {
                   Authorization: `Bearer ${token}`,
                },
-            }
+            },
          );
 
          if (!res.ok) throw new Error('Failed to follow/unfollow user');
@@ -62,8 +62,8 @@ export default function Suggestions() {
          // Optimistic update:
          setUsers((prev) =>
             prev.map((user) =>
-               user._id === id ? { ...user, isFollowing: !isFollowing } : user
-            )
+               user._id === id ? { ...user, isFollowing: !isFollowing } : user,
+            ),
          );
       } catch (err) {
          setError(err.message);

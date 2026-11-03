@@ -25,7 +25,7 @@ export default function SingleComment({
    const handleDelete = async () => {
       if (
          !confirm(
-            'Are you sure you want to delete this comment and all its replies?'
+            'Are you sure you want to delete this comment and all its replies?',
          )
       )
          return;
@@ -42,7 +42,7 @@ export default function SingleComment({
                headers: {
                   Authorization: `Bearer ${token}`,
                },
-            }
+            },
          );
 
          const data = await res.json();

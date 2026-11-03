@@ -12,7 +12,7 @@ export default function UserHeader({ id, onNotFound }) {
    const [profile, setProfile] = useState(null);
    const [loading, setLoading] = useState(false);
    const [error, setError] = useState(null);
-  
+
    // for users list search
    const [type, setType] = useState('');
    const [openUserList, setOpenUserList] = useState(false);
@@ -29,7 +29,7 @@ export default function UserHeader({ id, onNotFound }) {
                `${process.env.NEXT_PUBLIC_API_URL}/api/users/${id}`,
                {
                   headers: { Authorization: `Bearer ${token}` },
-               }
+               },
             );
             const data = await res.json();
 
@@ -130,7 +130,7 @@ export default function UserHeader({ id, onNotFound }) {
                      headers: {
                         Authorization: `Bearer ${getValidToken()}`,
                      },
-                  }
+                  },
                );
             }}
          />
