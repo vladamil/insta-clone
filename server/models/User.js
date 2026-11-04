@@ -6,15 +6,25 @@ const userSchema = new mongoose.Schema(
          type: String,
          required: true,
          unique: true,
+         trim: true,
+         lowercase: true,
+         maxlength: 50,
       },
       username: {
          type: String,
          required: true,
          unique: true,
+         trim: true,
+         lowercase: true,
+         minlength: 3,
+         maxlength: 20,
       },
       realname: {
          type: String,
          required: true,
+         trim: true,
+         minlength: 2,
+         maxlength: 40,
       },
       passwordHash: {
          type: String,
@@ -31,6 +41,8 @@ const userSchema = new mongoose.Schema(
       description: {
          type: String,
          default: '',
+         trim: true,
+         maxlength: 150,
       },
       isVerified: {
          type: Boolean,
@@ -38,11 +50,12 @@ const userSchema = new mongoose.Schema(
       },
       pendingEmail: {
          type: String,
+         trim: true,
+         lowercase: true,
       },
       emailVerificationToken: {
          type: String,
       },
-
       emailVerificationExpires: {
          type: Date,
       },
@@ -54,7 +67,6 @@ const userSchema = new mongoose.Schema(
       passwordResetToken: {
          type: String,
       },
-
       passwordResetExpires: {
          type: Date,
       },

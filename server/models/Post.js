@@ -6,7 +6,6 @@ const postSchema = new mongoose.Schema(
          type: mongoose.Schema.Types.ObjectId,
          ref: 'User',
          required: true,
-         index: true, // faster lookups by author
       },
       imageUrl: {
          type: String,
@@ -18,6 +17,8 @@ const postSchema = new mongoose.Schema(
       },
       caption: {
          type: String,
+         trim: true,
+         maxlength: 150,
       },
       likes: [
          {
@@ -29,7 +30,7 @@ const postSchema = new mongoose.Schema(
    { timestamps: true },
 );
 
-// Helpful index to sort posts by creation date quickly
-postSchema.index({ createdAt: -1 });
+// Posts by author, newest first: serves the feed, profile posts and post counts
+postSchema.index({ author: 1, createdAt: -1 });
 
 export default mongoose.model('Post', postSchema);
