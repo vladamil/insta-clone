@@ -7,6 +7,7 @@ import {
    sendVerificationEmail,
    sendPasswordResetEmail,
 } from '../utils/sendEmail.js';
+import { cleanString } from '../utils/validation.js';
 
 const router = express.Router();
 
@@ -17,10 +18,10 @@ const MAX_ATTEMPTS = 3;
 // REGISTER ROUTE
 router.post('/register', async (req, res) => {
    // Sanitize data from req
-   const email = req.body.email?.trim().toLowerCase();
-   const username = req.body.username?.trim().toLowerCase();
-   const realname = req.body.realname?.trim();
-   const password = req.body.password?.trim();
+   const email = cleanString(req.body.email).toLowerCase();
+   const username = cleanString(req.body.username).toLowerCase();
+   const realname = cleanString(req.body.realname);
+   const password = cleanString(req.body.password);
 
    // Empty fields checks
    if (!email || !username || !realname || !password) {
@@ -122,11 +123,19 @@ router.post('/register', async (req, res) => {
       });
       await newUser.save();
 
-      // Send verification email
-      await sendVerificationEmail({
-         to: email,
-         token: emailVerificationToken,
-      });
+      // The account is saved, so a failed email can be resent from the login page
+      try {
+         await sendVerificationEmail({
+            to: email,
+            token: emailVerificationToken,
+         });
+      } catch (err) {
+         console.error(err);
+         return res.status(201).json({
+            message:
+               'Account created, but we could not send the verification email. Log in to send it again.',
+         });
+      }
 
       res.status(201).json({
          message:
@@ -140,8 +149,8 @@ router.post('/register', async (req, res) => {
 // LOGIN ROUTE
 router.post('/login', async (req, res) => {
    // Sanitize data from req
-   const username = req.body.username?.trim().toLowerCase();
-   const password = req.body.password?.trim();
+   const username = cleanString(req.body.username).toLowerCase();
+   const password = cleanString(req.body.password);
 
    // Empty fields checks
    if (!username || !password) {
@@ -152,7 +161,7 @@ router.post('/login', async (req, res) => {
 
    try {
       // Find user by email
-      const user = await User.findOne({ username });
+      const user = await User.findOne({ username }).select('+passwordHash');
       if (!user) {
          return res.status(400).json({ error: 'Invalid username or password' });
       }
@@ -172,11 +181,9 @@ router.post('/login', async (req, res) => {
       }
 
       // Generate JWT
-      const token = jwt.sign(
-         { id: user._id, username: user.username },
-         process.env.JWT_SECRET,
-         { expiresIn: '7d' },
-      );
+      const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
+         expiresIn: '7d',
+      });
 
       const { passwordHash, ...userWithoutPassword } = user.toObject();
 
@@ -193,7 +200,7 @@ router.post('/login', async (req, res) => {
 
 // VERIFY EMAIL ROUTE
 router.get('/verify-email', async (req, res) => {
-   const { token } = req.query;
+   const token = cleanString(req.query.token);
 
    if (!token) {
       return res.status(400).json({ error: 'Missing verification token' });
@@ -228,10 +235,15 @@ router.get('/verify-email', async (req, res) => {
 
 // RESEND VERIFY EMAIL ROUTE
 router.post('/resend-verification', async (req, res) => {
-   const { username } = req.body;
+   const username = cleanString(req.body.username).toLowerCase();
+   if (!username) {
+      return res.status(400).json({ error: 'Username is required' });
+   }
 
    try {
-      const user = await User.findOne({ username });
+      const user = await User.findOne({ username }).select(
+         '+emailVerificationAttempts',
+      );
 
       if (!user) {
          return res.status(400).json({
@@ -277,7 +289,7 @@ router.post('/resend-verification', async (req, res) => {
 
 // FORGOT PASSWORD ROUTE
 router.post('/forgot-password', async (req, res) => {
-   const { emailOrUsername } = req.body;
+   const emailOrUsername = cleanString(req.body.emailOrUsername).toLowerCase();
    if (!emailOrUsername) {
       return res
          .status(400)
@@ -287,7 +299,7 @@ router.post('/forgot-password', async (req, res) => {
    try {
       const user = await User.findOne({
          $or: [{ email: emailOrUsername }, { username: emailOrUsername }],
-      });
+      }).select('+passwordResetAttempts');
 
       if (!user) {
          return res.status(200).json({
@@ -331,7 +343,7 @@ router.post('/forgot-password', async (req, res) => {
 
 // VALIDATE PASSWORD RESET TOKEN
 router.post('/validate-reset-token', async (req, res) => {
-   const { token } = req.body;
+   const token = cleanString(req.body.token);
 
    if (!token) {
       return res.status(400).json({
@@ -369,7 +381,8 @@ router.post('/validate-reset-token', async (req, res) => {
 
 // RESET PASSWORD ROUTE
 router.post('/reset-password', async (req, res) => {
-   const { token, password } = req.body;
+   const token = cleanString(req.body.token);
+   const password = cleanString(req.body.password);
 
    if (!token || !password) {
       return res.status(400).json({
@@ -418,6 +431,7 @@ router.post('/reset-password', async (req, res) => {
 
       // Clear reset token
       user.passwordResetToken = undefined;
+      user.passwordResetExpires = undefined;
 
       await user.save();
 

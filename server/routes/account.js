@@ -9,6 +9,7 @@ import Comment from '../models/Comment.js';
 import Follow from '../models/Follow.js';
 import requireAuth from '../middleware/requireAuth.js';
 import { sendChangeEmail } from '../utils/sendEmail.js';
+import { cleanString } from '../utils/validation.js';
 import crypto from 'node:crypto';
 
 const router = express.Router();
@@ -237,7 +238,8 @@ router.get('/verify-email-change', async (req, res) => {
 
 // Update password
 router.patch('/password', requireAuth, async (req, res) => {
-   const { oldPassword, newPassword } = req.body;
+   const oldPassword = cleanString(req.body.oldPassword);
+   const newPassword = cleanString(req.body.newPassword);
 
    try {
       if (!oldPassword || !newPassword) {
@@ -246,7 +248,7 @@ router.patch('/password', requireAuth, async (req, res) => {
             .json({ error: 'Both old and new password are required' });
       }
 
-      const user = await User.findById(req.user.id);
+      const user = await User.findById(req.user.id).select('+passwordHash');
 
       if (!user) {
          return res.status(400).json({ error: 'User not found' });

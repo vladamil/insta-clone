@@ -26,9 +26,11 @@ const userSchema = new mongoose.Schema(
          minlength: 2,
          maxlength: 40,
       },
+      // select: false = never loaded unless a query asks with .select('+field')
       passwordHash: {
          type: String,
          required: true,
+         select: false,
       },
       profilePicUrl: {
          type: String,
@@ -55,26 +57,28 @@ const userSchema = new mongoose.Schema(
       },
       emailVerificationToken: {
          type: String,
+         select: false,
       },
       emailVerificationExpires: {
          type: Date,
+         select: false,
       },
-      emailVerificationAttempts: [
-         {
-            type: Date,
-         },
-      ],
+      emailVerificationAttempts: {
+         type: [Date],
+         select: false,
+      },
       passwordResetToken: {
          type: String,
+         select: false,
       },
       passwordResetExpires: {
          type: Date,
+         select: false,
       },
-      passwordResetAttempts: [
-         {
-            type: Date,
-         },
-      ],
+      passwordResetAttempts: {
+         type: [Date],
+         select: false,
+      },
    },
    { timestamps: true },
 );

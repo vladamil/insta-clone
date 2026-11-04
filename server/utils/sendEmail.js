@@ -1,12 +1,20 @@
 import { Resend } from 'resend';
 
 const resend = new Resend(process.env.RESEND_API_KEY);
+const FROM = 'InstaClone <noreply@vladimir-milinic.com>';
+
+// Resend returns { error } instead of throwing, so we throw it ourselves
+const send = async (email) => {
+   const { error } = await resend.emails.send({ from: FROM, ...email });
+   if (error) {
+      throw new Error(`Email not sent: ${error.message}`);
+   }
+};
 
 const sendVerificationEmail = async ({ to, token }) => {
    const verifyUrl = `${process.env.CLIENT_URL}/verify-email?token=${token}`;
 
-   await resend.emails.send({
-      from: 'InstaClone <noreply@vladimir-milinic.com>',
+   await send({
       to,
       subject: 'Verify your email',
       html: `
@@ -24,8 +32,7 @@ const sendVerificationEmail = async ({ to, token }) => {
 const sendChangeEmail = async ({ to, token }) => {
    const changeEmailUrl = `${process.env.CLIENT_URL}/verify-email-change?token=${token}`;
 
-   await resend.emails.send({
-      from: 'InstaClone <noreply@vladimir-milinic.com>',
+   await send({
       to,
       subject: 'Confirm your new email address',
       html: `
@@ -44,8 +51,7 @@ const sendChangeEmail = async ({ to, token }) => {
 const sendPasswordResetEmail = async ({ to, token }) => {
    const resetUrl = `${process.env.CLIENT_URL}/reset-password?token=${token}`;
 
-   await resend.emails.send({
-      from: 'InstaClone <noreply@vladimir-milinic.com>',
+   await send({
       to,
       subject: 'Reset Your Password',
       html: `
