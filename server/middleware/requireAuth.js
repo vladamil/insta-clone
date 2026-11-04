@@ -1,5 +1,7 @@
 import jwt from 'jsonwebtoken';
 
+// Guards a route: checks the "Authorization: Bearer <token>" header and puts
+// the logged-in user's id on req.user. Routes after it can trust req.user.id.
 const requireAuth = (req, res, next) => {
    const authHeader = req.headers.authorization;
    if (!authHeader || !authHeader.startsWith('Bearer ')) {
@@ -8,14 +10,25 @@ const requireAuth = (req, res, next) => {
 
    const token = authHeader.split(' ')[1];
 
+   let decoded;
+
    try {
-      const decoded = jwt.verify(token, process.env.JWT_SECRET);
-      // Attach token user info to request
-      req.user = decoded;
-      next();
+      // Only accept tokens signed the way we sign them (HS256)
+      decoded = jwt.verify(token, process.env.JWT_SECRET, {
+         algorithms: ['HS256'],
+      });
    } catch (err) {
-      res.status(401).json({ error: 'Invalid token' });
+      if (err.name === 'TokenExpiredError') {
+         return res
+            .status(401)
+            .json({ error: 'Token expired', code: 'TOKEN_EXPIRED' });
+      }
+      return res.status(401).json({ error: 'Invalid token' });
    }
+
+   // Keep only the id
+   req.user = { id: decoded.id };
+   next();
 };
 
 export default requireAuth;
