@@ -1,22 +1,27 @@
 import express from 'express';
 import bcrypt from 'bcryptjs';
-import crypto from 'node:crypto';
 import jwt from 'jsonwebtoken';
 import User from '../models/User.js';
 import {
    sendVerificationEmail,
    sendPasswordResetEmail,
 } from '../utils/sendEmail.js';
-import { cleanString, validatePassword } from '../utils/validation.js';
+import {
+   cleanString,
+   validatePassword,
+   validateUsername,
+   validateRealname,
+   validateEmail,
+} from '../utils/validation.js';
+import {
+   ONE_HOUR,
+   MAX_ATTEMPTS,
+   createToken,
+   hashToken,
+   recentAttempts,
+} from '../utils/authHelpers.js';
 
 const router = express.Router();
-
-// Email link lifetime and resend limits
-const ONE_HOUR = 1000 * 60 * 60;
-const MAX_ATTEMPTS = 3;
-
-const hashToken = (token) =>
-   crypto.createHash('sha256').update(token).digest('hex');
 
 // REGISTER ROUTE
 router.post('/register', async (req, res) => {
@@ -29,44 +34,19 @@ router.post('/register', async (req, res) => {
       return res.status(400).json({ error: 'All fields are required' });
    }
 
-   // Validate username length
-   if (username.length < 3 || username.length > 20) {
-      return res.status(400).json({
-         error: 'Username must be between 3 and 20 characters',
-      });
+   const usernameError = validateUsername(username);
+   if (usernameError) {
+      return res.status(400).json({ error: usernameError });
    }
 
-   // Validate username (no empty spaces)
-   if (/\s/.test(username)) {
-      return res.status(400).json({ error: 'Username cannot contain spaces' });
+   const realnameError = validateRealname(realname);
+   if (realnameError) {
+      return res.status(400).json({ error: realnameError });
    }
 
-   // Validate real name
-   const realnameRegex = /^[\p{L}][\p{L}\s'-]{1,39}$/u;
-
-   if (realname.length < 2 || realname.length > 40) {
-      return res.status(400).json({
-         error: 'Real name must be between 2 and 40 characters',
-      });
-   }
-
-   if (!realnameRegex.test(realname)) {
-      return res.status(400).json({
-         error: 'Real name may contain letters, spaces and hyphens only (no numbers or symbols)',
-      });
-   }
-
-   // Validate email length
-   if (email.length > 50) {
-      return res
-         .status(400)
-         .json({ error: 'Email is too long (max 50 characters)' });
-   }
-
-   // Validate email address
-   const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-   if (!emailRegex.test(email)) {
-      return res.status(400).json({ error: 'Not a valid e-mail address' });
+   const emailError = validateEmail(email);
+   if (emailError) {
+      return res.status(400).json({ error: emailError });
    }
 
    const passwordError = validatePassword(password);
@@ -94,7 +74,7 @@ router.post('/register', async (req, res) => {
          .status(400)
          .json({ error: 'Username is taken. Please try another' });
 
-   const emailVerificationToken = crypto.randomBytes(32).toString('hex');
+   const emailVerificationToken = createToken();
 
    const newUser = new User({
       email,
@@ -231,9 +211,8 @@ router.post('/resend-verification', async (req, res) => {
       });
    }
 
-   // Keep only attempts from the last hour
-   user.emailVerificationAttempts = user.emailVerificationAttempts.filter(
-      (date) => Date.now() - new Date(date).getTime() < ONE_HOUR,
+   user.emailVerificationAttempts = recentAttempts(
+      user.emailVerificationAttempts,
    );
 
    if (user.emailVerificationAttempts.length >= MAX_ATTEMPTS) {
@@ -242,7 +221,7 @@ router.post('/resend-verification', async (req, res) => {
       });
    }
 
-   const token = crypto.randomBytes(32).toString('hex');
+   const token = createToken();
 
    user.emailVerificationToken = token;
    user.emailVerificationExpires = Date.now() + ONE_HOUR;
@@ -276,10 +255,7 @@ router.post('/forgot-password', async (req, res) => {
       });
    }
 
-   // Keep only attempts from the last hour
-   user.passwordResetAttempts = user.passwordResetAttempts.filter(
-      (date) => Date.now() - new Date(date).getTime() < ONE_HOUR,
-   );
+   user.passwordResetAttempts = recentAttempts(user.passwordResetAttempts);
 
    if (user.passwordResetAttempts.length >= MAX_ATTEMPTS) {
       return res.status(429).json({
@@ -287,8 +263,7 @@ router.post('/forgot-password', async (req, res) => {
       });
    }
 
-   // The email gets the raw token, the database only its hash
-   const rawToken = crypto.randomBytes(32).toString('hex');
+   const rawToken = createToken();
 
    user.passwordResetToken = hashToken(rawToken);
    user.passwordResetExpires = Date.now() + ONE_HOUR;

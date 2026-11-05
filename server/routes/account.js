@@ -9,8 +9,20 @@ import Comment from '../models/Comment.js';
 import Follow from '../models/Follow.js';
 import requireAuth from '../middleware/requireAuth.js';
 import { sendChangeEmail } from '../utils/sendEmail.js';
-import { cleanString, validatePassword } from '../utils/validation.js';
-import crypto from 'node:crypto';
+import {
+   cleanString,
+   validatePassword,
+   validateUsername,
+   validateRealname,
+   validateEmail,
+} from '../utils/validation.js';
+import {
+   ONE_HOUR,
+   MAX_ATTEMPTS,
+   createToken,
+   hashToken,
+   recentAttempts,
+} from '../utils/authHelpers.js';
 
 const router = express.Router();
 
@@ -22,7 +34,10 @@ const storage = new CloudinaryStorage({
    },
 });
 
-const upload = multer({ storage });
+const upload = multer({
+   storage,
+   limits: { fileSize: 5 * 1024 * 1024 }, // 5 MB
+});
 
 // Update and set profile picture
 router.patch(
@@ -30,18 +45,26 @@ router.patch(
    requireAuth,
    upload.single('profilePic'),
    async (req, res) => {
+      if (!req.file) {
+         return res.status(400).json({ error: 'No image uploaded' });
+      }
+
       try {
          const user = await User.findById(req.user.id).select('-passwordHash');
+         const oldPublicId = user.profilePicPublicId;
 
-         //  Delete old image from Cloudinary if it exists
-         if (user.profilePicPublicId) {
-            await cloudinary.uploader.destroy(user.profilePicPublicId);
-         }
-
-         //  Save new image data to DB
          user.profilePicUrl = req.file.path;
          user.profilePicPublicId = req.file.filename;
          await user.save();
+
+         // Delete the old image only after the new one is saved
+         if (oldPublicId) {
+            try {
+               await cloudinary.uploader.destroy(oldPublicId);
+            } catch (err) {
+               console.error('Old profile pic not deleted:', err);
+            }
+         }
 
          res.json(user);
       } catch (err) {
@@ -53,30 +76,26 @@ router.patch(
 // Update username
 router.patch('/username', requireAuth, async (req, res) => {
    try {
-      const username = req.body.username?.trim().toLowerCase();
+      const username = cleanString(req.body.username).toLowerCase();
 
       if (!username) {
          return res.status(400).json({ error: 'Username is required' });
       }
 
-      // Validate username lenght
-      if (username.length < 3 || username.length > 20) {
-         return res.status(400).json({
-            error: 'Username must be between 3 and 20 characters',
-         });
-      }
-
-      // Validate username (no spaces)
-      if (/\s/.test(username)) {
-         return res
-            .status(400)
-            .json({ error: 'Username cannot contain spaces' });
+      const usernameError = validateUsername(username);
+      if (usernameError) {
+         return res.status(400).json({ error: usernameError });
       }
 
       // Check uniqueness
       const existingUsername = await User.findOne({ username });
       if (existingUsername) {
-         return res.status(400).json({ error: 'Username is already taken' });
+         const isOwn = existingUsername._id.toString() === req.user.id;
+         return res.status(400).json({
+            error: isOwn
+               ? 'This is already your username'
+               : 'Username is already taken',
+         });
       }
 
       // Update in DB
@@ -88,6 +107,10 @@ router.patch('/username', requireAuth, async (req, res) => {
 
       res.json(user);
    } catch (err) {
+      // Taken by someone else a moment ago (unique index)
+      if (err.code === 11000) {
+         return res.status(400).json({ error: 'Username is already taken' });
+      }
       res.status(500).json({ error: 'Failed to update username' });
    }
 });
@@ -95,26 +118,15 @@ router.patch('/username', requireAuth, async (req, res) => {
 // Update realname
 router.patch('/realname', requireAuth, async (req, res) => {
    try {
-      const realname = req.body.realname?.trim();
+      const realname = cleanString(req.body.realname);
 
       if (!realname) {
          return res.status(400).json({ error: 'Name is required' });
       }
 
-      // Validate real name lenght
-      if (realname.length < 2 || realname.length > 40) {
-         return res.status(400).json({
-            error: 'Full name must be between 2 and 40 characters',
-         });
-      }
-
-      // Validate real name regex
-      const realnameRegex = /^[\p{L}][\p{L}\s'-]{1,39}$/u;
-
-      if (!realnameRegex.test(realname)) {
-         return res.status(400).json({
-            error: 'Real name may contain letters, spaces and hyphens only (no numbers or symbols)',
-         });
+      const realnameError = validateRealname(realname);
+      if (realnameError) {
+         return res.status(400).json({ error: realnameError });
       }
 
       // Update in DB
@@ -133,24 +145,20 @@ router.patch('/realname', requireAuth, async (req, res) => {
 // Update email request
 router.patch('/email', requireAuth, async (req, res) => {
    try {
-      const newEmail = req.body.email?.trim().toLowerCase();
+      const newEmail = cleanString(req.body.email).toLowerCase();
 
       if (!newEmail) {
          return res.status(400).json({ error: 'Email is required' });
       }
 
-      if (newEmail.length > 50) {
-         return res
-            .status(400)
-            .json({ error: 'Email is too long (max 50 characters)' });
+      const emailError = validateEmail(newEmail);
+      if (emailError) {
+         return res.status(400).json({ error: emailError });
       }
 
-      const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-      if (!emailRegex.test(newEmail)) {
-         return res.status(400).json({ error: 'Not a valid e-mail address' });
-      }
-
-      const user = await User.findById(req.user.id);
+      const user = await User.findById(req.user.id).select(
+         '+emailVerificationAttempts',
+      );
 
       // Prevent changing to same email
       if (user.email === newEmail) {
@@ -172,18 +180,22 @@ router.patch('/email', requireAuth, async (req, res) => {
          return res.status(400).json({ error: 'Email is already in use' });
       }
 
-      // Generate verification token
-      const token = crypto.randomBytes(32).toString('hex');
+      user.emailVerificationAttempts = recentAttempts(
+         user.emailVerificationAttempts,
+      );
 
-      // Hash token to store in DB
-      const hashedToken = crypto
-         .createHash('sha256')
-         .update(token)
-         .digest('hex');
+      if (user.emailVerificationAttempts.length >= MAX_ATTEMPTS) {
+         return res.status(429).json({
+            error: 'Too many email change attempts. Please try again in about an hour.',
+         });
+      }
+
+      const token = createToken();
 
       user.pendingEmail = newEmail;
-      user.emailVerificationToken = hashedToken;
-      user.emailVerificationExpires = Date.now() + 1000 * 60 * 60; // 1 hour
+      user.emailVerificationToken = hashToken(token);
+      user.emailVerificationExpires = Date.now() + ONE_HOUR;
+      user.emailVerificationAttempts.push(new Date());
 
       await user.save();
 
@@ -202,19 +214,14 @@ router.patch('/email', requireAuth, async (req, res) => {
 // Verify update email
 router.get('/verify-email-change', async (req, res) => {
    try {
-      const { token } = req.query;
+      const token = cleanString(req.query.token);
 
       if (!token) {
          return res.status(400).json({ error: 'Invalid token' });
       }
 
-      const hashedToken = crypto
-         .createHash('sha256')
-         .update(token)
-         .digest('hex');
-
       const user = await User.findOne({
-         emailVerificationToken: hashedToken,
+         emailVerificationToken: hashToken(token),
          emailVerificationExpires: { $gt: new Date() },
       });
 
@@ -232,6 +239,10 @@ router.get('/verify-email-change', async (req, res) => {
 
       res.json({ message: 'Email updated successfully' });
    } catch (err) {
+      // Another account took this email in the meantime (unique index)
+      if (err.code === 11000) {
+         return res.status(400).json({ error: 'Email is already in use' });
+      }
       res.status(500).json({ error: 'Failed to verify email change' });
    }
 });

@@ -15,4 +15,47 @@ const validatePassword = (password) => {
    return null;
 };
 
-export { cleanString, validatePassword };
+const USERNAME_RULE = /^[a-z0-9._]+$/;
+
+// Expects an already lowercased username
+const validateUsername = (username) => {
+   if (username.length < 3 || username.length > 20) {
+      return 'Username must be between 3 and 20 characters';
+   }
+   if (!USERNAME_RULE.test(username)) {
+      return 'Username may contain only letters, numbers, dots and underscores';
+   }
+   return null;
+};
+
+const REALNAME_RULE = /^[\p{L}][\p{L}\s'-]{1,39}$/u;
+
+const validateRealname = (realname) => {
+   if (realname.length < 2 || realname.length > 40) {
+      return 'Real name must be between 2 and 40 characters';
+   }
+   if (!REALNAME_RULE.test(realname)) {
+      return 'Real name may contain letters, spaces and hyphens only (no numbers or symbols)';
+   }
+   return null;
+};
+
+const EMAIL_RULE = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+
+const validateEmail = (email) => {
+   if (email.length > 50) {
+      return 'Email is too long (max 50 characters)';
+   }
+   if (!EMAIL_RULE.test(email)) {
+      return 'Not a valid e-mail address';
+   }
+   return null;
+};
+
+export {
+   cleanString,
+   validatePassword,
+   validateUsername,
+   validateRealname,
+   validateEmail,
+};

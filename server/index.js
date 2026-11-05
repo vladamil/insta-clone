@@ -42,6 +42,12 @@ app.use((err, req, res, next) => {
    console.error(err);
 
    // Response already started - let Express close the connection
+   if (res.headersSent) return next(err);
+
+   // Upload problems (e.g. file too large) are the client's mistake
+   if (err.name === 'MulterError') {
+      return res.status(400).json({ error: err.message });
+   }
 
    // Errors from Express itself carry a status (e.g. 400 for malformed JSON)
    const status = err.status || 500;
