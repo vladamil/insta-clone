@@ -51,6 +51,12 @@ router.patch(
 
       try {
          const user = await User.findById(req.user.id).select('-passwordHash');
+
+         if (!user) {
+            await cloudinary.uploader.destroy(req.file.filename);
+            return res.status(404).json({ error: 'User not found' });
+         }
+
          const oldPublicId = user.profilePicPublicId;
 
          user.profilePicUrl = req.file.path;
@@ -68,7 +74,13 @@ router.patch(
 
          res.json(user);
       } catch (err) {
-         res.status(500).json({ error: 'Image upload failed' });
+         // Saving failed, so the new image has no owner - remove it
+         await cloudinary.uploader
+            .destroy(req.file.filename)
+            .catch((cleanupErr) =>
+               console.error('Uploaded image not removed:', cleanupErr),
+            );
+         throw err;
       }
    },
 );
@@ -159,6 +171,10 @@ router.patch('/email', requireAuth, async (req, res) => {
       const user = await User.findById(req.user.id).select(
          '+emailVerificationAttempts',
       );
+
+      if (!user) {
+         return res.status(404).json({ error: 'User not found' });
+      }
 
       // Prevent changing to same email
       if (user.email === newEmail) {
@@ -262,7 +278,7 @@ router.patch('/password', requireAuth, async (req, res) => {
       const user = await User.findById(req.user.id).select('+passwordHash');
 
       if (!user) {
-         return res.status(400).json({ error: 'User not found' });
+         return res.status(404).json({ error: 'User not found' });
       }
 
       // Compare old passwords
@@ -313,38 +329,52 @@ router.delete('/', requireAuth, async (req, res) => {
       const userId = req.user.id;
       const user = await User.findById(userId);
 
-      // delete profile pic from cloudinary
-      if (user.profilePicPublicId) {
-         await cloudinary.uploader.destroy(user.profilePicPublicId);
+      if (!user) {
+         return res.status(404).json({ error: 'User not found' });
       }
 
-      // delete posts (and related images + comments)
-      const posts = await Post.find({ author: userId });
+      const posts = await Post.find({ author: userId }, 'imagePublicId');
+      const postIds = posts.map((post) => post._id);
 
-      for (let post of posts) {
-         // delete post image
-         if (post.imagePublicId) {
-            await cloudinary.uploader.destroy(post.imagePublicId);
-         }
-         // delete comments under the post
-         await Comment.deleteMany({ post: post._id });
-      }
+      // Only top-level comments have replies
+      const commentIds = await Comment.find({
+         author: userId,
+         parentComment: null,
+      }).distinct('_id');
+
+      // Comments on the user's posts, by the user, and replies to the user's comments
+      await Comment.deleteMany({
+         $or: [
+            { post: { $in: postIds } },
+            { author: userId },
+            { parentComment: { $in: commentIds } },
+         ],
+      });
 
       await Post.deleteMany({ author: userId });
 
-      // delete comments authored by user (elsewhere)
-      await Comment.deleteMany({ author: userId });
+      await Post.updateMany({ likes: userId }, { $pull: { likes: userId } });
 
-      // delete follows (both directions)
       await Follow.deleteMany({
          $or: [{ followerId: userId }, { followingId: userId }],
       });
 
-      // remove likes from posts
-      await Post.updateMany({}, { $pull: { likes: userId } });
+      await user.deleteOne();
 
-      // delete the user
-      await User.findByIdAndDelete(req.user.id);
+      // Images last: if one fails, only a file is left behind, not broken data
+      const imageIds = [
+         user.profilePicPublicId,
+         ...posts.map((post) => post.imagePublicId),
+      ].filter(Boolean);
+
+      const results = await Promise.allSettled(
+         imageIds.map((id) => cloudinary.uploader.destroy(id)),
+      );
+
+      const failed = results.filter((result) => result.status === 'rejected');
+      if (failed.length > 0) {
+         console.error(`${failed.length} image(s) not deleted from Cloudinary`);
+      }
 
       res.json({ message: 'Account deleted successfully' });
    } catch (err) {
