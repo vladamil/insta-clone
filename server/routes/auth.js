@@ -7,28 +7,29 @@ import {
    sendVerificationEmail,
    sendPasswordResetEmail,
 } from '../utils/sendEmail.js';
-import { cleanString } from '../utils/validation.js';
+import { cleanString, validatePassword } from '../utils/validation.js';
 
 const router = express.Router();
 
-// Resend email constrains
+// Email link lifetime and resend limits
 const ONE_HOUR = 1000 * 60 * 60;
 const MAX_ATTEMPTS = 3;
 
+const hashToken = (token) =>
+   crypto.createHash('sha256').update(token).digest('hex');
+
 // REGISTER ROUTE
 router.post('/register', async (req, res) => {
-   // Sanitize data from req
    const email = cleanString(req.body.email).toLowerCase();
    const username = cleanString(req.body.username).toLowerCase();
    const realname = cleanString(req.body.realname);
    const password = cleanString(req.body.password);
 
-   // Empty fields checks
    if (!email || !username || !realname || !password) {
       return res.status(400).json({ error: 'All fields are required' });
    }
 
-   // Validate username lenght
+   // Validate username length
    if (username.length < 3 || username.length > 20) {
       return res.status(400).json({
          error: 'Username must be between 3 and 20 characters',
@@ -55,7 +56,7 @@ router.post('/register', async (req, res) => {
       });
    }
 
-   // Validate email lenght
+   // Validate email length
    if (email.length > 50) {
       return res
          .status(400)
@@ -68,134 +69,113 @@ router.post('/register', async (req, res) => {
       return res.status(400).json({ error: 'Not a valid e-mail address' });
    }
 
-   // Validate password lenght
-   if (password.length > 64) {
-      return res.status(400).json({
-         error: 'Password is too long (max 64 characters)',
-      });
+   const passwordError = validatePassword(password);
+   if (passwordError) {
+      return res.status(400).json({ error: passwordError });
    }
 
-   // Validate password strenght
-   const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/;
-   if (!passwordRegex.test(password)) {
-      return res.status(400).json({
-         error: 'Password must have at least 8 characters (one uppercase, one lowercase, one number, and one special character)',
-      });
-   }
+   // Validate unique email
+   const existingEmail = await User.findOne({
+      $or: [
+         { email },
+         {
+            pendingEmail: email,
+            emailVerificationExpires: { $gt: new Date() },
+         },
+      ],
+   });
+   if (existingEmail)
+      return res.status(400).json({ error: 'Account already exists' });
+
+   // Validate unique username
+   const existingUsername = await User.findOne({ username });
+   if (existingUsername)
+      return res
+         .status(400)
+         .json({ error: 'Username is taken. Please try another' });
+
+   const emailVerificationToken = crypto.randomBytes(32).toString('hex');
+
+   const newUser = new User({
+      email,
+      username,
+      realname,
+      passwordHash: await bcrypt.hash(password, 10),
+      emailVerificationToken,
+      emailVerificationExpires: Date.now() + ONE_HOUR,
+   });
 
    try {
-      // Validate unique email
-      const existingEmail = await User.findOne({
-         $or: [
-            { email },
-            {
-               pendingEmail: email,
-               emailVerificationExpires: { $gt: new Date() },
-            },
-         ],
-      });
-      if (existingEmail)
-         return res.status(400).json({ error: 'Account already exists' });
-
-      // Validate unique username
-      const existingUsername = await User.findOne({ username });
-      if (existingUsername)
+      await newUser.save();
+   } catch (err) {
+      // Same email or username registered a moment ago (unique index)
+      if (err.code === 11000) {
          return res
             .status(400)
-            .json({ error: 'Username is taken. Please try another' });
-
-      // Hashing password
-      const salt = await bcrypt.genSalt(10);
-      const hashedPassword = await bcrypt.hash(password, salt);
-
-      // Generate verification token
-      const emailVerificationToken = crypto.randomBytes(32).toString('hex');
-
-      const emailVerificationExpires = Date.now() + 60 * 60 * 1000; // 1h
-
-      const newUser = new User({
-         email,
-         username,
-         realname,
-         passwordHash: hashedPassword,
-         emailVerificationToken,
-         emailVerificationExpires,
-      });
-      await newUser.save();
-
-      // The account is saved, so a failed email can be resent from the login page
-      try {
-         await sendVerificationEmail({
-            to: email,
-            token: emailVerificationToken,
-         });
-      } catch (err) {
-         console.error(err);
-         return res.status(201).json({
-            message:
-               'Account created, but we could not send the verification email. Log in to send it again.',
-         });
+            .json({ error: 'Email or username is already taken' });
       }
+      throw err;
+   }
 
-      res.status(201).json({
-         message:
-            'Registration successful. Please check your email to verify your account.',
+   // The account is saved, so a failed email can be resent from the login page
+   try {
+      await sendVerificationEmail({
+         to: email,
+         token: emailVerificationToken,
       });
    } catch (err) {
-      res.status(500).json({ error: 'Server error during registration' });
+      console.error(err);
+      return res.status(201).json({
+         message:
+            'Account created, but we could not send the verification email. Log in to send it again.',
+      });
    }
+
+   res.status(201).json({
+      message:
+         'Registration successful. Please check your email to verify your account.',
+   });
 });
 
 // LOGIN ROUTE
 router.post('/login', async (req, res) => {
-   // Sanitize data from req
    const username = cleanString(req.body.username).toLowerCase();
    const password = cleanString(req.body.password);
 
-   // Empty fields checks
    if (!username || !password) {
       return res
-         .status(401)
+         .status(400)
          .json({ error: 'Username and password are required' });
    }
 
-   try {
-      // Find user by email
-      const user = await User.findOne({ username }).select('+passwordHash');
-      if (!user) {
-         return res.status(400).json({ error: 'Invalid username or password' });
-      }
-
-      // Verify password
-      const isMatch = await bcrypt.compare(password, user.passwordHash);
-      if (!isMatch) {
-         return res.status(400).json({ error: 'Invalid username or password' });
-      }
-
-      // Check if user verified email
-      if (!user.isVerified) {
-         return res.status(403).json({
-            error: 'Please verify your email before logging in',
-            code: 'EMAIL_NOT_VERIFIED',
-         });
-      }
-
-      // Generate JWT
-      const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
-         expiresIn: '7d',
-      });
-
-      const { passwordHash, ...userWithoutPassword } = user.toObject();
-
-      // Return token
-      res.status(200).json({
-         message: 'Login successful',
-         token,
-         user: userWithoutPassword,
-      });
-   } catch (error) {
-      res.status(500).json({ error: 'Server error during login' });
+   const user = await User.findOne({ username }).select('+passwordHash');
+   if (!user) {
+      return res.status(400).json({ error: 'Invalid username or password' });
    }
+
+   const isMatch = await bcrypt.compare(password, user.passwordHash);
+   if (!isMatch) {
+      return res.status(400).json({ error: 'Invalid username or password' });
+   }
+
+   if (!user.isVerified) {
+      return res.status(403).json({
+         error: 'Please verify your email before logging in',
+         code: 'EMAIL_NOT_VERIFIED',
+      });
+   }
+
+   const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
+      expiresIn: '7d',
+   });
+
+   const { passwordHash, ...userWithoutPassword } = user.toObject();
+
+   res.status(200).json({
+      message: 'Login successful',
+      token,
+      user: userWithoutPassword,
+   });
 });
 
 // VERIFY EMAIL ROUTE
@@ -206,31 +186,26 @@ router.get('/verify-email', async (req, res) => {
       return res.status(400).json({ error: 'Missing verification token' });
    }
 
-   try {
-      const user = await User.findOne({
-         emailVerificationToken: token,
-         emailVerificationExpires: { $gt: Date.now() },
+   const user = await User.findOne({
+      emailVerificationToken: token,
+      emailVerificationExpires: { $gt: Date.now() },
+   });
+
+   if (!user) {
+      return res.status(400).json({
+         error: 'Invalid or expired verification token',
       });
-
-      if (!user) {
-         return res.status(400).json({
-            error: 'Invalid or expired verification token',
-         });
-      }
-
-      // Verify user
-      user.isVerified = true;
-      user.emailVerificationToken = undefined;
-      user.emailVerificationExpires = undefined;
-
-      await user.save();
-
-      res.status(200).json({
-         message: 'Email verified successfully. You can now log in.',
-      });
-   } catch (error) {
-      res.status(500).json({ error: 'Email verification failed' });
    }
+
+   user.isVerified = true;
+   user.emailVerificationToken = undefined;
+   user.emailVerificationExpires = undefined;
+
+   await user.save();
+
+   res.status(200).json({
+      message: 'Email verified successfully. You can now log in.',
+   });
 });
 
 // RESEND VERIFY EMAIL ROUTE
@@ -240,51 +215,45 @@ router.post('/resend-verification', async (req, res) => {
       return res.status(400).json({ error: 'Username is required' });
    }
 
-   try {
-      const user = await User.findOne({ username }).select(
-         '+emailVerificationAttempts',
-      );
+   const user = await User.findOne({ username }).select(
+      '+emailVerificationAttempts',
+   );
 
-      if (!user) {
-         return res.status(400).json({
-            error: 'Account does not exist.',
-         });
-      }
-
-      if (user.isVerified) {
-         return res.status(400).json({
-            error: 'Account already verified.',
-         });
-      }
-
-      // Remove old attempts (older than 1 hour)
-      user.emailVerificationAttempts = user.emailVerificationAttempts.filter(
-         (date) => Date.now() - new Date(date).getTime() < ONE_HOUR,
-      );
-
-      // Check how many attempts remain
-      if (user.emailVerificationAttempts.length >= MAX_ATTEMPTS) {
-         return res.status(429).json({
-            error: 'Too many verification attempts. Please try again in about an hour.',
-         });
-      }
-
-      // generate NEW token
-      const token = crypto.randomBytes(32).toString('hex');
-
-      user.emailVerificationToken = token;
-      user.emailVerificationExpires = Date.now() + 1000 * 60 * 60; // 1h
-      user.emailVerificationAttempts.push(new Date());
-      await user.save();
-
-      await sendVerificationEmail({ to: user.email, token });
-
-      res.status(200).json({
-         message: 'Verification email sent',
+   if (!user) {
+      return res.status(400).json({
+         error: 'Account does not exist.',
       });
-   } catch (error) {
-      res.status(500).json({ error: 'Email verification failed' });
    }
+
+   if (user.isVerified) {
+      return res.status(400).json({
+         error: 'Account already verified.',
+      });
+   }
+
+   // Keep only attempts from the last hour
+   user.emailVerificationAttempts = user.emailVerificationAttempts.filter(
+      (date) => Date.now() - new Date(date).getTime() < ONE_HOUR,
+   );
+
+   if (user.emailVerificationAttempts.length >= MAX_ATTEMPTS) {
+      return res.status(429).json({
+         error: 'Too many verification attempts. Please try again in about an hour.',
+      });
+   }
+
+   const token = crypto.randomBytes(32).toString('hex');
+
+   user.emailVerificationToken = token;
+   user.emailVerificationExpires = Date.now() + ONE_HOUR;
+   user.emailVerificationAttempts.push(new Date());
+   await user.save();
+
+   await sendVerificationEmail({ to: user.email, token });
+
+   res.status(200).json({
+      message: 'Verification email sent',
+   });
 });
 
 // FORGOT PASSWORD ROUTE
@@ -296,49 +265,42 @@ router.post('/forgot-password', async (req, res) => {
          .json({ error: 'Please enter your email or username' });
    }
 
-   try {
-      const user = await User.findOne({
-         $or: [{ email: emailOrUsername }, { username: emailOrUsername }],
-      }).select('+passwordResetAttempts');
+   const user = await User.findOne({
+      $or: [{ email: emailOrUsername }, { username: emailOrUsername }],
+   }).select('+passwordResetAttempts');
 
-      if (!user) {
-         return res.status(200).json({
-            message: 'If the account exists, a reset email has been sent.',
-         });
-      }
-
-      // Remove old attempts
-      user.passwordResetAttempts = user.passwordResetAttempts.filter(
-         (date) => Date.now() - new Date(date).getTime() < ONE_HOUR,
-      );
-
-      if (user.passwordResetAttempts.length >= MAX_ATTEMPTS) {
-         return res.status(429).json({
-            error: 'Too many reset attempts. Please try again in about an hour.',
-         });
-      }
-
-      const rawToken = crypto.randomBytes(32).toString('hex');
-
-      const hashedToken = crypto
-         .createHash('sha256')
-         .update(rawToken)
-         .digest('hex');
-
-      user.passwordResetToken = hashedToken;
-      user.passwordResetExpires = Date.now() + 1000 * 60 * 60; // 1h
-      user.passwordResetAttempts.push(new Date());
-
-      await user.save();
-
-      await sendPasswordResetEmail({ to: user.email, token: rawToken });
-
-      res.status(200).json({
+   // Same answer either way, so nobody can test which accounts exist
+   if (!user) {
+      return res.status(200).json({
          message: 'If the account exists, a reset email has been sent.',
       });
-   } catch (error) {
-      res.status(500).json({ error: 'Server error during password reset' });
    }
+
+   // Keep only attempts from the last hour
+   user.passwordResetAttempts = user.passwordResetAttempts.filter(
+      (date) => Date.now() - new Date(date).getTime() < ONE_HOUR,
+   );
+
+   if (user.passwordResetAttempts.length >= MAX_ATTEMPTS) {
+      return res.status(429).json({
+         error: 'Too many reset attempts. Please try again in about an hour.',
+      });
+   }
+
+   // The email gets the raw token, the database only its hash
+   const rawToken = crypto.randomBytes(32).toString('hex');
+
+   user.passwordResetToken = hashToken(rawToken);
+   user.passwordResetExpires = Date.now() + ONE_HOUR;
+   user.passwordResetAttempts.push(new Date());
+
+   await user.save();
+
+   await sendPasswordResetEmail({ to: user.email, token: rawToken });
+
+   res.status(200).json({
+      message: 'If the account exists, a reset email has been sent.',
+   });
 });
 
 // VALIDATE PASSWORD RESET TOKEN
@@ -351,32 +313,20 @@ router.post('/validate-reset-token', async (req, res) => {
       });
    }
 
-   try {
-      // Hash incoming raw token
-      const hashedToken = crypto
-         .createHash('sha256')
-         .update(token)
-         .digest('hex');
+   const user = await User.findOne({
+      passwordResetToken: hashToken(token),
+      passwordResetExpires: { $gt: Date.now() },
+   });
 
-      const user = await User.findOne({
-         passwordResetToken: hashedToken,
-         passwordResetExpires: { $gt: Date.now() },
-      });
-
-      if (!user) {
-         return res.status(400).json({
-            error: 'Invalid or expired reset token',
-         });
-      }
-
-      res.status(200).json({
-         message: 'Token is valid',
-      });
-   } catch (error) {
-      res.status(500).json({
-         error: 'Server error while validating token',
+   if (!user) {
+      return res.status(400).json({
+         error: 'Invalid or expired reset token',
       });
    }
+
+   res.status(200).json({
+      message: 'Token is valid',
+   });
 });
 
 // RESET PASSWORD ROUTE
@@ -390,59 +340,31 @@ router.post('/reset-password', async (req, res) => {
       });
    }
 
-   // Validate password lenght
-   if (password.length > 64) {
+   const passwordError = validatePassword(password);
+   if (passwordError) {
+      return res.status(400).json({ error: passwordError });
+   }
+
+   const user = await User.findOne({
+      passwordResetToken: hashToken(token),
+      passwordResetExpires: { $gt: Date.now() },
+   });
+
+   if (!user) {
       return res.status(400).json({
-         error: 'Password is too long (max 64 characters)',
+         error: 'Invalid or expired reset token',
       });
    }
 
-   // Validate password strenght
-   const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/;
-   if (!passwordRegex.test(password)) {
-      return res.status(400).json({
-         error: 'Password must have at least 8 characters (one uppercase, one lowercase, one number, and one special character)',
-      });
-   }
+   user.passwordHash = await bcrypt.hash(password, 10);
+   user.passwordResetToken = undefined;
+   user.passwordResetExpires = undefined;
 
-   try {
-      // Hash incoming token to find user by it
-      const hashedToken = crypto
-         .createHash('sha256')
-         .update(token)
-         .digest('hex');
+   await user.save();
 
-      const user = await User.findOne({
-         passwordResetToken: hashedToken,
-         passwordResetExpires: { $gt: Date.now() },
-      });
-
-      if (!user) {
-         return res.status(400).json({
-            error: 'Invalid or expired reset token',
-         });
-      }
-
-      // Hashing new password
-      const salt = await bcrypt.genSalt(10);
-      const hashedPassword = await bcrypt.hash(password, salt);
-
-      user.passwordHash = hashedPassword;
-
-      // Clear reset token
-      user.passwordResetToken = undefined;
-      user.passwordResetExpires = undefined;
-
-      await user.save();
-
-      return res.status(200).json({
-         message: 'Password successfully reset',
-      });
-   } catch (error) {
-      return res.status(500).json({
-         error: 'Server error while resetting password',
-      });
-   }
+   res.status(200).json({
+      message: 'Password successfully reset',
+   });
 });
 
 export default router;

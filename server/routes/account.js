@@ -9,7 +9,7 @@ import Comment from '../models/Comment.js';
 import Follow from '../models/Follow.js';
 import requireAuth from '../middleware/requireAuth.js';
 import { sendChangeEmail } from '../utils/sendEmail.js';
-import { cleanString } from '../utils/validation.js';
+import { cleanString, validatePassword } from '../utils/validation.js';
 import crypto from 'node:crypto';
 
 const router = express.Router();
@@ -260,24 +260,13 @@ router.patch('/password', requireAuth, async (req, res) => {
          return res.status(400).json({ error: 'Old password is incorrect' });
       }
 
-      // Validate new password lenght
-      if (newPassword.length > 64) {
-         return res.status(400).json({
-            error: 'New password is too long (max 64 characters)',
-         });
-      }
-
-      // Validate new password strenght
-      const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/;
-      if (!passwordRegex.test(newPassword)) {
-         return res.status(400).json({
-            error: 'New password must have at least 8 characters (one uppercase, one lowercase, one number, and one special character)',
-         });
+      const passwordError = validatePassword(newPassword);
+      if (passwordError) {
+         return res.status(400).json({ error: passwordError });
       }
 
       // Hash new password
-      const salt = await bcrypt.genSalt(10);
-      user.passwordHash = await bcrypt.hash(newPassword, salt);
+      user.passwordHash = await bcrypt.hash(newPassword, 10);
 
       await user.save();
       res.json({ message: 'Password updated successfully' });
