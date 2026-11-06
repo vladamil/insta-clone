@@ -5,12 +5,15 @@ import styles from './SearchModal.module.css';
 import { FaSearch, FaTimes } from 'react-icons/fa';
 import UserLink from '../user/UserLink';
 import { useLockBodyScroll } from '@/hooks/useLockBodyScroll';
+import { useAuth } from '@/context/AuthContext';
 
 export default function SearchModal({ isOpen, onClose }) {
    const [query, setQuery] = useState('');
    const [results, setResults] = useState([]);
    const [loading, setLoading] = useState(false);
    const [error, setError] = useState(null);
+
+   const { getValidToken } = useAuth();
 
    const handleCloseSearch = () => {
       onClose();
@@ -43,14 +46,23 @@ export default function SearchModal({ isOpen, onClose }) {
 
       const delay = setTimeout(async () => {
          try {
+            setError(null);
+            const token = getValidToken();
+
             const res = await fetch(
                `${
                   process.env.NEXT_PUBLIC_API_URL
                }/api/search?q=${encodeURIComponent(query)}`,
+               {
+                  headers: { Authorization: `Bearer ${token}` },
+               },
             );
             const data = await res.json();
+            if (!res.ok) throw new Error(data.error);
+
             setResults(data);
          } catch (error) {
+            setResults([]);
             setError(error.message);
          } finally {
             setLoading(false);
@@ -92,7 +104,7 @@ export default function SearchModal({ isOpen, onClose }) {
             {/* RESULTS */}
             <div className={styles.results}>
                {loading && <p className={styles.info}>Searching...</p>}
-               {!loading && query && results.length === 0 && (
+               {!loading && !error && query && results.length === 0 && (
                   <p className={styles.info}>No users found</p>
                )}
                {error && <p className={styles.info}>{error}</p>}

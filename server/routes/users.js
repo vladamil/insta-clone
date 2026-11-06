@@ -8,14 +8,18 @@ import mongoose from 'mongoose';
 
 const router = express.Router();
 
+// Runs before every route in this file that has :id
+router.param('id', (req, res, next, id) => {
+   if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(404).json({ error: 'User not found' });
+   }
+   next();
+});
+
 // Get user profile by id
 router.get('/:id', requireAuth, async (req, res) => {
    try {
-      if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
-         return res.status(404).json({ error: 'User not found' });
-      }
-
-      const user = await User.findById(req.params.id).select('-passwordHash');
+      const user = await User.findById(req.params.id);
 
       if (!user) {
          return res.status(404).json({ error: 'User not found' });
@@ -37,10 +41,9 @@ router.get('/:id', requireAuth, async (req, res) => {
          followingId: user._id,
       });
 
-      res.status(200).json({
+      const profile = {
          _id: user._id,
          profilePicUrl: user.profilePicUrl || null,
-         email: user.email,
          username: user.username,
          realname: user.realname,
          description: user.description || '',
@@ -51,7 +54,14 @@ router.get('/:id', requireAuth, async (req, res) => {
             following: followingCount,
             posts: postsCount,
          },
-      });
+      };
+
+      // Email is private: only the owner sees it (on the account page)
+      if (isSelf) {
+         profile.email = user.email;
+      }
+
+      res.status(200).json(profile);
    } catch (err) {
       res.status(500).json({ error: 'Failed to fetch user profile' });
    }
@@ -64,11 +74,7 @@ router.get('/:id/posts', requireAuth, async (req, res) => {
    const skip = (page - 1) * limit;
 
    try {
-      if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
-         return res.status(404).json({ error: 'User not found' });
-      }
-
-      const user = await User.findById(req.params.id).select('-passwordHash');
+      const user = await User.findById(req.params.id);
 
       if (!user) {
          return res.status(404).json({ error: 'User not found' });
