@@ -39,7 +39,7 @@ const upload = multer({
    limits: { fileSize: 5 * 1024 * 1024 }, // 5 MB
 });
 
-// Update and set profile picture
+// UPDATE AND SET PROFILE PICTURE
 router.patch(
    '/profile-pic',
    requireAuth,
@@ -85,7 +85,7 @@ router.patch(
    },
 );
 
-// Update username
+// UPDATE USERNAME
 router.patch('/username', requireAuth, async (req, res) => {
    const username = cleanString(req.body.username).toLowerCase();
 
@@ -126,7 +126,7 @@ router.patch('/username', requireAuth, async (req, res) => {
    }
 });
 
-// Update realname
+// UPDATE REALNAME
 router.patch('/realname', requireAuth, async (req, res) => {
    const realname = cleanString(req.body.realname);
 
@@ -148,12 +148,17 @@ router.patch('/realname', requireAuth, async (req, res) => {
    res.json(user);
 });
 
-// Update email request
+// UPDATE EMAIL REQUEST
 router.patch('/email', requireAuth, async (req, res) => {
    const newEmail = cleanString(req.body.email).toLowerCase();
+   const password = cleanString(req.body.password);
 
    if (!newEmail) {
       return res.status(400).json({ error: 'Email is required' });
+   }
+
+   if (!password) {
+      return res.status(400).json({ error: 'Password is required' });
    }
 
    const emailError = validateEmail(newEmail);
@@ -162,11 +167,17 @@ router.patch('/email', requireAuth, async (req, res) => {
    }
 
    const user = await User.findById(req.user.id).select(
-      '+emailVerificationAttempts',
+      '+passwordHash +emailVerificationAttempts',
    );
 
    if (!user) {
       return res.status(404).json({ error: 'User not found' });
+   }
+
+   // A stolen token alone is not enough to change the email
+   const isMatch = await bcrypt.compare(password, user.passwordHash);
+   if (!isMatch) {
+      return res.status(400).json({ error: 'Password is incorrect' });
    }
 
    // Prevent changing to same email
@@ -216,7 +227,7 @@ router.patch('/email', requireAuth, async (req, res) => {
    });
 });
 
-// Verify update email
+// VERIFY UPDATE EMAIL
 router.get('/verify-email-change', async (req, res) => {
    const token = cleanString(req.query.token);
 
@@ -252,7 +263,7 @@ router.get('/verify-email-change', async (req, res) => {
    res.json({ message: 'Email updated successfully' });
 });
 
-// Update password
+// UPDATE PASSWORD
 router.patch('/password', requireAuth, async (req, res) => {
    const oldPassword = cleanString(req.body.oldPassword);
    const newPassword = cleanString(req.body.newPassword);
@@ -286,7 +297,7 @@ router.patch('/password', requireAuth, async (req, res) => {
    res.json({ message: 'Password updated successfully' });
 });
 
-// Update description/bio
+// UPDATE DESCRIPTION/BIO
 router.patch('/description', requireAuth, async (req, res) => {
    const description = cleanString(req.body.description);
 
@@ -305,13 +316,25 @@ router.patch('/description', requireAuth, async (req, res) => {
    res.json(user);
 });
 
-// Delete account
+// DELETE ACCOUNT
 router.delete('/', requireAuth, async (req, res) => {
    const userId = req.user.id;
-   const user = await User.findById(userId);
+   const password = cleanString(req.body.password);
+
+   if (!password) {
+      return res.status(400).json({ error: 'Password is required' });
+   }
+
+   const user = await User.findById(userId).select('+passwordHash');
 
    if (!user) {
       return res.status(404).json({ error: 'User not found' });
+   }
+
+   // A stolen token alone is not enough to delete the account
+   const isMatch = await bcrypt.compare(password, user.passwordHash);
+   if (!isMatch) {
+      return res.status(400).json({ error: 'Password is incorrect' });
    }
 
    const posts = await Post.find({ author: userId }, 'imagePublicId');

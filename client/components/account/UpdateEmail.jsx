@@ -5,9 +5,12 @@ import { useRouter } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
 
 import styles from './AccountSection.module.css';
+import PasswordEyeButton from '../common/PasswordEyeButton';
 
 export default function UpdateEmail({ currentEmail }) {
    const [email, setEmail] = useState(currentEmail || '');
+   const [password, setPassword] = useState('');
+   const [showPassword, setShowPassword] = useState(false);
    const [message, setMessage] = useState('');
 
    const { getValidToken } = useAuth();
@@ -32,6 +35,11 @@ export default function UpdateEmail({ currentEmail }) {
          return;
       }
 
+      if (!password.trim()) {
+         setMessage('Please enter your current password');
+         return;
+      }
+
       try {
          const token = getValidToken();
 
@@ -43,7 +51,7 @@ export default function UpdateEmail({ currentEmail }) {
                   'Content-Type': 'application/json',
                   Authorization: `Bearer ${token}`,
                },
-               body: JSON.stringify({ email }),
+               body: JSON.stringify({ email, password }),
             },
          );
 
@@ -76,6 +84,25 @@ export default function UpdateEmail({ currentEmail }) {
                value={email}
                onChange={(e) => setEmail(e.target.value)}
             />
+
+            <label className={styles.label} htmlFor="email-password">
+               Current Password:
+            </label>
+            <div style={{ position: 'relative' }}>
+               <input
+                  className={styles.input}
+                  id="email-password"
+                  value={password}
+                  type={showPassword ? 'text' : 'password'}
+                  autoComplete="current-password"
+                  onChange={(e) => setPassword(e.target.value)}
+               />
+               <PasswordEyeButton
+                  showPassword={showPassword}
+                  setShowPassword={setShowPassword}
+               />
+            </div>
+
             <button className={styles.btn} onClick={handleUpdate}>
                Update Email
             </button>

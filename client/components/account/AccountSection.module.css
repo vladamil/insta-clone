@@ -98,6 +98,11 @@
    color: #333;
 }
 
+.warning {
+   font-size: 0.85rem;
+   color: #c0392b;
+}
+
 .deleteBtn {
    background: #ff5b5b;
    border: none;
