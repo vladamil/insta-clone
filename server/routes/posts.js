@@ -7,8 +7,17 @@ import Follow from '../models/Follow.js';
 import Comment from '../models/Comment.js';
 import requireAuth from '../middleware/requireAuth.js';
 import mongoose from 'mongoose';
+import { cleanString, validateCommentText } from '../utils/validation.js';
 
 const router = express.Router();
+
+// Runs before every route in this file that has :id
+router.param('id', (req, res, next, id) => {
+   if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(404).json({ error: 'Post not found' });
+   }
+   next();
+});
 
 const storage = new CloudinaryStorage({
    cloudinary,
@@ -18,53 +27,56 @@ const storage = new CloudinaryStorage({
    },
 });
 
-const upload = multer({ storage });
+const upload = multer({
+   storage,
+   limits: { fileSize: 5 * 1024 * 1024 }, // 5 MB
+});
+
+// Removes an uploaded image that didn't end up in a post
+const removeUpload = (publicId) =>
+   cloudinary.uploader
+      .destroy(publicId)
+      .catch((err) =>
+         console.error('Failed to clean up Cloudinary image:', err),
+      );
 
 // Create a post route
 router.post('/', requireAuth, upload.single('postImage'), async (req, res) => {
-   try {
-      const { caption } = req.body;
-
-      if (!req.file) {
-         return res.status(400).json({ error: 'Image is required' });
-      }
-
-      // Validate caption lenght
-      if (caption.trim().length > 150) {
-         return res.status(400).json({
-            error: 'Caption is too long (max 150 characters)',
-         });
-      }
-
-      //   Save Post to DB
-      const post = new Post({
-         author: req.user.id,
-         imageUrl: req.file.path,
-         imagePublicId: req.file.filename,
-         caption,
-      });
-
-      await post.save();
-
-      //   Populate post with basic user data
-      const populatedPost = await Post.findById(post._id).populate(
-         'author',
-         'username realname profilePicUrl',
-      );
-
-      res.status(201).json(populatedPost);
-   } catch (error) {
-      // Rollback Cloudinary upload if DB save failed
-      if (req.file && req.file.filename) {
-         try {
-            await cloudinary.uploader.destroy(req.file.filename);
-         } catch (cleanupErr) {
-            console.error('Failed to clean up Cloudinary image:', cleanupErr);
-         }
-      }
-
-      res.status(500).json({ error: 'Failed to create post' });
+   if (!req.file) {
+      return res.status(400).json({ error: 'Image is required' });
    }
+
+   const caption = cleanString(req.body.caption);
+
+   // Multer has already uploaded the image at this point
+   if (caption.length > 150) {
+      await removeUpload(req.file.filename);
+      return res.status(400).json({
+         error: 'Caption is too long (max 150 characters)',
+      });
+   }
+
+   const post = new Post({
+      author: req.user.id,
+      imageUrl: req.file.path,
+      imagePublicId: req.file.filename,
+      caption,
+   });
+
+   try {
+      await post.save();
+   } catch (err) {
+      await removeUpload(req.file.filename);
+      throw err;
+   }
+
+   // Populate post with basic user data
+   const populatedPost = await Post.findById(post._id).populate(
+      'author',
+      'username realname profilePicUrl',
+   );
+
+   res.status(201).json(populatedPost);
 });
 
 // Get a feed for logged in user (posts from users he follows)
@@ -133,10 +145,6 @@ router.get('/feed', requireAuth, async (req, res) => {
 // Get a single post route
 router.get('/:id', requireAuth, async (req, res) => {
    try {
-      if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
-         return res.status(404).json({ error: 'Post not found' });
-      }
-
       const post = await Post.findById(req.params.id).populate(
          'author',
          'username realname profilePicUrl',
@@ -248,15 +256,11 @@ router.post('/:id/comment', requireAuth, async (req, res) => {
 
       if (!post) return res.status(404).json({ error: 'Post not found' });
 
-      const { text } = req.body;
-      if (!text?.trim())
-         return res.status(400).json({ error: 'Comment text required' });
+      const text = cleanString(req.body.text);
 
-      // Validate comment lenght
-      if (text?.trim().length > 300) {
-         return res.status(400).json({
-            error: 'Comment is too long (max 300 characters)',
-         });
+      const textError = validateCommentText(text);
+      if (textError) {
+         return res.status(400).json({ error: textError });
       }
 
       const comment = new Comment({ post: post.id, author: req.user.id, text });

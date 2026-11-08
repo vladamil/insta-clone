@@ -52,10 +52,22 @@ const validateEmail = (email) => {
    return null;
 };
 
+// Expects text that already went through cleanString
+const validateCommentText = (text) => {
+   if (!text) {
+      return 'Comment text required';
+   }
+   if (text.length > 300) {
+      return 'Comment is too long (max 300 characters)';
+   }
+   return null;
+};
+
 export {
    cleanString,
    validatePassword,
    validateUsername,
    validateRealname,
    validateEmail,
+   validateCommentText,
 };

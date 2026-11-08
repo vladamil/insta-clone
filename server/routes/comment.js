@@ -1,8 +1,18 @@
 import express from 'express';
 import Comment from '../models/Comment.js';
 import requireAuth from '../middleware/requireAuth.js';
+import mongoose from 'mongoose';
+import { cleanString, validateCommentText } from '../utils/validation.js';
 
 const router = express.Router();
+
+// Runs before every route in this file that has :id
+router.param('id', (req, res, next, id) => {
+   if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(404).json({ error: 'Comment not found' });
+   }
+   next();
+});
 
 // Create a comment reply
 router.post('/:id/reply', requireAuth, async (req, res) => {
@@ -19,21 +29,17 @@ router.post('/:id/reply', requireAuth, async (req, res) => {
          ? parentComment.parentComment
          : parentComment._id;
 
-      const { text } = req.body;
-      if (!text?.trim())
-         return res.status(40).json({ error: 'Reply text required' });
+      const text = cleanString(req.body.text);
 
-      // Validate reply lenght
-      if (text?.trim().length > 300) {
-         return res.status(400).json({
-            error: 'Comment is too long (max 300 characters)',
-         });
+      const textError = validateCommentText(text);
+      if (textError) {
+         return res.status(400).json({ error: textError });
       }
 
       const reply = new Comment({
          post: parentComment.post, // same post as parent
          author: req.user.id,
-         text: text.trim(),
+         text,
          parentComment: topParentId,
          replyToUsername: parentComment.author.username,
       });
@@ -49,17 +55,11 @@ router.post('/:id/reply', requireAuth, async (req, res) => {
 // Edit a comment
 router.patch('/:id', requireAuth, async (req, res) => {
    try {
-      const { text } = req.body;
+      const text = cleanString(req.body.text);
 
-      if (!text?.trim()) {
-         return res.status(400).json({ error: 'Comment text required' });
-      }
-
-      // Validate comment lenght
-      if (text?.trim().length > 300) {
-         return res.status(400).json({
-            error: 'Comment is too long (max 300 characters)',
-         });
+      const textError = validateCommentText(text);
+      if (textError) {
+         return res.status(400).json({ error: textError });
       }
 
       const comment = await Comment.findById(req.params.id);
@@ -72,7 +72,7 @@ router.patch('/:id', requireAuth, async (req, res) => {
             .json({ error: 'Not authorized to edit this comment' });
       }
 
-      comment.text = text.trim();
+      comment.text = text;
       await comment.save();
 
       res.json(comment);
