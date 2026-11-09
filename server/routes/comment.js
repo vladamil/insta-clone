@@ -14,102 +14,84 @@ router.param('id', (req, res, next, id) => {
    next();
 });
 
-// Create a comment reply
+// REPLY TO A COMMENT
 router.post('/:id/reply', requireAuth, async (req, res) => {
-   try {
-      const parentComment = await Comment.findById(req.params.id).populate(
-         'author',
-         'username',
-      );
-      if (!parentComment)
-         return res.status(404).json({ error: 'Comment not found' });
+   const parentComment = await Comment.findById(req.params.id).populate(
+      'author',
+      'username',
+   );
+   if (!parentComment)
+      return res.status(404).json({ error: 'Comment not found' });
 
-      // Always use the top-level parent
-      const topParentId = parentComment.parentComment
-         ? parentComment.parentComment
-         : parentComment._id;
+   // Always use the top-level parent
+   const topParentId = parentComment.parentComment
+      ? parentComment.parentComment
+      : parentComment._id;
 
-      const text = cleanString(req.body.text);
+   const text = cleanString(req.body.text);
 
-      const textError = validateCommentText(text);
-      if (textError) {
-         return res.status(400).json({ error: textError });
-      }
-
-      const reply = new Comment({
-         post: parentComment.post, // same post as parent
-         author: req.user.id,
-         text,
-         parentComment: topParentId,
-         replyToUsername: parentComment.author.username,
-      });
-
-      await reply.save();
-
-      res.status(201).json(reply);
-   } catch (error) {
-      res.status(500).json({ error: 'Failed to add reply' });
+   const textError = validateCommentText(text);
+   if (textError) {
+      return res.status(400).json({ error: textError });
    }
+
+   const reply = new Comment({
+      post: parentComment.post, // same post as parent
+      author: req.user.id,
+      text,
+      parentComment: topParentId,
+      replyToUsername: parentComment.author.username,
+   });
+
+   await reply.save();
+
+   res.status(201).json(reply);
 });
 
-// Edit a comment
+// EDIT A COMMENT
 router.patch('/:id', requireAuth, async (req, res) => {
-   try {
-      const text = cleanString(req.body.text);
+   const text = cleanString(req.body.text);
 
-      const textError = validateCommentText(text);
-      if (textError) {
-         return res.status(400).json({ error: textError });
-      }
-
-      const comment = await Comment.findById(req.params.id);
-      if (!comment) return res.status(404).json({ error: 'Comment not found' });
-
-      // Only the author can edit comment
-      if (comment.author.toString() !== req.user.id) {
-         return res
-            .status(403)
-            .json({ error: 'Not authorized to edit this comment' });
-      }
-
-      comment.text = text;
-      await comment.save();
-
-      res.json(comment);
-   } catch (err) {
-      res.status(500).json({ error: 'Failed to edit comment' });
+   const textError = validateCommentText(text);
+   if (textError) {
+      return res.status(400).json({ error: textError });
    }
+
+   const comment = await Comment.findById(req.params.id);
+   if (!comment) return res.status(404).json({ error: 'Comment not found' });
+
+   // Only the author can edit comment
+   if (comment.author.toString() !== req.user.id) {
+      return res
+         .status(403)
+         .json({ error: 'Not authorized to edit this comment' });
+   }
+
+   comment.text = text;
+   await comment.save();
+
+   res.json(comment);
 });
 
-// Delete a comment (and its replies)
+// DELETE A COMMENT (AND ITS REPLIES)
 router.delete('/:id', requireAuth, async (req, res) => {
-   try {
-      const comment = await Comment.findById(req.params.id);
-      if (!comment) return res.status(404).json({ error: 'Comment not found' });
+   const comment = await Comment.findById(req.params.id);
+   if (!comment) return res.status(404).json({ error: 'Comment not found' });
 
-      // Only the author can delete comment
-      if (comment.author.toString() !== req.user.id) {
-         return res
-            .status(403)
-            .json({ error: 'Not authorized to delete this comment' });
-      }
-
-      // Count how many replies exist
-      const repliesCount = await Comment.countDocuments({
-         parentComment: comment._id,
-      });
-
-      // Delete replies first
-      await Comment.deleteMany({ parentComment: comment._id });
-
-      // Delete the comment itself
-      await comment.deleteOne();
-
-      res.json({ message: 'Comment deleted successfully' });
-   } catch (err) {
-      console.error(err);
-      res.status(500).json({ error: 'Failed to delete comment' });
+   // Only the author can delete comment
+   if (comment.author.toString() !== req.user.id) {
+      return res
+         .status(403)
+         .json({ error: 'Not authorized to delete this comment' });
    }
+
+   // Delete replies first
+   await Comment.deleteMany({ parentComment: comment._id });
+
+   // Delete the comment itself
+   await comment.deleteOne();
+
+   res.json({ message: 'Comment deleted successfully' });
 });
 
 export default router;
