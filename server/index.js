@@ -1,5 +1,7 @@
 // Must be the first import: loads .env before any other module reads process.env
 import 'dotenv/config';
+// Must come before the routes: some of them use env variables as soon as they load
+import './config/checkEnv.js';
 import express from 'express';
 import cors from 'cors';
 import mongoose from 'mongoose';
