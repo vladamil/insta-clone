@@ -20,11 +20,12 @@ import {
    hashToken,
    recentAttempts,
 } from '../utils/authHelpers.js';
+import { loginLimiter, emailLimiter } from '../middleware/rateLimit.js';
 
 const router = express.Router();
 
 // REGISTER ROUTE
-router.post('/register', async (req, res) => {
+router.post('/register', emailLimiter, async (req, res) => {
    const email = cleanString(req.body.email).toLowerCase();
    const username = cleanString(req.body.username).toLowerCase();
    const realname = cleanString(req.body.realname);
@@ -118,7 +119,7 @@ router.post('/register', async (req, res) => {
 });
 
 // LOGIN ROUTE
-router.post('/login', async (req, res) => {
+router.post('/login', loginLimiter, async (req, res) => {
    const username = cleanString(req.body.username).toLowerCase();
    const password = cleanString(req.body.password);
 
@@ -189,7 +190,7 @@ router.get('/verify-email', async (req, res) => {
 });
 
 // RESEND VERIFY EMAIL ROUTE
-router.post('/resend-verification', async (req, res) => {
+router.post('/resend-verification', emailLimiter, async (req, res) => {
    const username = cleanString(req.body.username).toLowerCase();
    if (!username) {
       return res.status(400).json({ error: 'Username is required' });
@@ -236,7 +237,7 @@ router.post('/resend-verification', async (req, res) => {
 });
 
 // FORGOT PASSWORD ROUTE
-router.post('/forgot-password', async (req, res) => {
+router.post('/forgot-password', emailLimiter, async (req, res) => {
    const emailOrUsername = cleanString(req.body.emailOrUsername).toLowerCase();
    if (!emailOrUsername) {
       return res
@@ -279,7 +280,7 @@ router.post('/forgot-password', async (req, res) => {
 });
 
 // VALIDATE PASSWORD RESET TOKEN
-router.post('/validate-reset-token', async (req, res) => {
+router.post('/validate-reset-token', emailLimiter, async (req, res) => {
    const token = cleanString(req.body.token);
 
    if (!token) {
@@ -305,7 +306,7 @@ router.post('/validate-reset-token', async (req, res) => {
 });
 
 // RESET PASSWORD ROUTE
-router.post('/reset-password', async (req, res) => {
+router.post('/reset-password', emailLimiter, async (req, res) => {
    const token = cleanString(req.body.token);
    const password = cleanString(req.body.password);
 

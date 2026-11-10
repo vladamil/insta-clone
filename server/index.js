@@ -15,6 +15,10 @@ import commentRoutes from './routes/comment.js';
 const app = express();
 const PORT = process.env.PORT || 5000;
 
+// Render sits in front of the server as a proxy. This tells Express to take
+// the visitor's real IP from the header the proxy adds (needed for rate limits)
+app.set('trust proxy', 1);
+
 // Allow our frontend to read API responses in the browser.
 // CORS is enforced by browsers only - the API itself is protected by requireAuth.
 app.use(cors({ origin: process.env.CLIENT_URL }));
