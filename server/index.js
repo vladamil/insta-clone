@@ -29,6 +29,11 @@ app.use(cors({ origin: process.env.CLIENT_URL }));
 // Parse JSON request bodies into req.body
 app.use(express.json());
 
+// TEMPORARY: CHECK WHICH IP THE SERVER SEES
+app.get('/ip-check', (req, res) => {
+   res.json({ ip: req.ip, forwardedFor: req.headers['x-forwarded-for'] });
+});
+
 // Express 5 leaves req.body undefined when there is no body
 app.use((req, res, next) => {
    if (req.body === undefined || req.body === null) {
