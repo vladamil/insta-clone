@@ -16,9 +16,10 @@ import commentRoutes from './routes/comment.js';
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-// Render sits in front of the server as a proxy. This tells Express to take
-// the visitor's real IP from the header the proxy adds (needed for rate limits)
-app.set('trust proxy', 1);
+// On Render a request passes through 3 proxies before it reaches us (checked
+// with a test route). This tells Express to skip them and use the visitor's
+// real IP from the X-Forwarded-For header (needed for rate limits)
+app.set('trust proxy', 3);
 
 // Security headers on every response (also removes "X-Powered-By: Express")
 app.use(helmet());
