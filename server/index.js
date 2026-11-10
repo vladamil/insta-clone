@@ -4,6 +4,7 @@ import 'dotenv/config';
 import './config/checkEnv.js';
 import express from 'express';
 import cors from 'cors';
+import helmet from 'helmet';
 import mongoose from 'mongoose';
 import authRoutes from './routes/auth.js';
 import userRoutes from './routes/user.js';
@@ -18,6 +19,9 @@ const PORT = process.env.PORT || 5000;
 // Render sits in front of the server as a proxy. This tells Express to take
 // the visitor's real IP from the header the proxy adds (needed for rate limits)
 app.set('trust proxy', 1);
+
+// Security headers on every response (also removes "X-Powered-By: Express")
+app.use(helmet());
 
 // Allow our frontend to read API responses in the browser.
 // CORS is enforced by browsers only - the API itself is protected by requireAuth.
